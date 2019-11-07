@@ -3,6 +3,7 @@ package com.mishenka.notbasic.main
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
                 search_b.setOnClickListener {
                     search()
                 }
+                search_results_tv.movementMethod = ScrollingMovementMethod()
 
                 queryProcessed.observe(this@MainActivity, Observer<Event<Int>> {
                     it.getContentIfNotHandled()?.let { resultCode ->
