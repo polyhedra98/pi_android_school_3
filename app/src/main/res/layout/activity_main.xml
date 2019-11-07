@@ -16,14 +16,49 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/generic_dimen"
+            android:layout_marginLeft="@dimen/generic_dimen"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:ems="10"
+            android:selectAllOnFocus="true"
+            android:inputType="textPersonName"
+            android:text="@={mainVM.searchField}"
+            app:layout_constraintEnd_toStartOf="@+id/search_b"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/search_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{mainVM.helloWorld}"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:text="@string/search"
+            app:layout_constraintBaseline_toBaselineOf="@+id/search_et"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/search_results_tv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/generic_dimen"
+            android:layout_marginLeft="@dimen/generic_dimen"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:layout_marginBottom="@dimen/generic_dimen"
+            android:scrollbars = "vertical"
+            android:text="@{mainVM.resultsField}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_et" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

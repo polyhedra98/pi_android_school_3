@@ -1,9 +1,12 @@
 package com.mishenka.notbasic.data.source
 
+import android.util.Log
+
 class AppRepository {
 
-
-
+    fun getSearchResults(query: String?): String? {
+        return "Not yet implemented results for $query query"
+    }
 
 
     companion object {
