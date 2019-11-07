@@ -31,27 +31,47 @@ class MainVM private constructor(
     val observableError: LiveData<String?>
         get() = _observableError
 
+    private val _currentPage = MutableLiveData<Int>()
+    val currentPage: LiveData<Int>
+        get() = _currentPage
+
+    private val _lastPage = MutableLiveData<Int>()
+    val lastPage: LiveData<Int>
+        get() = _lastPage
+
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean>
+        get() = _loading
+
+    private var query = ""
+
     fun search() {
-        val query = searchField.value ?: ""
+        query = searchField.value ?: ""
         val validationResult = Validator.validateQuery(query)
         processValidationResult(validationResult)
         if (!validationResult) {
             return
         }
 
+        _currentPage.value = null
+        _lastPage.value = null
+        _loading.value = true
         appRepository.getSearchResults(query.toLowerCase(), object: SearchCallback {
             override fun onSearchCompleted(response: Response<OuterClass?>) {
                 _resultsField.value = processSearchResult(response)
+                _loading.value = false
             }
 
             override fun onDataNotAvailable(message: String) {
                 _resultsField.value = message
+                _loading.value = false
             }
         })
     }
 
     fun start(context: Context) {
         _resultsField.value = context.getString(R.string.initial_empty_results)
+        _loading.value = false
     }
 
     private fun processSearchResult(response: Response<OuterClass?>): String {
@@ -65,6 +85,8 @@ class MainVM private constructor(
             .append("Pages: ${photos.pages}\n")
             .append("Per page: ${photos.perpage}\n")
             .append("Total: ${photos.total}\n\n")
+        _currentPage.value = photos.page
+        _lastPage.value = photos.pages
         val photoItems = photos.photo ?: return builder.append("Empty photo items.").toString()
         for (photoItem in photoItems) {
             builder.append("${photoItem.constructURL()}\n\n")
