@@ -29,6 +29,7 @@
             android:selectAllOnFocus="true"
             android:inputType="textPersonName"
             android:text="@={mainVM.searchField}"
+            app:observable_error="@{mainVM.observableError}"
             app:layout_constraintEnd_toStartOf="@+id/search_b"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
