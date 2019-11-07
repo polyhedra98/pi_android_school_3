@@ -14,7 +14,6 @@ object Bindings {
         if (observable_error.isNullOrEmpty()) {
             et.error = null
             et.clearFocus()
-            et.text.clear()
         } else {
             et.error = observable_error
             et.selectAll()

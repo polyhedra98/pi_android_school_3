@@ -46,7 +46,7 @@ class MainVM private constructor(
     private var query = ""
 
     fun search() {
-        query = searchField.value ?: ""
+        query = searchField.value?.toLowerCase() ?: ""
         val validationResult = Validator.validateQuery(query)
         processValidationResult(validationResult)
         if (!validationResult) {
@@ -56,17 +56,16 @@ class MainVM private constructor(
         _currentPage.value = null
         _lastPage.value = null
         _loading.value = true
-        appRepository.getSearchResults(query.toLowerCase(), object: SearchCallback {
-            override fun onSearchCompleted(response: Response<OuterClass?>) {
-                _resultsField.value = processSearchResult(response)
-                _loading.value = false
-            }
+        appRepository.getSearchResults(query, SearchCallbackImplementation())
+    }
 
-            override fun onDataNotAvailable(message: String) {
-                _resultsField.value = message
-                _loading.value = false
-            }
-        })
+    fun changePage(pageChange: Int) {
+        if (currentPage.value == null) {
+            return
+        }
+        _loading.value = true
+        appRepository.getSearchResults(query, SearchCallbackImplementation(),
+            currentPage.value!! + pageChange)
     }
 
     fun start(context: Context) {
@@ -104,6 +103,18 @@ class MainVM private constructor(
             null
         } else {
             "English / Digits only"
+        }
+    }
+
+    inner class SearchCallbackImplementation : SearchCallback {
+        override fun onSearchCompleted(response: Response<OuterClass?>) {
+            _resultsField.value = processSearchResult(response)
+            _loading.value = false
+        }
+
+        override fun onDataNotAvailable(message: String) {
+            _resultsField.value = message
+            _loading.value = false
         }
     }
 

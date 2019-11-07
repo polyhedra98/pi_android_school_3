@@ -29,7 +29,12 @@ class MainActivity : AppCompatActivity() {
                     search()
                 }
                 search_results_tv.movementMethod = ScrollingMovementMethod()
-
+                next_page_tv.setOnClickListener {
+                    changePage(1)
+                }
+                prev_page_tv.setOnClickListener {
+                    changePage(-1)
+                }
                 queryProcessed.observe(this@MainActivity, Observer<Event<Int>> {
                     it.getContentIfNotHandled()?.let { resultCode ->
                         processValidationResult(resultCode)
