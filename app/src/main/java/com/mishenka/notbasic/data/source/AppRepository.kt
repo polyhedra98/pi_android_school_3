@@ -1,6 +1,5 @@
 package com.mishenka.notbasic.data.source
 
-import android.util.Log
 import okhttp3.HttpUrl
 
 
@@ -16,7 +15,6 @@ class AppRepository {
             .addQueryParameter("format", "gson")
             .addQueryParameter("text", query.toLowerCase())
             .build()
-
         return url.toString()
     }
 
