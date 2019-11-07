@@ -55,7 +55,7 @@
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
             android:layout_marginBottom="@dimen/generic_dimen"
-            android:text="@{mainVM.resultsField}"
+            app:linkified_results="@{mainVM.resultsField}"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -1,6 +1,8 @@
 package com.mishenka.notbasic.util
 
+import android.text.util.Linkify
 import android.widget.EditText
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 
@@ -16,6 +18,12 @@ object Bindings {
             et.error = observable_error.value
             et.selectAll()
         }
+    }
+
+    @BindingAdapter("app:linkified_results")
+    @JvmStatic fun linkifyResults(tv: TextView, results: String) {
+        tv.text = results
+        Linkify.addLinks(tv, Linkify.WEB_URLS)
     }
 
 }
