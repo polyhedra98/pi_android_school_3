@@ -46,7 +46,7 @@ class MainVM private constructor(
     private var query = ""
 
     fun search() {
-        query = searchField.value?.toLowerCase() ?: ""
+        query = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
         val validationResult = Validator.validateQuery(query)
         processValidationResult(validationResult)
         if (!validationResult) {
@@ -76,10 +76,11 @@ class MainVM private constructor(
     private fun processSearchResult(response: Response<OuterClass?>): String {
         val code = response.code()
         if (code != 200) {
-            return "Unsuccessful. Error code: $code."
+            return "Query: $query\nUnsuccessful. Error code: $code."
         }
-        val photos = response.body()?.photos ?: return "Unsuccessful. Empty photos."
+        val photos = response.body()?.photos ?: return "Query: $query\nUnsuccessful. Empty photos."
         val builder = StringBuilder()
+        builder.append("Query: $query\n")
         builder.append("Page: ${photos.page}\n")
             .append("Pages: ${photos.pages}\n")
             .append("Per page: ${photos.perpage}\n")
