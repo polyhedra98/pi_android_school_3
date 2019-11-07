@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.show()
+
         setupBinding {
             mainVM = obtainVM().apply {
                 start(this@MainActivity)
