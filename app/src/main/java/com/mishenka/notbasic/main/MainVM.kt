@@ -85,7 +85,11 @@ class MainVM private constructor(
             .append("Pages: ${photos.pages}\n")
             .append("Per page: ${photos.perpage}\n")
             .append("Total: ${photos.total}\n\n")
-        _currentPage.value = photos.page
+        if (photos.pages != null && photos.pages == 0) {
+            _currentPage.value = 0
+        } else {
+            _currentPage.value = photos.page
+        }
         _lastPage.value = photos.pages
         val photoItems = photos.photo ?: return builder.append("Empty photo items.").toString()
         for (photoItem in photoItems) {
