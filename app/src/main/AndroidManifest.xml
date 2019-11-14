@@ -19,14 +19,14 @@
                 <data android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.SplashActivity">
+        <activity android:name=".home.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity" />
+        <activity android:name=".home.HomeActivity" />
     </application>
 
 </manifest>

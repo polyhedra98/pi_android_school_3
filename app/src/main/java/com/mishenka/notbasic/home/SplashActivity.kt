@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.main
+package com.mishenka.notbasic.home
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +28,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun invokeHandler() {
         Handler().postDelayed({
-            intent = Intent(this, MainActivity::class.java)
+            intent = Intent(this, HomeActivity::class.java)
             startActivity(intent).also {
                 finish()
             }

@@ -7,4 +7,5 @@
     <string name="url_error">Error. Invalid URL.</string>
     <string name="previous_page"><![CDATA[< Previous page]]></string>
     <string name="next_page"><![CDATA[Next Page >]]></string>
+    <string name="home_nav_title">Home</string>
 </resources>

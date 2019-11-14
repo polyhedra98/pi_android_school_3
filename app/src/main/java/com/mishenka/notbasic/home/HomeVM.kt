@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.main
+package com.mishenka.notbasic.home
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -13,7 +13,7 @@ import com.mishenka.notbasic.util.Validator
 import retrofit2.Response
 import java.lang.StringBuilder
 
-class MainVM private constructor(
+class HomeVM private constructor(
     private val appRepository: AppRepository
 ) : ViewModel() {
 
@@ -125,11 +125,11 @@ class MainVM private constructor(
 
     companion object {
 
-        private var INSTANCE: MainVM? = null
+        private var INSTANCE: HomeVM? = null
 
         fun getInstance(appRepository: AppRepository) =
-            INSTANCE ?: synchronized(MainVM::class.java) {
-                INSTANCE ?: MainVM(
+            INSTANCE ?: synchronized(HomeVM::class.java) {
+                INSTANCE ?: HomeVM(
                     appRepository
                 ).also { INSTANCE = it }
             }

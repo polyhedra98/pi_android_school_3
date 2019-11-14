@@ -3,7 +3,7 @@ package com.mishenka.notbasic.util
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mishenka.notbasic.data.source.AppRepository
-import com.mishenka.notbasic.main.MainVM
+import com.mishenka.notbasic.home.HomeVM
 import java.lang.IllegalArgumentException
 
 class ViewModelFactory private constructor(
@@ -13,8 +13,8 @@ class ViewModelFactory private constructor(
     override fun <T : ViewModel?> create(modelClass: Class<T>) =
         with(modelClass) {
             when {
-                isAssignableFrom(MainVM::class.java) ->
-                    MainVM.getInstance(appRepository)
+                isAssignableFrom(HomeVM::class.java) ->
+                    HomeVM.getInstance(appRepository)
                 else -> throw IllegalArgumentException("Unknown VM class")
             }
         } as T
