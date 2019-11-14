@@ -8,4 +8,6 @@
     <string name="previous_page"><![CDATA[< Previous page]]></string>
     <string name="next_page"><![CDATA[Next Page >]]></string>
     <string name="home_nav_title">Home</string>
+    <string name="fav_nav_title">Favourites</string>
+    <string name="history_nav_title">History</string>
 </resources>

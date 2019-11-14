@@ -8,10 +8,13 @@ import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.favourites.FavouritesFragment
+import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.util.*
 import kotlinx.android.synthetic.main.activity_home.*
 
@@ -19,7 +22,7 @@ class HomeActivity : AppCompatActivity() {
 
 
     private lateinit var drawerLayout: DrawerLayout
-
+    private var selectedItem = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,20 +74,43 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.menu.findItem(R.id.home_nav_menu_item).isChecked = true
+        selectedItem = R.id.home_nav_menu_item
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
+            navigationView.menu.findItem(selectedItem).isChecked = false
+
             when (menuItem.itemId) {
-                R.id.home_nav_menu_item -> {
-                    Log.i("NYA", "Already on home screen")
-                }
-                else -> {
-                    throw IllegalStateException("Illegal menu item")
-                }
+                R.id.home_nav_menu_item -> conditionallyReplaceFragment(HomeFragment::class.java)
+                R.id.fav_nav_menu_item -> conditionallyReplaceFragment(FavouritesFragment::class.java)
+                R.id.history_nav_menu_item -> conditionallyReplaceFragment(HistoryFragment::class.java)
+                else -> throw IllegalStateException("Illegal menu item")
             }
 
+            selectedItem = menuItem.itemId
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
+        }
+    }
+
+
+    private fun <F: Fragment> conditionallyReplaceFragment(fragment: Class<F>) {
+        if (fragment.isAssignableFrom(supportFragmentManager
+                .findFragmentById(R.id.home_content_frame)!!::class.java)) {
+            Log.i("NYA", "Already in $fragment")
+        } else {
+            with(fragment) {
+                when {
+                    isAssignableFrom(HomeFragment::class.java) ->
+                        replaceFragmentInActivity(R.id.home_content_frame, HomeFragment.newInstance())
+                    isAssignableFrom(FavouritesFragment::class.java) ->
+                        replaceFragmentInActivity(R.id.home_content_frame, FavouritesFragment.newInstance())
+                    isAssignableFrom(HistoryFragment::class.java) ->
+                        replaceFragmentInActivity(R.id.home_content_frame, HistoryFragment.newInstance())
+                    else ->
+                        throw java.lang.IllegalStateException("Unknown fragment class")
+                }
+            }
         }
     }
 
@@ -104,9 +130,7 @@ class HomeActivity : AppCompatActivity() {
             Validator.VALIDATION_RESULT_ERROR -> {
                 Log.i("NYA","Query validation error")
             }
-            else -> {
-                throw IllegalStateException("Illegal result code")
-            }
+            else -> throw IllegalStateException("Illegal result code")
         }
     }
 
