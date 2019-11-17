@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/home_nav_menu_item"
-        android:title="@string/home_nav_title"
-        />
+    <group
+        android:id="@+id/fragment_navigation"
+        android:checkableBehavior="single">
 
-    <item
-        android:id="@+id/fav_nav_menu_item"
-        android:title="@string/fav_nav_title"
-        />
+        <item
+            android:id="@+id/home_nav_menu_item"
+            android:title="@string/home_nav_title"
+            />
 
-    <item
-        android:id="@+id/history_nav_menu_item"
-        android:title="@string/history_nav_title"
-        />
+        <item
+            android:id="@+id/fav_nav_menu_item"
+            android:title="@string/fav_nav_title"
+            />
+
+        <item
+            android:id="@+id/history_nav_menu_item"
+            android:title="@string/history_nav_title"
+            />
+
+    </group>
+
+    <group
+        android:id="@+id/settings_navigation"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/settings_nav_menu_item"
+            android:title="@string/settings_nav_title"
+            />
+
+    </group>
 
 </menu>

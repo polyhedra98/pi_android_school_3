@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.favourites.FavouritesFragment
 import com.mishenka.notbasic.history.HistoryFragment
+import com.mishenka.notbasic.settings.SettingsActivity
 import com.mishenka.notbasic.util.*
 import kotlinx.android.synthetic.main.activity_home.*
 
@@ -22,7 +24,6 @@ class HomeActivity : AppCompatActivity() {
 
 
     private lateinit var drawerLayout: DrawerLayout
-    private var selectedItem = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,23 +75,26 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.menu.findItem(R.id.home_nav_menu_item).isChecked = true
-        selectedItem = R.id.home_nav_menu_item
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
-            navigationView.menu.findItem(selectedItem).isChecked = false
 
             when (menuItem.itemId) {
                 R.id.home_nav_menu_item -> conditionallyReplaceFragment(HomeFragment::class.java)
                 R.id.fav_nav_menu_item -> conditionallyReplaceFragment(FavouritesFragment::class.java)
                 R.id.history_nav_menu_item -> conditionallyReplaceFragment(HistoryFragment::class.java)
+                R.id.settings_nav_menu_item -> startActivity(SettingsActivity::class.java)
                 else -> throw IllegalStateException("Illegal menu item")
             }
 
-            selectedItem = menuItem.itemId
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
         }
+    }
+
+
+    private fun <A: AppCompatActivity> startActivity(activity: Class<A>) {
+        startActivity(Intent(this, activity))
     }
 
 
