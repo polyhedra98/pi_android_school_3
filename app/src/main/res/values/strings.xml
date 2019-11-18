@@ -22,9 +22,13 @@
     <string name="settings_auth_key">auth_key</string>
     <string name="log_in">Log In</string>
     <string name="log_out">Log Out</string>
+    <string name="create">Create</string>
+    <string name="username">Username</string>
     <string name="preferences_filename">preferences_filename</string>
     <string name="preferences_username">preferences_username</string>
     <string name="anonymous_user">&anonymous;</string>
     <string name="welcome_user">Welcome, <b>%1$s</b>!</string>
     <string name="welcome_anonymous">Welcome, <b>&anonymous;</b>!</string>
+    <string name="username_validation_error">Invalid username. English letters / digits only.</string>
+    <string name="username_existence_error">Such user does not exist.</string>
 </resources>

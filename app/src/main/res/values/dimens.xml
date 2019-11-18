@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="generic_dimen">16dp</dimen>
+    <dimen name="auth_dimen">32dp</dimen>
     <dimen name="nav_header_height">180dp</dimen>
     <dimen name="nav_image_height">100dp</dimen>
 </resources>

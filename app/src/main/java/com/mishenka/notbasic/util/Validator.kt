@@ -8,4 +8,7 @@ object Validator {
     fun validateQuery(query: String) =
         (query.matches(Regex("^[A-Za-z0-9_]*$")) && query.isNotBlank())
 
+    fun validateUsername(username: String) =
+        (username.matches(Regex("^[A-Za-z0-9_]*$")) && username.isNotBlank())
+
 }

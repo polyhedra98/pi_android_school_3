@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 class HomeFragment private constructor() : Fragment() {
 
 
-    private lateinit var viewModel: HomeVM
+    private lateinit var binding: FragmentHomeBinding
 
 
     override fun onCreateView(
@@ -30,26 +30,26 @@ class HomeFragment private constructor() : Fragment() {
             .apply {
                 homeVM = (activity as AppCompatActivity).obtainHomeVM().apply {
                     start(context!!)
-                }.also {
-                    viewModel = it
                 }
                 lifecycleOwner = activity
-            }.root
+            }.also { binding = it }.root
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.apply {
-            search_b.setOnClickListener {
-                search()
-            }
-            search_results_tv.movementMethod = ScrollingMovementMethod()
-            next_page_tv.setOnClickListener {
-                changePage(1)
-            }
-            prev_page_tv.setOnClickListener {
-                changePage(-1)
+        with(binding) {
+            homeVM?.apply {
+                searchB.setOnClickListener {
+                    search()
+                }
+                searchResultsTv.movementMethod = ScrollingMovementMethod()
+                nextPageTv.setOnClickListener {
+                    changePage(1)
+                }
+                prevPageTv.setOnClickListener {
+                    changePage(-1)
+                }
             }
         }
     }

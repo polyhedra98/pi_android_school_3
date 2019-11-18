@@ -1,11 +1,19 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.model.user.User
 import com.mishenka.notbasic.data.source.AppRepository
+import com.mishenka.notbasic.settings.AuthCallback
+import com.mishenka.notbasic.util.Event
+import com.mishenka.notbasic.util.Validator
+import kotlinx.coroutines.launch
 
 class AuthVM private constructor(
     private val appRepository: AppRepository
@@ -16,14 +24,43 @@ class AuthVM private constructor(
     val username: LiveData<String?>
         get() = _username
 
+    private val _loginError = MutableLiveData<Event<String?>>().apply { value = Event(null) }
+    val loginError: LiveData<Event<String?>>
+        get() = _loginError
+
 
     fun start(context: Context) {
         getSavedUser(context)
     }
 
 
-    fun logInUser(username: String, context: Context) {
+    fun createUser(username: String, context: Context, callback: AuthCallback? = null) {
+        if (!Validator.validateUsername(username)) {
+            _loginError.value = Event(context.getString(R.string.username_validation_error))
+            return
+        }
+        viewModelScope.launch {
+            appRepository.insertUser(User(0, username))
+            saveUser(username, context)
+            callback?.onAuthenticationFinished()
+        }
+    }
 
+
+    fun logInUser(username: String, context: Context, callback: AuthCallback? = null) {
+        if (!Validator.validateUsername(username)) {
+            _loginError.value = Event(context.getString(R.string.username_validation_error))
+            return
+        }
+        viewModelScope.launch {
+            if (appRepository.getUserIdByUsername(username) == null) {
+                _loginError.value = Event(context.getString(R.string.username_existence_error))
+            } else {
+                _loginError.value = Event(null)
+                saveUser(username, context)
+                callback?.onAuthenticationFinished()
+            }
+        }
     }
 
 
@@ -57,6 +94,19 @@ class AuthVM private constructor(
         _username.value = username
     }
 
+
+    private fun saveUser(username: String, context: Context) {
+        _username.value = username
+        with(context) {
+            getSharedPreferences(
+                getString(R.string.preferences_filename), Context.MODE_PRIVATE
+            )?.let { safePreferences ->
+                safePreferences.edit()
+                    .putString(getString(R.string.preferences_username), username)
+                    .commit()
+            }
+        }
+    }
 
     companion object {
 

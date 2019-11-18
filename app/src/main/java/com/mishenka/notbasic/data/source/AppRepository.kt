@@ -4,6 +4,7 @@ import android.content.Context
 import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
+import com.mishenka.notbasic.data.model.user.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,6 +43,14 @@ class AppRepository private constructor(
             }
         })
     }
+
+
+    suspend fun getUserIdByUsername(username: String) =
+        appDatabase.userDao().getUserIdByUsername(username)
+
+
+    suspend fun insertUser(user: User) =
+        appDatabase.userDao().insertUser(user)
 
 
     companion object {

@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -62,11 +63,18 @@ class SettingsActivity : AppCompatActivity() {
                         safePref.title = getString(R.string.anonymous_user)
                         authPref?.let { authPref ->
                             authPref.title = getString(R.string.log_in)
+                            authPref.intent = Intent(activity, AuthActivity::class.java)
+                            authPref.onPreferenceClickListener = null
                         }
                     } else {
                         safePref.title = username
                         authPref?.let { authPref ->
                             authPref.title = getString(R.string.log_out)
+                            authPref.intent = null
+                            authPref.setOnPreferenceClickListener {
+                                authVM.logOutUser(context!!)
+                                true
+                            }
                         }
                     }
                 })
