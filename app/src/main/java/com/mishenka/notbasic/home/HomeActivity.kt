@@ -86,7 +86,6 @@ class HomeActivity : AppCompatActivity() {
                 else -> throw IllegalStateException("Illegal menu item")
             }
 
-            menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
         }

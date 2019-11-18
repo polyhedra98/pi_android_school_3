@@ -24,7 +24,7 @@
 
     <group
         android:id="@+id/settings_navigation"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
 
         <item
             android:id="@+id/settings_nav_menu_item"

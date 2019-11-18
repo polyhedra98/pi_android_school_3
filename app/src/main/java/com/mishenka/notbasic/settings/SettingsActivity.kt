@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.settings
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
@@ -20,12 +21,25 @@ class SettingsActivity : AppCompatActivity() {
         setupViewFragment()
     }
 
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when(item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+
     private fun setupViewFragment() {
         supportFragmentManager.findFragmentById(R.id.settings_content_frame)
             ?: replaceFragmentInActivity(R.id.settings_content_frame, SettingsFragment.newInstance())
     }
 
+
     class SettingsFragment : PreferenceFragmentCompat() {
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
