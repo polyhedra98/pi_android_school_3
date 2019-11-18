@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.data.model.OuterClass
-import com.mishenka.notbasic.data.model.SearchCallback
+import com.mishenka.notbasic.data.model.photo.OuterClass
+import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.Validator
@@ -111,7 +111,8 @@ class HomeVM private constructor(
         }
     }
 
-    inner class SearchCallbackImplementation : SearchCallback {
+    inner class SearchCallbackImplementation :
+        SearchCallback {
         override fun onSearchCompleted(response: Response<OuterClass?>) {
             _resultsField.value = processSearchResult(response)
             _loading.value = false

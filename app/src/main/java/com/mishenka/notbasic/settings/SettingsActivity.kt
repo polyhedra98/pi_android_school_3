@@ -2,9 +2,13 @@ package com.mishenka.notbasic.settings
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.replaceFragmentInActivity
 import com.mishenka.notbasic.util.setupActionBar
 
@@ -43,6 +47,32 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
+
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            val authVM = (activity as AppCompatActivity).obtainAuthVM()
+
+            val userPref = findPreference<Preference>(getString(R.string.settings_user_key))
+            val authPref = findPreference<Preference>(getString(R.string.settings_auth_key))
+            userPref?.let { safePref ->
+                authVM.username.observe(this.viewLifecycleOwner, Observer { username ->
+                    if (username == null) {
+                        safePref.title = getString(R.string.anonymous_user)
+                        authPref?.let { authPref ->
+                            authPref.title = getString(R.string.log_in)
+                        }
+                    } else {
+                        safePref.title = username
+                        authPref?.let { authPref ->
+                            authPref.title = getString(R.string.log_out)
+                        }
+                    }
+                })
+            }
+        }
+
 
         companion object {
 

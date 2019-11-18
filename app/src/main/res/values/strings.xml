@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?><!DOCTYPE resources [<!ENTITY anonymous "Anonymous">]>
 <resources>
     <string name="app_name">NotBasic</string>
     <string name="formatted_app_name">Not Basic</string>
@@ -16,4 +17,14 @@
     <string name="settings_endless_list_title">Prefer endless list</string>
     <string name="settings_endless_list_key">endless_list_key</string>
     <string name="settings_endless_list_summary">Output method for search queries.</string>
+    <string name="settings_account_category">Account</string>
+    <string name="settings_user_key">user_key</string>
+    <string name="settings_auth_key">auth_key</string>
+    <string name="log_in">Log In</string>
+    <string name="log_out">Log Out</string>
+    <string name="preferences_filename">preferences_filename</string>
+    <string name="preferences_username">preferences_username</string>
+    <string name="anonymous_user">&anonymous;</string>
+    <string name="welcome_user">Welcome, <b>%1$s</b>!</string>
+    <string name="welcome_anonymous">Welcome, <b>&anonymous;</b>!</string>
 </resources>

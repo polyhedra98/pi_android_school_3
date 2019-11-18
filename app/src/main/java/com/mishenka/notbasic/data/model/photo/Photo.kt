@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.data.model
+package com.mishenka.notbasic.data.model.photo
 
 
 class Photo(

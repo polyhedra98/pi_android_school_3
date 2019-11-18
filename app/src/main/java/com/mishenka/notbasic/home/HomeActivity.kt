@@ -38,13 +38,19 @@ class HomeActivity : AppCompatActivity() {
 
         setupNavigationDrawer()
 
-        obtainVM().apply {
+        obtainHomeVM().apply {
 
             queryProcessed.observe(this@HomeActivity, Observer<Event<Int>> {
                 it.getContentIfNotHandled()?.let { resultCode ->
                     processValidationResult(resultCode)
                 }
             })
+
+        }
+
+        obtainAuthVM().apply {
+
+            start(this@HomeActivity)
 
         }
     }
@@ -61,10 +67,6 @@ class HomeActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
-
-
-    fun obtainVM(): HomeVM =
-        ViewModelProviders.of(this, ViewModelFactory.getInstance()).get(HomeVM::class.java)
 
 
     private fun setupNavigationDrawer() {

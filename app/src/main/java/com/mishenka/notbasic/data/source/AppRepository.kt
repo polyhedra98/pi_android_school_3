@@ -1,8 +1,9 @@
 package com.mishenka.notbasic.data.source
 
+import android.content.Context
 import com.mishenka.notbasic.data.ApiService
-import com.mishenka.notbasic.data.model.OuterClass
-import com.mishenka.notbasic.data.model.SearchCallback
+import com.mishenka.notbasic.data.model.photo.OuterClass
+import com.mishenka.notbasic.data.model.photo.SearchCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -10,7 +11,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class AppRepository {
+class AppRepository private constructor(
+    private val appDatabase: AppDatabase
+) {
 
     fun getSearchResults(query: String, callback: SearchCallback, page: Int = 1) {
         val apiKey = "d64c48cfef077371e18078e6e3657da5"
@@ -45,9 +48,11 @@ class AppRepository {
 
         private var INSTANCE: AppRepository? = null
 
-        fun getInstance() =
+        fun getInstance(context: Context) =
             INSTANCE ?: synchronized(AppRepository::class.java) {
-                INSTANCE ?: AppRepository().also { INSTANCE = it }
+                INSTANCE ?: AppRepository(
+                    AppDatabase.getInstance(context)
+                ).also { INSTANCE = it }
             }
 
     }

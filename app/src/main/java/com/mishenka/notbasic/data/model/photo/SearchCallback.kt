@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.data.model
+package com.mishenka.notbasic.data.model.photo
 
 import retrofit2.Response
 

@@ -5,10 +5,12 @@ import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
+import com.mishenka.notbasic.util.obtainHomeVM
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
@@ -26,7 +28,7 @@ class HomeFragment private constructor() : Fragment() {
         (DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
                 as FragmentHomeBinding)
             .apply {
-                homeVM = (activity as HomeActivity).obtainVM().apply {
+                homeVM = (activity as AppCompatActivity).obtainHomeVM().apply {
                     start(context!!)
                 }.also {
                     viewModel = it

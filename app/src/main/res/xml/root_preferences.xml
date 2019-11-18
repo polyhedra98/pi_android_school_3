@@ -12,4 +12,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/settings_account_category">
+
+        <Preference
+            android:key="@string/settings_user_key"
+            android:selectable="false"
+            />
+
+        <Preference
+            android:key="@string/settings_auth_key"
+            />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

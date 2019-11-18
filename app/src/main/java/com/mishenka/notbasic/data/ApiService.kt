@@ -1,6 +1,6 @@
 package com.mishenka.notbasic.data
 
-import com.mishenka.notbasic.data.model.OuterClass
+import com.mishenka.notbasic.data.model.photo.OuterClass
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
