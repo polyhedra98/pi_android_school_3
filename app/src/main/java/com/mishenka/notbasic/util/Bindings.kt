@@ -7,8 +7,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mishenka.notbasic.R
-import com.mishenka.notbasic.util.interfaces.ReplaceableAdapter
 
 object Bindings {
 
@@ -26,7 +24,7 @@ object Bindings {
     @BindingAdapter("observable_home_results")
     @JvmStatic fun observeResults(rv: RecyclerView, observable_results: List<String>) {
         with(rv) {
-            (adapter as ReplaceableAdapter).replaceItems(observable_results)
+            (adapter as RecyclerView.Adapter).notifyDataSetChanged()
             scrollToPosition(0)
         }
     }
@@ -34,9 +32,7 @@ object Bindings {
     @BindingAdapter("observable_home_summary")
     @JvmStatic fun observeSummary(rv: RecyclerView, observable_summary: String?) {
         with(rv) {
-            (adapter as ReplaceableAdapter).overrideSummary(
-                observable_summary ?: rv.context.getString(R.string.initial_empty_results)
-            )
+            (adapter as RecyclerView.Adapter).notifyItemChanged(0)
         }
     }
 

@@ -43,7 +43,7 @@ class HomeFragment private constructor() : Fragment() {
                 searchB.setOnClickListener {
                     search()
                 }
-                searchResultsRv.adapter = HomeAdapter()
+                searchResultsRv.adapter = HomeAdapter(this)
                 searchResultsRv.layoutManager =
                     LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
                 nextPageTv.setOnClickListener {

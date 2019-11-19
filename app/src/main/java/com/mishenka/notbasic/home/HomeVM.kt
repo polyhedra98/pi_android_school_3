@@ -45,11 +45,20 @@ class HomeVM private constructor(
     val loading: LiveData<Boolean>
         get() = _loading
 
+    private val _resultClicked = MutableLiveData<Event<String>>()
+    val resultClicked: LiveData<Event<String>>
+        get() = _resultClicked
+
     private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
     val resultsList: LiveData<List<String>>
         get() = _resultsList
 
     private var query = ""
+
+
+    fun onResultClicked(url: String) {
+        _resultClicked.value = Event(url)
+    }
 
     fun search() {
         query = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""

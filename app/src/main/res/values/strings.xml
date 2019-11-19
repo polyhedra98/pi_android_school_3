@@ -32,4 +32,5 @@
     <string name="username_validation_error">Invalid username. English letters / digits only.</string>
     <string name="username_existence_collision">User already exists.</string>
     <string name="username_existence_error">User does not exist.</string>
+    <string name="intent_url_extra">url_extra</string>
 </resources>

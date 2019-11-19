@@ -8,27 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.util.interfaces.ReplaceableAdapter
 
 class HomeAdapter(
-    private var summary: String? = null,
-    private var items: List<String> = emptyList()
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-    ReplaceableAdapter {
+    private val homeVM: HomeVM
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TYPE_HEADER = 1
     private val TYPE_CARD = 2
-
-    override fun <T> replaceItems(newItems: List<T>) {
-        items = newItems as List<String>
-        notifyDataSetChanged()
-    }
-
-
-    override fun overrideSummary(summary: String) {
-        this.summary = summary
-        notifyItemChanged(0)
-    }
 
 
     override fun getItemViewType(position: Int): Int {
@@ -49,17 +35,23 @@ class HomeAdapter(
 
 
     override fun getItemCount() =
-        items.size + 1
+        homeVM.resultsList.value!!.size + 1
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HeaderHolder) {
-            holder.headerTV?.text = summary
+            holder.headerTV?.text = homeVM.resultsField.value
+                ?: holder.itemView.context.getString(R.string.initial_empty_results)
         } else if (holder is PicHolder) {
             holder.picIV?.let { safePicView ->
                 Glide.with(safePicView.context)
-                    .load(items[position - 1])
+                    .load(homeVM.resultsList.value!![position - 1])
+                    .centerCrop()
                     .into(safePicView)
+                safePicView.setOnClickListener {
+                    homeVM.onResultClicked(homeVM.resultsList.value!![position - 1])
+
+                }
             }
         }
     }

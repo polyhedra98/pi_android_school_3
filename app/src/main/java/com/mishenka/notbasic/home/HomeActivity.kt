@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.detail.DetailActivity
 import com.mishenka.notbasic.favourites.FavouritesFragment
 import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.settings.SettingsActivity
@@ -43,6 +44,15 @@ class HomeActivity : AppCompatActivity() {
             queryProcessed.observe(this@HomeActivity, Observer<Event<Int>> {
                 it.getContentIfNotHandled()?.let { resultCode ->
                     processValidationResult(resultCode)
+                }
+            })
+
+            resultClicked.observe(this@HomeActivity, Observer<Event<String>> {
+                it.getContentIfNotHandled()?.let { url ->
+                    startActivity(Intent(this@HomeActivity, DetailActivity::class.java)
+                        .apply {
+                            putExtra(getString(R.string.intent_url_extra), url)
+                        })
                 }
             })
 
