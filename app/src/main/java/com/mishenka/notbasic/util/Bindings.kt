@@ -6,6 +6,8 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.mishenka.notbasic.util.interfaces.ReplaceableAdapter
 
 object Bindings {
 
@@ -17,6 +19,14 @@ object Bindings {
         } else {
             et.error = observable_error
             et.selectAll()
+        }
+    }
+
+    @BindingAdapter("observable_home_results")
+    @JvmStatic fun observeResults(rv: RecyclerView, observable_results: List<String>) {
+        with(rv) {
+            (adapter as ReplaceableAdapter).replaceItems(observable_results)
+            scrollToPosition(0)
         }
     }
 

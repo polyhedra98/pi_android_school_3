@@ -7,21 +7,28 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.util.interfaces.ReplaceableAdapter
 
 class HomeAdapter(
-    private val homeVM: HomeVM
-) : RecyclerView.Adapter<HomeAdapter.PicHolder>() {
+    private var items: List<String> = emptyList()
+) : RecyclerView.Adapter<HomeAdapter.PicHolder>(),
+    ReplaceableAdapter {
+
+    override fun <T> replaceItems(newItems: List<T>) {
+        items = newItems as List<String>
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         PicHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_picture_card, parent, false))
 
     override fun getItemCount() =
-        homeVM.resultsList.value!!.size
+        items.size
 
     override fun onBindViewHolder(holder: PicHolder, position: Int) {
         holder.picIV?.let { safePicView ->
             Glide.with(safePicView.context)
-                .load(homeVM.resultsList.value!![position])
+                .load(items[position])
                 .into(safePicView)
         }
     }

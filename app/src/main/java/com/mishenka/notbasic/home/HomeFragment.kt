@@ -43,7 +43,7 @@ class HomeFragment private constructor() : Fragment() {
                 searchB.setOnClickListener {
                     search()
                 }
-                searchResultsRv.adapter = HomeAdapter(this)
+                searchResultsRv.adapter = HomeAdapter()
                 searchResultsRv.layoutManager =
                     LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
                 nextPageTv.setOnClickListener {
@@ -55,6 +55,13 @@ class HomeFragment private constructor() : Fragment() {
             }
         }
     }
+
+
+    private fun notifyRV(recyclerView: RecyclerView) {
+        recyclerView.adapter?.notifyDataSetChanged()
+        recyclerView.scrollToPosition(0)
+    }
+
 
     companion object {
 
