@@ -30,5 +30,6 @@
     <string name="welcome_user">Welcome, <b>%1$s</b>!</string>
     <string name="welcome_anonymous">Welcome, <b>&anonymous;</b>!</string>
     <string name="username_validation_error">Invalid username. English letters / digits only.</string>
-    <string name="username_existence_error">Such user does not exist.</string>
+    <string name="username_existence_collision">User already exists.</string>
+    <string name="username_existence_error">User does not exist.</string>
 </resources>

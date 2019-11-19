@@ -40,9 +40,13 @@ class AuthVM private constructor(
             return
         }
         viewModelScope.launch {
-            appRepository.insertUser(User(0, username))
-            saveUser(username, context)
-            callback?.onAuthenticationFinished()
+            if (appRepository.getUserIdByUsername(username) == null) {
+                appRepository.insertUser(User(0, username))
+                saveUser(username, context)
+                callback?.onAuthenticationFinished()
+            } else {
+                _loginError.value = Event(context.getString(R.string.username_existence_collision))
+            }
         }
     }
 
