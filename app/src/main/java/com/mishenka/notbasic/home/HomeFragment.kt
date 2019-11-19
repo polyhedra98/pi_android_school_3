@@ -57,12 +57,6 @@ class HomeFragment private constructor() : Fragment() {
     }
 
 
-    private fun notifyRV(recyclerView: RecyclerView) {
-        recyclerView.adapter?.notifyDataSetChanged()
-        recyclerView.scrollToPosition(0)
-    }
-
-
     companion object {
 
         fun newInstance() = HomeFragment()

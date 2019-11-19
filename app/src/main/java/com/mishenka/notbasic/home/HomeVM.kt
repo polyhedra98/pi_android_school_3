@@ -95,7 +95,7 @@ class HomeVM private constructor(
         builder.append("Page: ${photos.page}\n")
             .append("Pages: ${photos.pages}\n")
             .append("Per page: ${photos.perpage}\n")
-            .append("Total: ${photos.total}\n\n")
+            .append("Total: ${photos.total}")
         if (photos.pages != null && photos.pages == 0) {
             _currentPage.value = 0
         } else {

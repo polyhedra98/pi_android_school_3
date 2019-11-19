@@ -5,4 +5,6 @@ interface ReplaceableAdapter {
 
     fun <T> replaceItems(newItems: List<T>)
 
+    fun overrideSummary(summary: String)
+
 }
