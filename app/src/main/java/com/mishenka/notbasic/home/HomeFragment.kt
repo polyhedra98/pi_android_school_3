@@ -1,17 +1,17 @@
 package com.mishenka.notbasic.home
 
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
 import com.mishenka.notbasic.util.obtainHomeVM
-import kotlinx.android.synthetic.main.fragment_home.*
 
 
 class HomeFragment private constructor() : Fragment() {
@@ -43,7 +43,9 @@ class HomeFragment private constructor() : Fragment() {
                 searchB.setOnClickListener {
                     search()
                 }
-                searchResultsTv.movementMethod = ScrollingMovementMethod()
+                searchResultsRv.adapter = HomeAdapter(this)
+                searchResultsRv.layoutManager =
+                    LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
                 nextPageTv.setOnClickListener {
                     changePage(1)
                 }

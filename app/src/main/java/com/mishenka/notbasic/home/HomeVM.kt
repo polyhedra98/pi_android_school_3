@@ -1,11 +1,13 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
+import com.mishenka.notbasic.data.model.photo.Photo
 import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.util.Event
@@ -43,6 +45,10 @@ class HomeVM private constructor(
     val loading: LiveData<Boolean>
         get() = _loading
 
+    private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
+    val resultsList: LiveData<List<String>>
+        get() = _resultsList
+
     private var query = ""
 
     fun search() {
@@ -73,12 +79,17 @@ class HomeVM private constructor(
         _loading.value = false
     }
 
-    private fun processSearchResult(response: Response<OuterClass?>): String {
+    private fun processSearchResult(response: Response<OuterClass?>): List<String> {
         val code = response.code()
         if (code != 200) {
-            return "Query: $query\nUnsuccessful. Error code: $code."
+            _resultsField.value = "Query: $query\nUnsuccessful. Error code: $code."
+            return emptyList()
         }
-        val photos = response.body()?.photos ?: return "Query: $query\nUnsuccessful. Empty photos."
+        if (response.body()?.photos == null) {
+            _resultsField.value = "Query: $query\nUnsuccessful. Empty photos."
+            return emptyList()
+        }
+        val photos = response.body()!!.photos!!
         val builder = StringBuilder()
         builder.append("Query: $query\n")
         builder.append("Page: ${photos.page}\n")
@@ -91,11 +102,13 @@ class HomeVM private constructor(
             _currentPage.value = photos.page
         }
         _lastPage.value = photos.pages
-        val photoItems = photos.photo ?: return builder.append("Empty photo items.").toString()
-        for (photoItem in photoItems) {
-            builder.append("${photoItem.constructURL()}\n\n")
+        return if (photos.photo == null) {
+            _resultsField.value = "Empty photo items."
+            emptyList()
+        } else {
+            _resultsField.value = builder.toString()
+            photos.photo!!.map { it.constructURL() }
         }
-        return builder.toString()
     }
 
     private fun processValidationResult(validationResult: Boolean) {
@@ -114,7 +127,7 @@ class HomeVM private constructor(
     inner class SearchCallbackImplementation :
         SearchCallback {
         override fun onSearchCompleted(response: Response<OuterClass?>) {
-            _resultsField.value = processSearchResult(response)
+            _resultsList.value = processSearchResult(response)
             _loading.value = false
         }
 

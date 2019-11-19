@@ -54,11 +54,11 @@ object Bindings {
     }
 
     @BindingAdapter("loading_results")
-    @JvmStatic fun loadingResults(tv: TextView, loading: Boolean?) {
+    @JvmStatic fun loadingResults(v: View, loading: Boolean?) {
         if (loading == null || !loading) {
-            tv.visibility = View.VISIBLE
+            v.visibility = View.VISIBLE
         } else {
-            tv.visibility = View.GONE
+            v.visibility = View.GONE
         }
     }
 

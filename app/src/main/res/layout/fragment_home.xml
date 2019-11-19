@@ -53,8 +53,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="@dimen/generic_dimen"
             android:text="@string/previous_page"
-            android:visibility="invisible"
             android:textColor="@color/colorAccent"
+            android:visibility="invisible"
             app:bind_prev="@{homeVM.currentPage}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_et" />
@@ -67,8 +67,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:text="@string/next_page"
-            android:visibility="invisible"
             android:textColor="@color/colorAccent"
+            android:visibility="invisible"
             app:bind_next_current="@{homeVM.currentPage}"
             app:bind_next_last="@{homeVM.lastPage}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,21 +77,27 @@
         <TextView
             android:id="@+id/search_results_tv"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/generic_dimen"
             android:layout_marginLeft="@dimen/generic_dimen"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
-            android:layout_marginBottom="@dimen/generic_dimen"
-            android:scrollbars="vertical"
+            android:text="@{homeVM.resultsField}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/prev_page_tv" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_results_rv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/prev_page_tv"
+            app:layout_constraintTop_toBottomOf="@+id/search_results_tv"
             app:layout_constraintVertical_bias="0.0"
-            app:linkified_results="@{homeVM.resultsField}"
             app:loading_results="@{homeVM.loading}" />
 
         <ProgressBar
@@ -105,10 +111,10 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:visibility="gone"
-            app:loading_progress="@{homeVM.loading}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/prev_page_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/prev_page_tv"
+            app:loading_progress="@{homeVM.loading}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
