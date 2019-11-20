@@ -45,10 +45,8 @@ class AuthVM private constructor(
         }
         viewModelScope.launch {
             if (appRepository.getUserIdByUsername(username) == null) {
-                //TODO("Need a better way..")
-                appRepository.insertUser(User(0, username))
-                val id = appRepository.getUserIdByUsername(username)
-                saveUser(id!!, username, context)
+                val id = appRepository.insertUser(User(0, username))
+                saveUser(id as Long, username, context)
                 callback?.onAuthenticationFinished()
             } else {
                 _loginError.value = Event(context.getString(R.string.username_existence_collision))
@@ -89,7 +87,6 @@ class AuthVM private constructor(
             }
         }
     }
-
 
 
     private fun getSavedUser(context: Context) {

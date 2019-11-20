@@ -4,14 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.mishenka.notbasic.data.model.user.History
-import com.mishenka.notbasic.data.model.user.User
-import com.mishenka.notbasic.data.model.user.UserDao
+import com.mishenka.notbasic.data.model.user.*
 
 @Database(
     entities = [
         User::class,
-        History::class
+        History::class,
+        Favourite::class,
+        FavouriteSearch::class,
+        FavouriteToSearchToUser::class
     ],
     version = 1
 )

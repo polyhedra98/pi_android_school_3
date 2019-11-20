@@ -9,17 +9,17 @@ import java.util.*
     foreignKeys = [ForeignKey(
         entity = User::class,
         parentColumns = ["id"],
-        childColumns = ["userId"],
+        childColumns = ["user_id"],
         onDelete = ForeignKey.CASCADE
     )],
-    indices = [Index(value = ["userId"])]
+    indices = [Index(value = ["user_id"])]
 )
 
 @TypeConverters(DateConverter::class)
 
 data class History(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    val userId: Long,
-    val historyItem: String,
-    val timeStamp: Date?
+    @ColumnInfo(name = "user_id") val userId: Long,
+    @ColumnInfo(name = "history_item") val historyItem: String,
+    @ColumnInfo(name = "time_stamp") val timeStamp: Date?
 )
