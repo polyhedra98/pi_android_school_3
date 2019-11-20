@@ -5,6 +5,7 @@
     <string name="initial_empty_results">Enter a keyword to search.</string>
     <string name="search">Search</string>
     <string name="search_autohint">Search...</string>
+    <string name="empty_history">Empty history.</string>
     <string name="url_error">Error. Invalid URL.</string>
     <string name="previous_page"><![CDATA[< Previous page]]></string>
     <string name="next_page"><![CDATA[Next Page >]]></string>
@@ -26,6 +27,7 @@
     <string name="username">Username</string>
     <string name="preferences_filename">preferences_filename</string>
     <string name="preferences_username">preferences_username</string>
+    <string name="preferences_user_id">preferences_user_id</string>
     <string name="anonymous_user">&anonymous;</string>
     <string name="welcome_user">Welcome, <b>%1$s</b>!</string>
     <string name="welcome_anonymous">Welcome, <b>&anonymous;</b>!</string>

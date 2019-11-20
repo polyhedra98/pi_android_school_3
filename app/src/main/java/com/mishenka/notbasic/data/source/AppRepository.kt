@@ -4,6 +4,7 @@ import android.content.Context
 import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
+import com.mishenka.notbasic.data.model.user.History
 import com.mishenka.notbasic.data.model.user.User
 import retrofit2.Call
 import retrofit2.Callback
@@ -43,6 +44,13 @@ class AppRepository private constructor(
             }
         })
     }
+
+    suspend fun insertHistory(history: History) =
+        appDatabase.userDao().insertHistory(history)
+
+
+    suspend fun getHistoryByUserId(userId: Long) =
+        appDatabase.userDao().getUserHistory(userId)
 
 
     suspend fun getUserIdByUsername(username: String) =

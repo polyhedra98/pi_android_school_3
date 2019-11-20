@@ -1,19 +1,21 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
-import com.mishenka.notbasic.data.model.photo.Photo
 import com.mishenka.notbasic.data.model.photo.SearchCallback
+import com.mishenka.notbasic.data.model.user.History
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.Validator
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.StringBuilder
+import java.util.*
 
 class HomeVM private constructor(
     private val appRepository: AppRepository
@@ -60,7 +62,7 @@ class HomeVM private constructor(
         _resultClicked.value = Event(url)
     }
 
-    fun search() {
+    fun search(userId: Long?) {
         query = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
         val validationResult = Validator.validateQuery(query)
         processValidationResult(validationResult)
@@ -72,7 +74,19 @@ class HomeVM private constructor(
         _lastPage.value = null
         _loading.value = true
         appRepository.getSearchResults(query, SearchCallbackImplementation())
+        userId?.let {
+            viewModelScope.launch {
+                appRepository.insertHistory(History(0, it, query, Date()))
+            }
+        }
     }
+
+    suspend fun getUserHistory(userId: Long?) =
+        if (userId == null) {
+            null
+        } else {
+            appRepository.getHistoryByUserId(userId)
+        }
 
     fun changePage(pageChange: Int) {
         if (currentPage.value == null) {

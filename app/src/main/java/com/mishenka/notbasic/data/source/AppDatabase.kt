@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.mishenka.notbasic.data.model.user.History
 import com.mishenka.notbasic.data.model.user.User
 import com.mishenka.notbasic.data.model.user.UserDao
 
 @Database(
     entities = [
-        User::class
+        User::class,
+        History::class
     ],
     version = 1
 )

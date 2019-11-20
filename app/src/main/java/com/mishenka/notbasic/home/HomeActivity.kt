@@ -27,6 +27,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //TODO(Changed to null for now, going to try to handle configuration changes later.)
         super.onCreate(null)
         setContentView(R.layout.activity_home)
 

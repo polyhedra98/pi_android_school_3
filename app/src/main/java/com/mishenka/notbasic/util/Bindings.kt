@@ -24,7 +24,7 @@ object Bindings {
     @BindingAdapter("observable_home_results")
     @JvmStatic fun observeResults(rv: RecyclerView, observable_results: List<String>) {
         with(rv) {
-            (adapter as RecyclerView.Adapter).notifyDataSetChanged()
+            (adapter as RecyclerView.Adapter?)?.notifyDataSetChanged()
             scrollToPosition(0)
         }
     }
@@ -32,7 +32,7 @@ object Bindings {
     @BindingAdapter("observable_home_summary")
     @JvmStatic fun observeSummary(rv: RecyclerView, observable_summary: String?) {
         with(rv) {
-            (adapter as RecyclerView.Adapter).notifyItemChanged(0)
+            (adapter as RecyclerView.Adapter?)?.notifyItemChanged(0)
         }
     }
 

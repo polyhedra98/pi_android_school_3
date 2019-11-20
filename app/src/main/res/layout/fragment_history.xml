@@ -6,6 +6,7 @@
     tools:context=".history.HistoryFragment">
 
     <TextView
+        android:id="@+id/history_temp_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="History fragment" />

@@ -24,6 +24,10 @@ class AuthVM private constructor(
     val username: LiveData<String?>
         get() = _username
 
+    private val _userId = MutableLiveData<Long?>().apply { value = null }
+    val userId: LiveData<Long?>
+        get() = _userId
+
     private val _loginError = MutableLiveData<Event<String?>>().apply { value = Event(null) }
     val loginError: LiveData<Event<String?>>
         get() = _loginError
@@ -41,8 +45,10 @@ class AuthVM private constructor(
         }
         viewModelScope.launch {
             if (appRepository.getUserIdByUsername(username) == null) {
+                //TODO("Need a better way..")
                 appRepository.insertUser(User(0, username))
-                saveUser(username, context)
+                val id = appRepository.getUserIdByUsername(username)
+                saveUser(id!!, username, context)
                 callback?.onAuthenticationFinished()
             } else {
                 _loginError.value = Event(context.getString(R.string.username_existence_collision))
@@ -57,11 +63,12 @@ class AuthVM private constructor(
             return
         }
         viewModelScope.launch {
-            if (appRepository.getUserIdByUsername(username) == null) {
+            val id = appRepository.getUserIdByUsername(username)
+            if (id == null) {
                 _loginError.value = Event(context.getString(R.string.username_existence_error))
             } else {
                 _loginError.value = Event(null)
-                saveUser(username, context)
+                saveUser(id, username, context)
                 callback?.onAuthenticationFinished()
             }
         }
@@ -69,13 +76,15 @@ class AuthVM private constructor(
 
 
     fun logOutUser(context: Context) {
+        _username.value = null
+        _userId.value = null
         with(context) {
             getSharedPreferences(
                 getString(R.string.preferences_filename), Context.MODE_PRIVATE
             )?.let { safePreferences ->
-                _username.value = null
                 safePreferences.edit()
                     .putString(getString(R.string.preferences_username), null)
+                    .putLong(getString(R.string.preferences_user_id), -1)
                     .commit()
             }
         }
@@ -85,6 +94,7 @@ class AuthVM private constructor(
 
     private fun getSavedUser(context: Context) {
         var username: String? = null
+        var userId: Long = -1
         with(context) {
             getSharedPreferences(
                 getString(R.string.preferences_filename), Context.MODE_PRIVATE
@@ -93,20 +103,31 @@ class AuthVM private constructor(
                     getString(R.string.preferences_username),
                     null
                 )
+                userId = safePreferences.getLong(
+                    getString(R.string.preferences_user_id),
+                    -1
+                )
             }
         }
         _username.value = username
+        _userId.value = if (userId == (-1).toLong()) {
+            null
+        } else {
+            userId
+        }
     }
 
 
-    private fun saveUser(username: String, context: Context) {
+    private fun saveUser(userId: Long, username: String, context: Context) {
         _username.value = username
+        _userId.value = userId
         with(context) {
             getSharedPreferences(
                 getString(R.string.preferences_filename), Context.MODE_PRIVATE
             )?.let { safePreferences ->
                 safePreferences.edit()
                     .putString(getString(R.string.preferences_username), username)
+                    .putLong(getString(R.string.preferences_user_id), userId)
                     .commit()
             }
         }

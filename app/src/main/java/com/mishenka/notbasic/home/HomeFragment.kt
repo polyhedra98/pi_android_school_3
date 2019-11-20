@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
+import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
 
@@ -41,7 +42,7 @@ class HomeFragment private constructor() : Fragment() {
         with(binding) {
             homeVM?.apply {
                 searchB.setOnClickListener {
-                    search()
+                    search((activity as AppCompatActivity).obtainAuthVM().userId.value)
                 }
                 searchResultsRv.adapter = HomeAdapter(this)
                 searchResultsRv.layoutManager =
