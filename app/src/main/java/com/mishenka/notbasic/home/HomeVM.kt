@@ -93,6 +93,10 @@ class HomeVM private constructor(
         _resultClicked.value = Event(Pair(url, query))
     }
 
+    fun onFavouriteClicked(url: String, category: String) {
+        _resultClicked.value = Event(Pair(url, category))
+    }
+
     fun search(userId: Long?) {
         val tempQuery = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
         val validationResult = Validator.validateQuery(tempQuery)

@@ -37,14 +37,21 @@ class FavouriteAdapter(
                     textSize = 18f
                 }
             }
-        } else if(holder is HomeAdapter.PicHolder) {
+        } else if (holder is HomeAdapter.PicHolder) {
             holder.picIV?.let { safePicView ->
                 Glide.with(safePicView.context)
                     .load(homeVM.favouritesList.value!![position].value)
                     .centerCrop()
                     .into(safePicView)
                 safePicView.setOnClickListener {
-                    //TODO("Set on click listener")
+                    var pos = position
+                    while (homeVM.favouritesList.value!![pos].type != homeVM.TYPE_HEADER) {
+                        pos--
+                    }
+                    homeVM.onFavouriteClicked(
+                        url = homeVM.favouritesList.value!![position].value,
+                        category = homeVM.favouritesList.value!![pos].value
+                    )
                 }
             }
         }
