@@ -24,6 +24,7 @@ interface UserDao {
         INNER JOIN favourite
         ON favourite_to_search_to_user.favourite_id = favourite.id
         WHERE user_id = :userId
+        ORDER BY category
     """)
     suspend fun getCategoriesAndFavsForUser(userId: Long): List<CategoryFavSelectItem>?
 

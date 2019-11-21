@@ -3,17 +3,11 @@ package com.mishenka.notbasic.home
 import android.content.Context
 import android.util.Log
 import android.widget.Button
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
-import com.mishenka.notbasic.data.model.user.Favourite
-import com.mishenka.notbasic.data.model.user.FavouriteSearch
-import com.mishenka.notbasic.data.model.user.FavouriteToSearchToUser
-import com.mishenka.notbasic.data.model.user.History
+import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.Validator
@@ -64,6 +58,10 @@ class HomeVM private constructor(
     val resultsList: LiveData<List<String>>
         get() = _resultsList
 
+    private val _favouritesList = MutableLiveData<List<FavouriteToShow>>().apply { value = emptyList() }
+    val favouritesList: LiveData<List<FavouriteToShow>>
+        get() = _favouritesList
+
     private var query = ""
 
     var currentSearch: String? = null
@@ -78,6 +76,8 @@ class HomeVM private constructor(
     var currentCategoryId: Long = -1
         private set
 
+    val TYPE_HEADER = 1
+    val TYPE_CARD = 2
 
     fun setCurrentSearchAndUrl(search: String?, url: String?) {
         currentSearch = search
@@ -152,6 +152,32 @@ class HomeVM private constructor(
     fun start(context: Context) {
         _resultsField.value = context.getString(R.string.initial_empty_results)
         _loading.value = false
+    }
+
+    fun getFavourites(userId: Long?) {
+        if (userId == null) {
+            Log.i("NYA", "Anonymous user. No favourites")
+            return
+        }
+        //TODO("Change scope")
+        GlobalScope.launch {
+            //TODO("Probably not the best way to group favs by categories")
+            val dbFavList = appRepository.getFavourites(userId) ?: return@launch
+            val list: ArrayList<FavouriteToShow> = ArrayList(dbFavList.size + 1)
+            var previousCategory: String? = null
+            for (dbFavItem in dbFavList) {
+                if (previousCategory != dbFavItem.category) {
+                    previousCategory = dbFavItem.category
+                    list.add(FavouriteToShow(previousCategory, TYPE_HEADER))
+                    list.add(FavouriteToShow(dbFavItem.url, TYPE_CARD))
+                } else {
+                    list.add(FavouriteToShow(dbFavItem.url, TYPE_CARD))
+                }
+            }
+            MainScope().launch {
+                _favouritesList.value = list
+            }
+        }
     }
 
     suspend fun getUserHistory(userId: Long?) =

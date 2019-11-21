@@ -28,9 +28,11 @@ class HomeAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         if (viewType == TYPE_HEADER) {
-            HeaderHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_picture_header, parent, false))
+            HeaderHolder(LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_picture_header, parent, false))
         } else {
-            PicHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_picture_card, parent, false))
+            PicHolder(LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_picture_card, parent, false))
         }
 
 
@@ -50,7 +52,6 @@ class HomeAdapter(
                     .into(safePicView)
                 safePicView.setOnClickListener {
                     homeVM.onResultClicked(homeVM.resultsList.value!![position - 1])
-
                 }
             }
         }

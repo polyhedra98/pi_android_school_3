@@ -45,6 +45,10 @@ class AppRepository private constructor(
     }
 
 
+    suspend fun getFavourites(userId: Long) =
+        appDatabase.userDao().getCategoriesAndFavsForUser(userId)
+
+
     suspend fun insertFavouriteSearch(favouriteSearch: FavouriteSearch) =
         appDatabase.userDao().insertFavSearch(favouriteSearch)
 

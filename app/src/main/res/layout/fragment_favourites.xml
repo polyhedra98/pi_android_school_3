@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".favourites.FavouritesFragment">
 
-    <TextView
+    <data>
+        
+        <variable
+            name="homeVM"
+            type="com.mishenka.notbasic.home.HomeVM" />
+        
+    </data>
+
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Favourites fragment" />
+        android:paddingTop="@dimen/generic_dimen">
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favourites_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:observe_favourites="@{homeVM.favouritesList}"
+            />
+
+    </FrameLayout>
+
+</layout>
