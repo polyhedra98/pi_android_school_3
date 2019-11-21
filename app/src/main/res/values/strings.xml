@@ -35,4 +35,8 @@
     <string name="username_existence_collision">User already exists.</string>
     <string name="username_existence_error">User does not exist.</string>
     <string name="intent_url_extra">url_extra</string>
+    <string name="intent_category_extra">category_extra</string>
+    <string name="login_to_star_error">You have to be logged in to star.</string>
+    <string name="unstar">Unstar</string>
+    <string name="star">Star</string>
 </resources>

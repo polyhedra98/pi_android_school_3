@@ -48,11 +48,12 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
-            resultClicked.observe(this@HomeActivity, Observer<Event<String>> {
-                it.getContentIfNotHandled()?.let { url ->
+            resultClicked.observe(this@HomeActivity, Observer<Event<Pair<String, String>>> {
+                it.getContentIfNotHandled()?.let { pair ->
                     startActivity(Intent(this@HomeActivity, DetailActivity::class.java)
                         .apply {
-                            putExtra(getString(R.string.intent_url_extra), url)
+                            putExtra(getString(R.string.intent_url_extra), pair.first)
+                            putExtra(getString(R.string.intent_category_extra), pair.second)
                         })
                 }
             })

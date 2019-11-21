@@ -11,4 +11,10 @@ object Validator {
     fun validateUsername(username: String) =
         (username.matches(Regex("^[A-Za-z0-9_]*$")) && username.isNotBlank())
 
+    fun validateSearchAndUrl(currentSearch: String?, currentUrl: String?) =
+        currentUrl != null && currentSearch != null
+
+    fun validateFavAndCategoryId(currentFavId: Long, currentCategoryId: Long) =
+        currentFavId != (-1).toLong() && currentCategoryId != (-1).toLong()
+
 }

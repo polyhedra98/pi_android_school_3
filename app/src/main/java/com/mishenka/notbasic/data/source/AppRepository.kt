@@ -4,8 +4,7 @@ import android.content.Context
 import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
-import com.mishenka.notbasic.data.model.user.History
-import com.mishenka.notbasic.data.model.user.User
+import com.mishenka.notbasic.data.model.user.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,8 +44,25 @@ class AppRepository private constructor(
         })
     }
 
+
+    suspend fun insertFavouriteSearch(favouriteSearch: FavouriteSearch) =
+        appDatabase.userDao().insertFavSearch(favouriteSearch)
+
+
+    suspend fun insertFavourite(favourite: Favourite) =
+        appDatabase.userDao().insertFav(favourite)
+
+
+    suspend fun insertFSU(fsu: FavouriteToSearchToUser) =
+        appDatabase.userDao().insertFavToSearchToUser(fsu)
+
+
     suspend fun insertHistory(history: History) =
         appDatabase.userDao().insertHistory(history)
+
+
+    suspend fun insertUser(user: User) =
+        appDatabase.userDao().insertUser(user)
 
 
     suspend fun getHistoryByUserId(userId: Long) =
@@ -57,8 +73,20 @@ class AppRepository private constructor(
         appDatabase.userDao().getUserIdByUsername(username)
 
 
-    suspend fun insertUser(user: User) =
-        appDatabase.userDao().insertUser(user)
+    suspend fun getFSUid(userId: Long, favouriteId: Long, categoryId: Long) =
+        appDatabase.userDao().getFavToSearchToUserId(userId, favouriteId, categoryId)
+
+
+    suspend fun getFavIdByUrl(url: String) =
+        appDatabase.userDao().getFavIdByUrl(url)
+
+
+    suspend fun getFavSearchIdByCategory(category: String) =
+        appDatabase.userDao().getFavSearchIdByCategory(category)
+
+
+    suspend fun deleteFSUbyIds(userId: Long, favId: Long, categoryId: Long) =
+        appDatabase.userDao().deleteFavToSearchToUserByIds(userId, favId, categoryId)
 
 
     companion object {

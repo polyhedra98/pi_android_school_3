@@ -13,6 +13,8 @@ import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.settings.AuthCallback
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.Validator
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class AuthVM private constructor(
@@ -43,13 +45,18 @@ class AuthVM private constructor(
             _loginError.value = Event(context.getString(R.string.username_validation_error))
             return
         }
-        viewModelScope.launch {
+        //TODO("Change scope")
+        GlobalScope.launch {
             if (appRepository.getUserIdByUsername(username) == null) {
                 val id = appRepository.insertUser(User(0, username))
-                saveUser(id as Long, username, context)
-                callback?.onAuthenticationFinished()
+                MainScope().launch {
+                    saveUser(id as Long, username, context)
+                    callback?.onAuthenticationFinished()
+                }
             } else {
-                _loginError.value = Event(context.getString(R.string.username_existence_collision))
+                MainScope().launch {
+                    _loginError.value = Event(context.getString(R.string.username_existence_collision))
+                }
             }
         }
     }
@@ -60,14 +67,17 @@ class AuthVM private constructor(
             _loginError.value = Event(context.getString(R.string.username_validation_error))
             return
         }
-        viewModelScope.launch {
+        //TODO("Change scope")
+        GlobalScope.launch {
             val id = appRepository.getUserIdByUsername(username)
-            if (id == null) {
-                _loginError.value = Event(context.getString(R.string.username_existence_error))
-            } else {
-                _loginError.value = Event(null)
-                saveUser(id, username, context)
-                callback?.onAuthenticationFinished()
+            MainScope().launch {
+                if (id == null) {
+                    _loginError.value = Event(context.getString(R.string.username_existence_error))
+                } else {
+                    _loginError.value = Event(null)
+                    saveUser(id, username, context)
+                    callback?.onAuthenticationFinished()
+                }
             }
         }
     }

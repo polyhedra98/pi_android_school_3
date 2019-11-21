@@ -28,19 +28,20 @@ interface UserDao {
     suspend fun getCategoriesAndFavsForUser(userId: Long): List<CategoryFavSelectItem>?
 
 
-    @Query("SELECT id FROM favourite_search WHERE category = :category")
+    @Query("SELECT id FROM favourite_search WHERE category = :category LIMIT 1")
     suspend fun getFavSearchIdByCategory(category: String): Long?
 
 
-    @Query("SELECT id FROM favourite WHERE url = :url")
+    @Query("SELECT id FROM favourite WHERE url = :url LIMIT 1")
     suspend fun getFavIdByUrl(url: String): Long?
 
 
     @Query("""
-        SELECT * FROM favourite_to_search_to_user
+        SELECT id FROM favourite_to_search_to_user
         WHERE user_id = :userId AND favourite_id = :favouriteId AND favourite_search_id = :categoryId
+        LIMIT 1
     """)
-    suspend fun getFavToSearchToUser(userId: Long, favouriteId: Long, categoryId: Long): FavouriteToSearchToUser?
+    suspend fun getFavToSearchToUserId(userId: Long, favouriteId: Long, categoryId: Long): Long?
 
 
     @Insert
@@ -63,7 +64,10 @@ interface UserDao {
     suspend fun insertUser(user: User): Long?
 
 
-    @Delete
-    suspend fun deleteFavToSearchToUser(favouriteToSearchToUser: FavouriteToSearchToUser)
+    @Query("""
+        DELETE FROM favourite_to_search_to_user
+        WHERE user_id = :userId AND favourite_id = :favId AND favourite_search_id = :categoryId
+    """)
+    suspend fun deleteFavToSearchToUserByIds(userId: Long, favId: Long, categoryId: Long)
 
 }

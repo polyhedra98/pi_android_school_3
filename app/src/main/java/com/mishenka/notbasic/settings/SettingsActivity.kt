@@ -13,6 +13,7 @@ import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.replaceFragmentInActivity
 import com.mishenka.notbasic.util.setupActionBar
 
+//TODO("Login is very bugged for some reason.")
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
