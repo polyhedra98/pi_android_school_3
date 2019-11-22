@@ -42,6 +42,8 @@ class HomeActivity : AppCompatActivity() {
 
         obtainHomeVM().apply {
 
+            searchField.value = loadSearch()
+
             queryProcessed.observe(this@HomeActivity, Observer<Event<Int>> {
                 it.getContentIfNotHandled()?.let { resultCode ->
                     processValidationResult(resultCode)
@@ -57,7 +59,6 @@ class HomeActivity : AppCompatActivity() {
                         })
                 }
             })
-
         }
 
         obtainAuthVM().apply {
@@ -65,6 +66,12 @@ class HomeActivity : AppCompatActivity() {
             start(this@HomeActivity)
 
         }
+    }
+
+
+    override fun onDestroy() {
+        saveSearch()
+        super.onDestroy()
     }
 
 
@@ -79,6 +86,28 @@ class HomeActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
+
+
+    private fun loadSearch(): String? {
+        var previousSearch: String? = null
+        getSharedPreferences(
+            getString(R.string.preferences_filename), Context.MODE_PRIVATE
+        )?.let { safePreferences ->
+            previousSearch = safePreferences.getString(getString(R.string.preferences_search), null)
+        }
+        return previousSearch
+    }
+
+
+    private fun saveSearch() {
+        getSharedPreferences(
+            getString(R.string.preferences_filename), Context.MODE_PRIVATE
+        )?.let { safePreferences ->
+            safePreferences.edit()
+                .putString(getString(R.string.preferences_search), obtainHomeVM().searchField.value)
+                .commit()
+        }
+    }
 
 
     private fun setupNavigationDrawer() {
