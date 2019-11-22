@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.data.model.user.FavouriteToShow
+import com.mishenka.notbasic.data.model.user.HistorySelectItem
 
 object Bindings {
 
@@ -33,6 +34,14 @@ object Bindings {
     @BindingAdapter("observe_favourites")
     @JvmStatic fun observeFavourites(rv: RecyclerView, observable_favourites: List<FavouriteToShow>) {
         with(rv) {
+            (adapter as RecyclerView.Adapter?)?.notifyDataSetChanged()
+            scrollToPosition(0)
+        }
+    }
+
+    @BindingAdapter("observe_history")
+    @JvmStatic fun observeHistory(rv: RecyclerView, observable_history: List<HistorySelectItem>) {
+        with (rv) {
             (adapter as RecyclerView.Adapter?)?.notifyDataSetChanged()
             scrollToPosition(0)
         }

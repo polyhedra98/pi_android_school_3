@@ -4,9 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.util.Linkify
 import android.view.View
-import android.webkit.WebView
 import android.widget.Button
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.obtainAuthVM
@@ -54,7 +52,7 @@ class DetailActivity : AppCompatActivity() {
         val homeVM = obtainHomeVM()
         if (userId == null) {
             with(detail_error_tv) {
-                text = getString(R.string.login_to_star_error)
+                text = getString(R.string.star_auth_error)
                 visibility = View.VISIBLE
             }
             detail_star_b.visibility = View.INVISIBLE

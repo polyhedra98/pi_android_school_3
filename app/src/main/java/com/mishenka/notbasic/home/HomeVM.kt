@@ -59,6 +59,10 @@ class HomeVM private constructor(
     val resultsList: LiveData<List<String>>
         get() = _resultsList
 
+    private val _historyList = MutableLiveData<List<HistorySelectItem>>().apply { value = emptyList() }
+    val historyList: LiveData<List<HistorySelectItem>>
+        get() = _historyList
+
     private val _favouritesList = MutableLiveData<ArrayList<FavouriteToShow>>()
         .apply { value = ArrayList() }
     val favouritesList: LiveData<ArrayList<FavouriteToShow>>
@@ -208,12 +212,16 @@ class HomeVM private constructor(
         }
     }
 
-    suspend fun getUserHistory(userId: Long?) =
-        if (userId == null) {
-            null
-        } else {
-            appRepository.getHistoryByUserId(userId)
+    fun getUserHistory(userId: Long?) {
+        if (userId == null) return
+        //TODO("Change scope")
+        GlobalScope.launch {
+            val history = appRepository.getHistoryByUserId(userId)
+            MainScope().launch {
+                _historyList.value = history
+            }
         }
+    }
 
     suspend fun isAlreadyStarred(userId: Long): Boolean {
         if (currentFavId == (-1).toLong() || currentCategoryId == (-1).toLong()) {
