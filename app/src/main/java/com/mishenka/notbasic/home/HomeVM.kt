@@ -188,7 +188,7 @@ class HomeVM private constructor(
 
     fun getFavourites(userId: Long?) {
         if (userId == null) {
-            Log.i("NYA", "Anonymous user. No favourites")
+            _favouritesList.value = ArrayList()
             return
         }
         //TODO("Change scope")
@@ -213,7 +213,10 @@ class HomeVM private constructor(
     }
 
     fun getUserHistory(userId: Long?) {
-        if (userId == null) return
+        if (userId == null) {
+            _historyList.value = emptyList()
+            return
+        }
         //TODO("Change scope")
         GlobalScope.launch {
             val history = appRepository.getHistoryByUserId(userId)

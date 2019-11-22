@@ -64,6 +64,10 @@ class HomeActivity : AppCompatActivity() {
 
             start(this@HomeActivity)
 
+            userStateChanged.observe(this@HomeActivity, Observer<Event<Int>> {
+                handleUserState(it.getContentIfNotHandled())
+            })
+
         }
     }
 
@@ -85,6 +89,24 @@ class HomeActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
+
+
+    private fun handleUserState(state: Int?) {
+        val homeVM = obtainHomeVM()
+        with(obtainAuthVM()) {
+            when (state) {
+                USER_LOGGED_IN -> {
+                    homeVM.getUserHistory(userId.value)
+                    homeVM.getFavourites(userId.value)
+                }
+                USER_LOGGED_OUT -> {
+                    homeVM.getUserHistory(null)
+                    homeVM.getFavourites(null)
+                }
+                else -> throw java.lang.IllegalStateException("Illegal user state.")
+            }
+        }
+    }
 
 
     private fun loadSearch(): String? {

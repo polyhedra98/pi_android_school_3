@@ -11,6 +11,10 @@
             name="homeVM"
             type="com.mishenka.notbasic.home.HomeVM" />
 
+        <variable
+            name="authVM"
+            type="com.mishenka.notbasic.home.AuthVM" />
+
     </data>
 
 
@@ -20,14 +24,17 @@
 
         <TextView
             android:id="@+id/history_auth_error_tv"
+            android:text="@string/history_auth_error"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:observe_anon_user="@{authVM.username}"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/history_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:observe_history="@{homeVM.historyList}"
+            app:observe_user="@{authVM.username}"
             android:visibility="gone"/>
 
     </FrameLayout>
