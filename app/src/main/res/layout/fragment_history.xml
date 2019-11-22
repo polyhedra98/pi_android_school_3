@@ -27,15 +27,14 @@
             android:text="@string/history_auth_error"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:observe_anon_user="@{authVM.username}"/>
+            app:observe_anon_user="@{authVM.userId}"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/history_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:observe_history="@{homeVM.historyList}"
-            app:observe_user="@{authVM.username}"
-            android:visibility="gone"/>
+            app:observe_user="@{authVM.userId}"/>
 
     </FrameLayout>
 

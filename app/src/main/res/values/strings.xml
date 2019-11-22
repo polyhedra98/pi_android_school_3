@@ -39,6 +39,7 @@
     <string name="intent_category_extra">category_extra</string>
     <string name="star_auth_error">You have to be logged in to star.</string>
     <string name="history_auth_error">Log in to save history.</string>
+    <string name="favourites_auth_error">Log in to access favourites.</string>
     <string name="unstar">Unstar</string>
     <string name="star">Star</string>
     <string name="remove">Remove</string>

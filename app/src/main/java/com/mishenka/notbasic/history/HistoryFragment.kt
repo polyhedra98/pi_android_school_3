@@ -48,9 +48,11 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
 
-            historyRv.adapter = HistoryAdapter(homeVM!!)
-            historyRv.layoutManager =
-                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+            homeVM?.let { safeHomeVM ->
+                historyRv.adapter = HistoryAdapter(safeHomeVM)
+                historyRv.layoutManager =
+                    LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+            }
 
         }
     }

@@ -9,6 +9,8 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.data.model.user.FavouriteToShow
 import com.mishenka.notbasic.data.model.user.HistorySelectItem
+import com.mishenka.notbasic.favourites.FavouriteAdapter
+import com.mishenka.notbasic.home.HomeVM
 
 object Bindings {
 
@@ -48,7 +50,7 @@ object Bindings {
     }
 
     @BindingAdapter("observe_anon_user")
-    @JvmStatic fun observeUserStateForAnonymous(view: View, observable_user: String?) {
+    @JvmStatic fun observeUserStateForAnonymous(view: View, observable_user: Long?) {
         view.visibility = if (observable_user == null) {
             View.VISIBLE
         } else {
@@ -57,7 +59,7 @@ object Bindings {
     }
 
     @BindingAdapter("observe_user")
-    @JvmStatic fun observeUserState(view: View, observable_user: String?) {
+    @JvmStatic fun observeUserState(view: View, observable_user: Long?) {
         view.visibility = if (observable_user == null) {
             View.GONE
         } else {
