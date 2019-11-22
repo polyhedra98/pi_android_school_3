@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.StringBuilder
 import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeVM private constructor(
     private val appRepository: AppRepository
@@ -58,8 +59,9 @@ class HomeVM private constructor(
     val resultsList: LiveData<List<String>>
         get() = _resultsList
 
-    private val _favouritesList = MutableLiveData<List<FavouriteToShow>>().apply { value = emptyList() }
-    val favouritesList: LiveData<List<FavouriteToShow>>
+    private val _favouritesList = MutableLiveData<ArrayList<FavouriteToShow>>()
+        .apply { value = ArrayList() }
+    val favouritesList: LiveData<ArrayList<FavouriteToShow>>
         get() = _favouritesList
 
     private var query = ""
@@ -95,6 +97,28 @@ class HomeVM private constructor(
 
     fun onFavouriteClicked(url: String, category: String) {
         _resultClicked.value = Event(Pair(url, category))
+    }
+
+    fun dismissFavourite(userId: Long, position: Int) {
+        val category = favouritesList.value!![getCategoryPosForPosition(position)].value
+        val url = favouritesList.value!![position].value
+        favouritesList.value!!.removeAt(position)
+        //TODO("Change scope")
+        GlobalScope.launch {
+            appRepository.deleteFSUbyIds(
+                userId,
+                appRepository.getFavIdByUrl(url)!!,
+                appRepository.getFavSearchIdByCategory(category)!!
+            )
+        }
+    }
+
+    fun getCategoryPosForPosition(position: Int): Int {
+        var pos = position
+        while (favouritesList.value!![pos].type != TYPE_HEADER) {
+            pos--
+        }
+        return pos
     }
 
     fun search(userId: Long?) {

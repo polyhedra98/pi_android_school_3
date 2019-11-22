@@ -7,10 +7,17 @@ import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.home.HomeAdapter
 import com.mishenka.notbasic.home.HomeVM
+import com.mishenka.notbasic.util.SwipeItemTouchHelperAdapter
 
 class FavouriteAdapter(
+    private val userId: Long,
     private val homeVM: HomeVM
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SwipeItemTouchHelperAdapter {
+
+    override fun onItemDismiss(position: Int) {
+        homeVM.dismissFavourite(userId, position)
+        notifyItemRemoved(position)
+    }
 
     override fun getItemViewType(position: Int) =
         homeVM.favouritesList.value!![position].type
@@ -44,10 +51,7 @@ class FavouriteAdapter(
                     .centerCrop()
                     .into(safePicView)
                 safePicView.setOnClickListener {
-                    var pos = position
-                    while (homeVM.favouritesList.value!![pos].type != homeVM.TYPE_HEADER) {
-                        pos--
-                    }
+                    val pos = homeVM.getCategoryPosForPosition(position)
                     homeVM.onFavouriteClicked(
                         url = homeVM.favouritesList.value!![position].value,
                         category = homeVM.favouritesList.value!![pos].value

@@ -8,11 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentFavouritesBinding
+import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
@@ -38,13 +40,19 @@ class FavouritesFragment private constructor() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
-            homeVM?.apply {
-                favouritesRv.adapter = FavouriteAdapter(this)
-                favouritesRv.layoutManager =
-                    LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+        (activity as AppCompatActivity).obtainAuthVM().userId.value?.let { safeUserId ->
+            with(binding) {
+                homeVM?.apply {
+                    val adapter = FavouriteAdapter(safeUserId, this)
+                    favouritesRv.adapter = adapter
+                    ItemTouchHelper(SwipeItemTouchHelperCallback(adapter, this))
+                        .attachToRecyclerView(favouritesRv)
+                    favouritesRv.layoutManager =
+                        LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                }
             }
         }
+
     }
 
 
