@@ -16,7 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class HistoryFragment private constructor() : Fragment() {
+class HistoryFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

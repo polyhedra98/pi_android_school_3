@@ -7,7 +7,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mishenka.notbasic.data.model.user.CategoryFavSelectItem
 import com.mishenka.notbasic.data.model.user.FavouriteToShow
 
 object Bindings {
@@ -26,7 +25,7 @@ object Bindings {
     @BindingAdapter("observable_home_results")
     @JvmStatic fun observeResults(rv: RecyclerView, observable_results: List<String>) {
         with(rv) {
-            (adapter as RecyclerView.Adapter?)?.notifyDataSetChanged()
+            (adapter as RecyclerView.Adapter?)?.notifyItemRangeChanged(1, observable_results.size)
             scrollToPosition(0)
         }
     }

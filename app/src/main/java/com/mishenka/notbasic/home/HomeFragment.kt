@@ -15,7 +15,7 @@ import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
 
-class HomeFragment private constructor() : Fragment() {
+class HomeFragment : Fragment() {
 
 
     private lateinit var binding: FragmentHomeBinding
@@ -30,7 +30,9 @@ class HomeFragment private constructor() : Fragment() {
                 as FragmentHomeBinding)
             .apply {
                 homeVM = (activity as AppCompatActivity).obtainHomeVM().apply {
-                    start(context!!)
+                    if (savedInstanceState == null) {
+                        start(context!!)
+                    }
                 }
                 lifecycleOwner = activity
             }.also { binding = it }.root

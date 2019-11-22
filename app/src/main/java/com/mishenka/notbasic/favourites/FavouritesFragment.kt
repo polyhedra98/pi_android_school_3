@@ -18,7 +18,7 @@ import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
-class FavouritesFragment private constructor() : Fragment() {
+class FavouritesFragment : Fragment() {
 
 
     private lateinit var binding: FragmentFavouritesBinding
