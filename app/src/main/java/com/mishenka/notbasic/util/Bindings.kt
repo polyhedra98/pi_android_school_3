@@ -49,24 +49,6 @@ object Bindings {
         }
     }
 
-    @BindingAdapter("observe_anon_user")
-    @JvmStatic fun observeUserStateForAnonymous(view: View, observable_user: Long?) {
-        view.visibility = if (observable_user == null) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    @BindingAdapter("observe_user")
-    @JvmStatic fun observeUserState(view: View, observable_user: Long?) {
-        view.visibility = if (observable_user == null) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
-
     @BindingAdapter("observable_home_summary")
     @JvmStatic fun observeSummary(rv: RecyclerView, observable_summary: String?) {
         with(rv) {

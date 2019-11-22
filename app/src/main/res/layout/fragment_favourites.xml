@@ -19,22 +19,19 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/generic_dimen">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/favourites_auth_error_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/favourites_auth_error"
-            app:observe_anon_user="@{authVM.userId}" />
+            android:text="@string/favourites_auth_error"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favourites_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:observe_favourites="@{homeVM.favouritesList}"
-            app:observe_user="@{authVM.userId}"/>
+            app:observe_favourites="@{homeVM.favouritesList}"/>
 
     </FrameLayout>
 

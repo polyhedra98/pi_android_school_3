@@ -48,12 +48,23 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
 
-            homeVM?.let { safeHomeVM ->
-                historyRv.adapter = HistoryAdapter(safeHomeVM)
-                historyRv.layoutManager =
-                    LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-            }
-
+            authVM?.userId?.observe(this@HistoryFragment, Observer { userId ->
+                if (userId != null) {
+                    homeVM?.let { safeHomeVM ->
+                        safeHomeVM.getUserHistory(userId)
+                        if (historyRv.adapter == null) {
+                            historyRv.adapter = HistoryAdapter(safeHomeVM)
+                            historyRv.layoutManager =
+                                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                        }
+                        historyAuthErrorTv.visibility = View.GONE
+                        historyRv.visibility = View.VISIBLE
+                    }
+                } else {
+                    historyAuthErrorTv.visibility = View.VISIBLE
+                    historyRv.visibility = View.GONE
+                }
+            })
         }
     }
 

@@ -34,14 +34,6 @@ class AuthVM private constructor(
     val loginError: LiveData<Event<String?>>
         get() = _loginError
 
-    private val _userStateChanged = MutableLiveData<Event<Int>>()
-    val userStateChanged: LiveData<Event<Int>>
-        get() = _userStateChanged
-
-    val USER_LOGGED_IN = 1
-    val USER_LOGGED_OUT = 2
-
-
     fun start(context: Context) {
         getSavedUser(context)
     }
@@ -58,7 +50,6 @@ class AuthVM private constructor(
                 val id = appRepository.insertUser(User(0, username))
                 MainScope().launch {
                     saveUser(id as Long, username, context)
-                    _userStateChanged.value = Event(USER_LOGGED_IN)
                     callback?.onAuthenticationFinished()
                 }
             } else {
@@ -84,7 +75,6 @@ class AuthVM private constructor(
                 } else {
                     _loginError.value = Event(null)
                     saveUser(id, username, context)
-                    _userStateChanged.value = Event(USER_LOGGED_IN)
                     callback?.onAuthenticationFinished()
                 }
             }
@@ -95,7 +85,6 @@ class AuthVM private constructor(
     fun logOutUser(context: Context) {
         _username.value = null
         _userId.value = null
-        _userStateChanged.value = Event(USER_LOGGED_OUT)
         with(context) {
             getSharedPreferences(
                 getString(R.string.preferences_filename), Context.MODE_PRIVATE
