@@ -31,7 +31,15 @@ class DetailActivity : AppCompatActivity() {
 
         setupUrlRelatedViews(url)
 
+        setupCategoryRelatedViews(category)
+
         setupStarButton(url, category)
+    }
+
+
+    private fun setupCategoryRelatedViews(category: String?) {
+        if (category == null) return
+        detail_category_tv.text = getString(R.string.category_text, category)
     }
 
 

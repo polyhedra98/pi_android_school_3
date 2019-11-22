@@ -37,6 +37,7 @@
     <string name="username_existence_error">User does not exist.</string>
     <string name="intent_url_extra">url_extra</string>
     <string name="intent_category_extra">category_extra</string>
+    <string name="category_text">Category: %1$s</string>
     <string name="star_auth_error">You have to be logged in to star.</string>
     <string name="history_auth_error">Log in to save history.</string>
     <string name="favourites_auth_error">Log in to access favourites.</string>
