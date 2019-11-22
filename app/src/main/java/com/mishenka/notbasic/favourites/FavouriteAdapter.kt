@@ -1,7 +1,10 @@
 package com.mishenka.notbasic.favourites
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
@@ -27,8 +30,8 @@ class FavouriteAdapter(
             HomeAdapter.HeaderHolder(LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_picture_header, parent, false))
         } else {
-            HomeAdapter.PicHolder(LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_picture_card, parent, false))
+            FavouritePicHolder(LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_favourite_picture_card, parent, false))
         }
 
 
@@ -44,7 +47,7 @@ class FavouriteAdapter(
                     textSize = 18f
                 }
             }
-        } else if (holder is HomeAdapter.PicHolder) {
+        } else if (holder is FavouritePicHolder) {
             holder.picIV?.let { safePicView ->
                 Glide.with(safePicView.context)
                     .load(homeVM.favouritesList.value!![position].value)
@@ -58,6 +61,17 @@ class FavouriteAdapter(
                     )
                 }
             }
+            holder.removeB?.let { safeRemoveButton ->
+                safeRemoveButton.setOnClickListener {
+                    homeVM.dismissFavourite(userId, position)
+                    notifyItemRemoved(position)
+                }
+            }
         }
+    }
+
+    class FavouritePicHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val picIV: ImageView? = itemView.findViewById(R.id.item_favourite_picture_iv)
+        val removeB: Button? = itemView.findViewById(R.id.item_favourite_remove_b)
     }
 }
