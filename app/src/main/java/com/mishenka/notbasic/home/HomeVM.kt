@@ -68,6 +68,10 @@ class HomeVM private constructor(
     val favouritesList: LiveData<ArrayList<FavouriteToShow>>
         get() = _favouritesList
 
+    private val _responseAcquired = MutableLiveData<Event<Response<OuterClass?>>>()
+    val responseAcquired: LiveData<Event<Response<OuterClass?>>>
+        get() = _responseAcquired
+
     private var query = ""
 
     var currentSearch: String? = null
@@ -288,35 +292,35 @@ class HomeVM private constructor(
         return true
     }
 
-    private fun processSearchResult(response: Response<OuterClass?>): List<String> {
+    fun processSearchResult(context: Context, response: Response<OuterClass?>) {
         val code = response.code()
-        if (code != 200) {
-            _resultsField.value = "Query: $query\nUnsuccessful. Error code: $code."
-            return emptyList()
-        }
-        if (response.body()?.photos == null) {
-            _resultsField.value = "Query: $query\nUnsuccessful. Empty photos."
-            return emptyList()
-        }
-        val photos = response.body()!!.photos!!
-        val builder = StringBuilder()
-        builder.append("Query: $query\n")
-        builder.append("Page: ${photos.page}\n")
-            .append("Pages: ${photos.pages}\n")
-            .append("Per page: ${photos.perpage}\n")
-            .append("Total: ${photos.total}")
-        if (photos.pages != null && photos.pages == 0) {
-            _currentPage.value = 0
-        } else {
-            _currentPage.value = photos.page
-        }
-        _lastPage.value = photos.pages
-        return if (photos.photo == null) {
-            _resultsField.value = "Empty photo items."
-            emptyList()
-        } else {
-            _resultsField.value = builder.toString()
-            photos.photo!!.map { it.constructURL() }
+        with(context) {
+            if (code != 200) {
+                _resultsField.value = getString(R.string.query_error_code, query, code)
+                _resultsList.value =  emptyList()
+                return
+            }
+            if (response.body()?.photos == null) {
+                _resultsField.value = getString(R.string.query_empty_photos, query)
+                _resultsList.value = emptyList()
+                return
+            }
+            val photos = response.body()!!.photos!!
+            val builder = getString(R.string.query_header, query, photos.page,
+                photos.pages, photos.perpage, photos.total)
+            if (photos.pages != null && photos.pages == 0) {
+                _currentPage.value = 0
+            } else {
+                _currentPage.value = photos.page
+            }
+            _lastPage.value = photos.pages
+            if (photos.photo == null) {
+                _resultsField.value = getString(R.string.empty_photo_items)
+                _resultsList.value = emptyList()
+            } else {
+                _resultsField.value = builder
+                _resultsList.value = photos.photo!!.map { it.constructURL() }
+            }
         }
     }
 
@@ -336,7 +340,7 @@ class HomeVM private constructor(
     inner class SearchCallbackImplementation :
         SearchCallback {
         override fun onSearchCompleted(response: Response<OuterClass?>) {
-            _resultsList.value = processSearchResult(response)
+            _responseAcquired.value = Event(response)
             _loading.value = false
         }
 

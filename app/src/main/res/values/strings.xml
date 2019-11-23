@@ -44,4 +44,9 @@
     <string name="unstar">Unstar</string>
     <string name="star">Star</string>
     <string name="remove">Remove</string>
+
+    <string name="query_error_code">Query: %1$s\nUnsuccessful. Error code: %2$d.</string>
+    <string name="query_empty_photos">Query: %1$s\nUnsuccessful. Empty photos.</string>
+    <string name="query_header">Query: %1$s\nPage: %2$d\nPages: %3$d\nPer page: %4$d\nTotal: %5$d</string>
+    <string name="empty_photo_items">Empty photo items.</string>
 </resources>

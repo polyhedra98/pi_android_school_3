@@ -7,6 +7,7 @@ import android.os.Handler
 import android.view.WindowManager
 import com.mishenka.notbasic.R
 
+//TODO("Prefetch data for authorized users)
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

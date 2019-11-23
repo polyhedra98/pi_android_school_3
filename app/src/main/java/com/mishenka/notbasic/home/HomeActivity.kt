@@ -14,12 +14,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.detail.DetailActivity
 import com.mishenka.notbasic.favourites.FavouritesFragment
 import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.settings.SettingsActivity
 import com.mishenka.notbasic.util.*
 import kotlinx.android.synthetic.main.activity_home.*
+import retrofit2.Response
 
 class HomeActivity : AppCompatActivity() {
 
@@ -58,6 +60,12 @@ class HomeActivity : AppCompatActivity() {
                         })
                 }
             })
+
+            responseAcquired.observe(this@HomeActivity, Observer<Event<Response<OuterClass?>>> {
+                it.getContentIfNotHandled()?.let { response ->
+                    this.processSearchResult(this@HomeActivity, response)
+                }
+            })
         }
 
         obtainAuthVM().apply {
@@ -78,6 +86,7 @@ class HomeActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> {
                 hideKeyboard()
+                currentFocus?.clearFocus()
                 drawerLayout.openDrawer(GravityCompat.START)
                 true
             }
