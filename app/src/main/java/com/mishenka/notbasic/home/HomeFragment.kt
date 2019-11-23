@@ -63,14 +63,26 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerView(endlessPreferred: Boolean) {
         with(binding) {
+            searchResultsRv.layoutManager =
+                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
             if (endlessPreferred) {
-                Log.i("NYA", "Endless preferred. Can't do anything yet")
-                searchResultsRv.adapter = null
+                searchResultsRv.adapter = HomeAdapter(homeVM!!)
+                searchResultsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        homeVM!!.resultsList.value?.let { safeResultsList ->
+                            if (safeResultsList.isNotEmpty() && (searchResultsRv.layoutManager as LinearLayoutManager)
+                                    .findLastVisibleItemPosition() == safeResultsList.size) {
+                                Log.i("NYA", "Reached the bottom")
+                                homeVM!!.continuousSearch()
+                            }
+                        }
+                        super.onScrolled(recyclerView, dx, dy)
+                    }
+                })
             } else {
                 Log.i("NYA", "No endless")
+                searchResultsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {})
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)
-                searchResultsRv.layoutManager =
-                    LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
             }
         }
     }

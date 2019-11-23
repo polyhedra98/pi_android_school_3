@@ -61,9 +61,9 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
-            responseAcquired.observe(this@HomeActivity, Observer<Event<Response<OuterClass?>>> {
+            responseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
                 it.getContentIfNotHandled()?.let { response ->
-                    this.processSearchResult(this@HomeActivity, response)
+                    this.processSearchResult(this@HomeActivity, response.first, response.second)
                 }
             })
         }

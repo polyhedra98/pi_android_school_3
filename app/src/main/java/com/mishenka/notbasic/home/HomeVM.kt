@@ -55,6 +55,10 @@ class HomeVM private constructor(
     val loading: LiveData<Boolean>
         get() = _loading
 
+    private val _loadingContinuation = MutableLiveData<Boolean>().apply { value = false }
+    val loadingContinuation: LiveData<Boolean>
+        get() = _loadingContinuation
+
     private val _resultClicked = MutableLiveData<Event<Pair<String, String>>>()
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
@@ -72,8 +76,8 @@ class HomeVM private constructor(
     val favouritesList: LiveData<ArrayList<FavouriteToShow>>
         get() = _favouritesList
 
-    private val _responseAcquired = MutableLiveData<Event<Response<OuterClass?>>>()
-    val responseAcquired: LiveData<Event<Response<OuterClass?>>>
+    private val _responseAcquired = MutableLiveData<Event<Pair<Response<OuterClass?>, Boolean>>>()
+    val responseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
         get() = _responseAcquired
 
     private var query = ""
@@ -98,18 +102,22 @@ class HomeVM private constructor(
         currentUrl = url
     }
 
+
     fun setCurrentFavAndCategoryId(favId: Long?, categoryId: Long?) {
         currentFavId = favId ?: -1
         currentCategoryId = categoryId ?: -1
     }
 
+
     fun onResultClicked(url: String) {
         _resultClicked.value = Event(Pair(url, query))
     }
 
+
     fun onFavouriteClicked(url: String, category: String) {
         _resultClicked.value = Event(Pair(url, category))
     }
+
 
     fun dismissFavourite(userId: Long, position: Int) {
         val category = favouritesList.value!![getCategoryPosForPosition(position)].value
@@ -125,32 +133,13 @@ class HomeVM private constructor(
         }
     }
 
+
     fun getCategoryPosForPosition(position: Int): Int {
         var pos = position
         while (favouritesList.value!![pos].type != TYPE_HEADER) {
             pos--
         }
         return pos
-    }
-
-    fun search(userId: Long?) {
-        val tempQuery = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
-        val validationResult = Validator.validateQuery(tempQuery)
-        processValidationResult(validationResult)
-        if (!validationResult) {
-            return
-        }
-        query = tempQuery
-        _currentPage.value = null
-        _lastPage.value = null
-        _loading.value = true
-        appRepository.getSearchResults(query, SearchCallbackImplementation())
-        userId?.let {
-            //TODO("Change scope")
-            GlobalScope.launch {
-                appRepository.insertHistory(History(0, it, query, Date()))
-            }
-        }
     }
 
 
@@ -194,14 +183,6 @@ class HomeVM private constructor(
         }
     }
 
-    fun changePage(pageChange: Int) {
-        if (currentPage.value == null) {
-            return
-        }
-        _loading.value = true
-        appRepository.getSearchResults(query, SearchCallbackImplementation(),
-            currentPage.value!! + pageChange)
-    }
 
     fun start(context: Context) {
         _resultsField.value = context.getString(R.string.initial_empty_results)
@@ -211,6 +192,7 @@ class HomeVM private constructor(
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
         _endlessPreferred.value = endlessPref
     }
+
 
     fun getFavourites(userId: Long?, action: (() -> Unit)? = null) {
         if (userId == null) {
@@ -239,6 +221,7 @@ class HomeVM private constructor(
         }
     }
 
+
     fun getUserHistory(userId: Long?, action: (() -> Unit)? = null) {
         if (userId == null) {
             _historyList.value = emptyList()
@@ -254,9 +237,11 @@ class HomeVM private constructor(
         }
     }
 
+
     fun endlessChanged(newValue: Boolean) {
         _endlessPreferred.value = newValue
     }
+
 
     suspend fun isAlreadyStarred(userId: Long): Boolean {
         if (currentFavId == (-1).toLong() || currentCategoryId == (-1).toLong()) {
@@ -267,11 +252,14 @@ class HomeVM private constructor(
         return appRepository.getFSUid(userId, currentFavId, currentCategoryId) != null
     }
 
+
     suspend fun getFavIdByUrl(url: String) =
         appRepository.getFavIdByUrl(url)
 
+
     suspend fun getFavSearchIdByCategory(category: String) =
         appRepository.getFavSearchIdByCategory(category)
+
 
     private suspend fun star(userId: Long): Boolean {
         if(!validateSearchAndUrl(currentSearch, currentUrl)){
@@ -305,6 +293,7 @@ class HomeVM private constructor(
         return true
     }
 
+
     private suspend fun unstar(userId: Long): Boolean {
         if(!validateSearchAndUrl(currentSearch, currentUrl)){
             Log.i("NYA", "Either current search, or url is null. " +
@@ -320,7 +309,8 @@ class HomeVM private constructor(
         return true
     }
 
-    fun processSearchResult(context: Context, response: Response<OuterClass?>) {
+
+    fun processSearchResult(context: Context, response: Response<OuterClass?>, isContinuation: Boolean) {
         val code = response.code()
         with(context) {
             if (code != 200) {
@@ -347,10 +337,59 @@ class HomeVM private constructor(
                 _resultsList.value = emptyList()
             } else {
                 _resultsField.value = builder
-                _resultsList.value = photos.photo!!.map { it.constructURL() }
+                if (isContinuation) {
+                    Log.i("NYA", "Former results list: ${resultsList.value}")
+                    _resultsList.value = _resultsList.value!! + photos.photo!!.map { it.constructURL() }
+                    _loadingContinuation.value = false
+                    Log.i("NYA", "New results list: ${resultsList.value}")
+                } else {
+                    _resultsList.value = photos.photo!!.map { it.constructURL() }
+                }
             }
         }
     }
+
+
+    fun search(userId: Long?) {
+        val tempQuery = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
+        val validationResult = Validator.validateQuery(tempQuery)
+        processValidationResult(validationResult)
+        if (!validationResult) {
+            return
+        }
+        query = tempQuery
+        _currentPage.value = null
+        _lastPage.value = null
+        _loading.value = true
+        appRepository.getSearchResults(query, SearchCallbackImplementation())
+        userId?.let {
+            //TODO("Change scope")
+            GlobalScope.launch {
+                appRepository.insertHistory(History(0, it, query, Date()))
+            }
+        }
+    }
+
+
+    fun continuousSearch() {
+        Log.i("NYA", "Getting results for page ${currentPage.value!! + 1}")
+        if (!_loadingContinuation.value!!) {
+            _loadingContinuation.value = true
+            appRepository.getSearchResults(query, SearchCallbackImplementation(true)
+                ,currentPage.value!! + 1)
+        }
+    }
+
+
+    fun changePage(pageChange: Int) {
+        if (currentPage.value == null) {
+            return
+        }
+        _loading.value = true
+        appRepository.getSearchResults(query, SearchCallbackImplementation(),
+            currentPage.value!! + pageChange)
+    }
+
 
     private fun processValidationResult(validationResult: Boolean) {
         _queryProcessed.value = if (validationResult) {
@@ -365,10 +404,12 @@ class HomeVM private constructor(
         }
     }
 
-    inner class SearchCallbackImplementation :
-        SearchCallback {
+
+    inner class SearchCallbackImplementation(
+        private val isContinuation: Boolean? = null
+    ) : SearchCallback {
         override fun onSearchCompleted(response: Response<OuterClass?>) {
-            _responseAcquired.value = Event(response)
+            _responseAcquired.value = Event(Pair(response, isContinuation ?: false))
             _loading.value = false
         }
 
