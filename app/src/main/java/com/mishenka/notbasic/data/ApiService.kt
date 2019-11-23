@@ -9,7 +9,6 @@ import retrofit2.http.Query
 interface ApiService {
 
 
-    //TODO("Remove per_page, it's just for testing purposes")
     @GET("services/rest/?")
     fun getSearchList(@Query("method") method: String,
                       @Query("api_key") apiKey: String,

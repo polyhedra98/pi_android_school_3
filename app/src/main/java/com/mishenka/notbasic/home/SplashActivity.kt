@@ -10,7 +10,7 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
-//TODO("Prefetch data for authorized users)
+
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
