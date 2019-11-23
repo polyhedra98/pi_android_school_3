@@ -5,7 +5,6 @@
     <string name="initial_empty_results">Enter a keyword to search.</string>
     <string name="search">Search</string>
     <string name="search_autohint">Search...</string>
-    <string name="empty_history">Empty history.</string>
     <string name="url_error">Error. Invalid URL.</string>
     <string name="previous_page"><![CDATA[< Previous page]]></string>
     <string name="next_page"><![CDATA[Next Page >]]></string>
@@ -44,6 +43,10 @@
     <string name="unstar">Unstar</string>
     <string name="star">Star</string>
     <string name="remove">Remove</string>
+    <string name="empty_favourites">No favourites added yet.</string>
+    <string name="empty_history">No searches saved yet.</string>
+    <string name="fetching_history">Fetching history..</string>
+    <string name="fetching_favourites">Fetching favourites..</string>
 
     <string name="query_error_code">Query: %1$s\nUnsuccessful. Error code: %2$d.</string>
     <string name="query_empty_photos">Query: %1$s\nUnsuccessful. Empty photos.</string>

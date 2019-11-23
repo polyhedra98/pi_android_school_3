@@ -51,18 +51,28 @@ class HistoryFragment : Fragment() {
             authVM?.userId?.observe(this@HistoryFragment, Observer { userId ->
                 if (userId != null) {
                     homeVM?.let { safeHomeVM ->
-                        safeHomeVM.getUserHistory(userId)
-                        if (historyRv.adapter == null) {
-                            historyRv.adapter = HistoryAdapter(safeHomeVM)
-                            historyRv.layoutManager =
-                                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                        historyAuthErrorTv.text = getString(R.string.fetching_history)
+                        historyAuthErrorTv.visibility = View.VISIBLE
+                        safeHomeVM.getUserHistory(userId) {
+                            if (safeHomeVM.historyList.value!!.isEmpty()) {
+                                historyAuthErrorTv.text = getString(R.string.empty_history)
+                                historyRv.visibility = View.GONE
+                                historyAuthErrorTv.visibility = View.VISIBLE
+                            } else {
+                                if (historyRv.adapter == null) {
+                                    historyRv.adapter = HistoryAdapter(safeHomeVM)
+                                    historyRv.layoutManager =
+                                        LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                                }
+                                historyAuthErrorTv.visibility = View.GONE
+                                historyRv.visibility = View.VISIBLE
+                            }
                         }
-                        historyAuthErrorTv.visibility = View.GONE
-                        historyRv.visibility = View.VISIBLE
                     }
                 } else {
-                    historyAuthErrorTv.visibility = View.VISIBLE
+                    historyAuthErrorTv.text = getString(R.string.history_auth_error)
                     historyRv.visibility = View.GONE
+                    historyAuthErrorTv.visibility = View.VISIBLE
                 }
             })
         }

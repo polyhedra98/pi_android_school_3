@@ -47,21 +47,31 @@ class FavouritesFragment : Fragment() {
             authVM?.userId?.observe(this@FavouritesFragment, Observer { userId ->
                 if (userId != null) {
                     homeVM?.let { safeHomeVM ->
-                        safeHomeVM.getFavourites(userId)
-                        if (favouritesRv.adapter == null) {
-                            val adapter = FavouriteAdapter(userId, homeVM!!)
-                            favouritesRv.adapter = adapter
-                            ItemTouchHelper(SwipeItemTouchHelperCallback(adapter, homeVM!!))
-                                .attachToRecyclerView(favouritesRv)
-                            favouritesRv.layoutManager =
-                                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                        favouritesAuthErrorTv.text = getString(R.string.fetching_favourites)
+                        favouritesAuthErrorTv.visibility = View.VISIBLE
+                        safeHomeVM.getFavourites(userId) {
+                            if (safeHomeVM.favouritesList.value!!.isEmpty()) {
+                                favouritesAuthErrorTv.text = getString(R.string.empty_favourites)
+                                favouritesRv.visibility = View.GONE
+                                favouritesAuthErrorTv.visibility = View.VISIBLE
+                            } else {
+                                if (favouritesRv.adapter == null) {
+                                    val adapter = FavouriteAdapter(userId, homeVM!!)
+                                    favouritesRv.adapter = adapter
+                                    ItemTouchHelper(SwipeItemTouchHelperCallback(adapter, homeVM!!))
+                                        .attachToRecyclerView(favouritesRv)
+                                    favouritesRv.layoutManager =
+                                        LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                                }
+                                favouritesAuthErrorTv.visibility = View.GONE
+                                favouritesRv.visibility = View.VISIBLE
+                            }
                         }
-                        favouritesAuthErrorTv.visibility = View.GONE
-                        favouritesRv.visibility = View.VISIBLE
                     }
                 } else {
-                    favouritesAuthErrorTv.visibility = View.VISIBLE
+                    favouritesAuthErrorTv.text = getString(R.string.favourites_auth_error)
                     favouritesRv.visibility = View.GONE
+                    favouritesAuthErrorTv.visibility = View.VISIBLE
                 }
             })
         }

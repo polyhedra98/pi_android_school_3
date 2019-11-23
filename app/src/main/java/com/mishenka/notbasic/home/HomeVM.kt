@@ -204,7 +204,7 @@ class HomeVM private constructor(
         _loading.value = false
     }
 
-    fun getFavourites(userId: Long?) {
+    fun getFavourites(userId: Long?, action: (() -> Unit)? = null) {
         if (userId == null) {
             _favouritesList.value = ArrayList()
             return
@@ -226,11 +226,12 @@ class HomeVM private constructor(
             }
             MainScope().launch {
                 _favouritesList.value = list
+                action?.invoke()
             }
         }
     }
 
-    fun getUserHistory(userId: Long?) {
+    fun getUserHistory(userId: Long?, action: (() -> Unit)? = null) {
         if (userId == null) {
             _historyList.value = emptyList()
             return
@@ -240,6 +241,7 @@ class HomeVM private constructor(
             val history = appRepository.getHistoryByUserId(userId)
             MainScope().launch {
                 _historyList.value = history
+                action?.invoke()
             }
         }
     }
