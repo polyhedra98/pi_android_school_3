@@ -70,9 +70,9 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    override fun onDestroy() {
+    override fun onStop() {
         saveSearch()
-        super.onDestroy()
+        super.onStop()
     }
 
 
@@ -105,9 +105,10 @@ class HomeActivity : AppCompatActivity() {
         getSharedPreferences(
             getString(R.string.preferences_filename), Context.MODE_PRIVATE
         )?.let { safePreferences ->
+            val searchField = obtainHomeVM().searchField.value
             safePreferences.edit()
-                .putString(getString(R.string.preferences_search), obtainHomeVM().searchField.value)
-                .commit()
+                .putString(getString(R.string.preferences_search), searchField)
+                .apply()
         }
     }
 
