@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
@@ -19,7 +18,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,9 +29,9 @@ class HomeVM private constructor(
     val resultsField: LiveData<String>
         get() = _resultsField
 
-    private val _endlessChanged = MutableLiveData<Boolean>()
-    val endlessChanged: LiveData<Boolean>
-        get() = _endlessChanged
+    private val _endlessPreferred = MutableLiveData<Boolean>()
+    val endlessPreferred: LiveData<Boolean>
+        get() = _endlessPreferred
 
     val searchField = MutableLiveData<String>()
 
@@ -211,7 +209,7 @@ class HomeVM private constructor(
 
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
-        _endlessChanged.value = endlessPref
+        _endlessPreferred.value = endlessPref
     }
 
     fun getFavourites(userId: Long?, action: (() -> Unit)? = null) {
@@ -257,7 +255,7 @@ class HomeVM private constructor(
     }
 
     fun endlessChanged(newValue: Boolean) {
-        _endlessChanged.value = newValue
+        _endlessPreferred.value = newValue
     }
 
     suspend fun isAlreadyStarred(userId: Long): Boolean {

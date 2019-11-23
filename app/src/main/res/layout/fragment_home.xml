@@ -56,6 +56,7 @@
             android:textColor="@color/colorAccent"
             android:visibility="invisible"
             app:bind_prev="@{homeVM.currentPage}"
+            app:endless="@{homeVM.endlessPreferred}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_et" />
 
@@ -71,6 +72,7 @@
             android:visibility="invisible"
             app:bind_next_current="@{homeVM.currentPage}"
             app:bind_next_last="@{homeVM.lastPage}"
+            app:endless="@{homeVM.endlessPreferred}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_et" />
 

@@ -48,7 +48,7 @@ class HomeFragment : Fragment() {
                 searchB.setOnClickListener {
                     search((activity as AppCompatActivity).obtainAuthVM().userId.value)
                 }
-                endlessChanged.observe(this@HomeFragment, Observer {
+                endlessPreferred.observe(this@HomeFragment, Observer {
                     setupRecyclerView(it)
                 })
                 nextPageTv.setOnClickListener {
@@ -65,6 +65,7 @@ class HomeFragment : Fragment() {
         with(binding) {
             if (endlessPreferred) {
                 Log.i("NYA", "Endless preferred. Can't do anything yet")
+                searchResultsRv.adapter = null
             } else {
                 Log.i("NYA", "No endless")
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)

@@ -62,18 +62,18 @@ object Bindings {
         Linkify.addLinks(tv, Linkify.WEB_URLS)
     }
 
-    @BindingAdapter("bind_prev")
-    @JvmStatic fun bindPrevPage(tv: TextView, currentPage: Int?) {
-        if (currentPage == null || currentPage < 2) {
+    @BindingAdapter(value = ["bind_prev", "endless"], requireAll = true)
+    @JvmStatic fun bindPrevPage(tv: TextView, currentPage: Int?, endless: Boolean) {
+        if (currentPage == null || currentPage < 2 || endless) {
             tv.visibility = View.INVISIBLE
         } else {
             tv.visibility = View.VISIBLE
         }
     }
 
-    @BindingAdapter(value = ["bind_next_current", "bind_next_last"])
-    @JvmStatic fun bindNextPage(tv: TextView, currentPage: Int?, lastPage: Int?) {
-        if (currentPage == null || lastPage == null || currentPage == lastPage) {
+    @BindingAdapter(value = ["bind_next_current", "bind_next_last", "endless"], requireAll = true)
+    @JvmStatic fun bindNextPage(tv: TextView, currentPage: Int?, lastPage: Int?, endless: Boolean) {
+        if (currentPage == null || lastPage == null || currentPage == lastPage || endless) {
             tv.visibility = View.INVISIBLE
         } else {
             tv.visibility = View.VISIBLE
