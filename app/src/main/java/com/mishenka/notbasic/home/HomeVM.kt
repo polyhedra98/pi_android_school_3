@@ -142,7 +142,8 @@ class HomeVM private constructor(
         _loading.value = true
         appRepository.getSearchResults(query, SearchCallbackImplementation())
         userId?.let {
-            viewModelScope.launch {
+            //TODO("Change scope")
+            GlobalScope.launch {
                 appRepository.insertHistory(History(0, it, query, Date()))
             }
         }
