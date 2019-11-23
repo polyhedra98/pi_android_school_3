@@ -48,7 +48,7 @@ class HomeFragment : Fragment() {
         with(binding) {
             homeVM?.apply {
                 searchB.setOnClickListener {
-                    search((activity as AppCompatActivity).obtainAuthVM().userId.value)
+                    search(context!!, (activity as AppCompatActivity).obtainAuthVM().userId.value)
                 }
                 endlessPreferred.observe(this@HomeFragment, Observer {
                     setupRecyclerView(it)
@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
                 scrollToPosition(0)
             } else {
                 (adapter as RecyclerView.Adapter?)
-                    ?.notifyItemRangeChanged(length - PER_PAGE, length)
+                    ?.notifyItemRangeChanged(length - PER_PAGE + 1, length)
             }
         }
     }
@@ -89,10 +89,16 @@ class HomeFragment : Fragment() {
             searchResultsRv.layoutManager = layoutManager
             val onScrollListener = OnBottomScrollListener(homeVM!!, layoutManager)
             if (endlessPreferred) {
+                if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
+                    homeVM!!.changePage(0)
+                }
                 searchResultsRv.addOnScrollListener(onScrollListener)
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)
             } else {
                 Log.i("NYA", "No endless")
+                if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
+                    homeVM!!.trimResultsList()
+                }
                 searchResultsRv.removeOnScrollListener(onScrollListener)
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)
             }

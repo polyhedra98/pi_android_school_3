@@ -10,6 +10,7 @@ import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppRepository
+import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.Validator
 import com.mishenka.notbasic.util.Validator.validateFavAndCategoryId
@@ -81,6 +82,10 @@ class HomeVM private constructor(
         get() = _responseAcquired
 
     private var query = ""
+
+    private var fullSummary = ""
+
+    private var summary = ""
 
     var currentSearch: String? = null
         private set
@@ -239,6 +244,11 @@ class HomeVM private constructor(
 
 
     fun endlessChanged(newValue: Boolean) {
+        if (newValue && summary.isNotBlank()) {
+            _resultsField.value = summary
+        } else if (!newValue && fullSummary.isNotBlank()) {
+            _resultsField.value = fullSummary
+        }
         _endlessPreferred.value = newValue
     }
 
@@ -324,7 +334,8 @@ class HomeVM private constructor(
                 return
             }
             val photos = response.body()!!.photos!!
-            val builder = getString(R.string.query_header, query, photos.page,
+            summary = getString(R.string.endless_query_header, query, photos.total)
+            fullSummary = getString(R.string.query_header, query, photos.page,
                 photos.pages, photos.perpage, photos.total)
             if (photos.pages != null && photos.pages == 0) {
                 _currentPage.value = 0
@@ -336,12 +347,14 @@ class HomeVM private constructor(
                 _resultsField.value = getString(R.string.empty_photo_items)
                 _resultsList.value = emptyList()
             } else {
-                _resultsField.value = builder
+                _resultsField.value = if (endlessPreferred.value!!) {
+                    summary
+                } else {
+                    fullSummary
+                }
                 if (isContinuation) {
-                    Log.i("NYA", "Former results list: ${resultsList.value}")
                     _resultsList.value = _resultsList.value!! + photos.photo!!.map { it.constructURL() }
                     _loadingContinuation.value = false
-                    Log.i("NYA", "New results list: ${resultsList.value}")
                 } else {
                     _resultsList.value = photos.photo!!.map { it.constructURL() }
                 }
@@ -350,10 +363,10 @@ class HomeVM private constructor(
     }
 
 
-    fun search(userId: Long?) {
+    fun search(context: Context, userId: Long?) {
         val tempQuery = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
         val validationResult = Validator.validateQuery(tempQuery)
-        processValidationResult(validationResult)
+        processValidationResult(context, validationResult)
         if (!validationResult) {
             return
         }
@@ -386,12 +399,22 @@ class HomeVM private constructor(
             return
         }
         _loading.value = true
-        appRepository.getSearchResults(query, SearchCallbackImplementation(),
-            currentPage.value!! + pageChange)
+        if (pageChange == 0) {
+            appRepository.getSearchResults(query, SearchCallbackImplementation())
+        } else {
+            appRepository.getSearchResults(query, SearchCallbackImplementation(),
+                currentPage.value!! + pageChange)
+        }
     }
 
 
-    private fun processValidationResult(validationResult: Boolean) {
+    fun trimResultsList() {
+        val length = _resultsList.value!!.size
+        _resultsList.value = _resultsList.value!!.subList(length - PER_PAGE, length)
+    }
+
+
+    private fun processValidationResult(context: Context, validationResult: Boolean) {
         _queryProcessed.value = if (validationResult) {
             Event(Validator.VALIDATION_RESULT_OK)
         } else {
@@ -400,7 +423,7 @@ class HomeVM private constructor(
         _observableError.value = if(validationResult) {
             null
         } else {
-            "English / Digits only"
+            context.getString(R.string.english_or_digits_only)
         }
     }
 

@@ -6,6 +6,7 @@
     <string name="search">Search</string>
     <string name="search_autohint">Search...</string>
     <string name="url_error">Error. Invalid URL.</string>
+    <string name="english_or_digits_only">English / Digits only</string>
     <string name="previous_page"><![CDATA[< Previous page]]></string>
     <string name="next_page"><![CDATA[Next Page >]]></string>
     <string name="home_nav_title">Home</string>
@@ -51,5 +52,6 @@
     <string name="query_error_code">Query: %1$s\nUnsuccessful. Error code: %2$d.</string>
     <string name="query_empty_photos">Query: %1$s\nUnsuccessful. Empty photos.</string>
     <string name="query_header">Query: %1$s\nPage: %2$d\nPages: %3$d\nPer page: %4$d\nTotal: %5$d</string>
+    <string name="endless_query_header">Query: %1$s\nTotal: %2$d</string>
     <string name="empty_photo_items">Empty photo items.</string>
 </resources>
