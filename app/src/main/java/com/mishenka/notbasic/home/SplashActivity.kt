@@ -4,8 +4,11 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.WindowManager
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.util.obtainAuthVM
+import com.mishenka.notbasic.util.obtainHomeVM
 
 //TODO("Prefetch data for authorized users)
 class SplashActivity : AppCompatActivity() {
@@ -18,6 +21,22 @@ class SplashActivity : AppCompatActivity() {
         invokeHandler()
 
         setContentView(R.layout.activity_splash)
+
+        var userId: Long?
+
+        obtainAuthVM().apply {
+            start(this@SplashActivity)
+            userId = this.userId.value
+        }
+
+        obtainHomeVM().apply {
+            start(this@SplashActivity)
+
+            if(userId != null) {
+                Log.i("NYA", "User is not null. Pre-fetching.")
+                prefetchData(userId!!)
+            }
+        }
     }
 
 

@@ -67,12 +67,6 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
         }
-
-        obtainAuthVM().apply {
-
-            start(this@HomeActivity)
-
-        }
     }
 
 

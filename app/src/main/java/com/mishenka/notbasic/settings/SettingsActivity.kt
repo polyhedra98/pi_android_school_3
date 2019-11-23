@@ -9,9 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.util.obtainAuthVM
-import com.mishenka.notbasic.util.replaceFragmentInActivity
-import com.mishenka.notbasic.util.setupActionBar
+import com.mishenka.notbasic.util.*
 
 //TODO("Login is very bugged for some reason.")
 class SettingsActivity : AppCompatActivity() {
@@ -22,6 +20,22 @@ class SettingsActivity : AppCompatActivity() {
 
         setupActionBar(R.id.settings_tb) {
             setDisplayHomeAsUpEnabled(true)
+        }
+
+        obtainAuthVM().apply {
+
+            userLogIn.observe(this@SettingsActivity, Observer<Event<Long>> {
+                it.getContentIfNotHandled()?.let { safeId ->
+                    obtainHomeVM().prefetchData(safeId)
+                }
+            })
+
+            userLogOut.observe(this@SettingsActivity, Observer<Event<Unit>> {
+                it.getContentIfNotHandled()?.let {
+                    obtainHomeVM().flashData()
+                }
+            })
+
         }
 
         setupViewFragment()

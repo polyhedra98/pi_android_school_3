@@ -34,6 +34,15 @@ class AuthVM private constructor(
     val loginError: LiveData<Event<String?>>
         get() = _loginError
 
+    private val _userLogIn = MutableLiveData<Event<Long>>()
+    val userLogIn: LiveData<Event<Long>>
+        get() = _userLogIn
+
+    private val _userLogOut = MutableLiveData<Event<Unit>>()
+    val userLogOut: LiveData<Event<Unit>>
+        get() = _userLogOut
+
+
     fun start(context: Context) {
         getSavedUser(context)
     }
@@ -74,6 +83,7 @@ class AuthVM private constructor(
                     _loginError.value = Event(context.getString(R.string.username_existence_error))
                 } else {
                     _loginError.value = Event(null)
+                    _userLogIn.value = Event(id)
                     saveUser(id, username, context)
                     callback?.onAuthenticationFinished()
                 }
@@ -85,6 +95,7 @@ class AuthVM private constructor(
     fun logOutUser(context: Context) {
         _username.value = null
         _userId.value = null
+        _userLogOut.value = Event(Unit)
         with(context) {
             getSharedPreferences(
                 getString(R.string.preferences_filename), Context.MODE_PRIVATE
@@ -96,6 +107,7 @@ class AuthVM private constructor(
             }
         }
     }
+
 
     private fun getSavedUser(context: Context) {
         var username: String? = null

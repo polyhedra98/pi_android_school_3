@@ -29,11 +29,7 @@ class HomeFragment : Fragment() {
         (DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
                 as FragmentHomeBinding)
             .apply {
-                homeVM = (activity as AppCompatActivity).obtainHomeVM().apply {
-                    if (savedInstanceState == null) {
-                        start(context!!)
-                    }
-                }
+                homeVM = (activity as AppCompatActivity).obtainHomeVM()
                 lifecycleOwner = activity
             }.also { binding = it }.root
 

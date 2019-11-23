@@ -148,6 +148,19 @@ class HomeVM private constructor(
         }
     }
 
+
+    fun prefetchData(userId: Long) {
+        getFavourites(userId)
+        getUserHistory(userId)
+    }
+
+
+    fun flashData() {
+        _favouritesList.value = ArrayList()
+        _historyList.value = emptyList()
+    }
+
+
     fun toggleStar(userId: Long, buttonCallback: Button) {
         buttonCallback.isEnabled = false
         buttonCallback.isClickable = false
