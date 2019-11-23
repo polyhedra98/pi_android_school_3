@@ -25,14 +25,6 @@ object Bindings {
         }
     }
 
-    @BindingAdapter("observable_home_results")
-    @JvmStatic fun observeResults(rv: RecyclerView, observable_results: List<String>) {
-        with(rv) {
-            (adapter as RecyclerView.Adapter?)?.notifyItemRangeChanged(1, observable_results.size)
-            scrollToPosition(0)
-        }
-    }
-
     @BindingAdapter("observe_favourites")
     @JvmStatic fun observeFavourites(rv: RecyclerView, observable_favourites: List<FavouriteToShow>) {
         with(rv) {

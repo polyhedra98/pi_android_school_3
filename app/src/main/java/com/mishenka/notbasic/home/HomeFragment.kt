@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
+import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
@@ -52,12 +53,30 @@ class HomeFragment : Fragment() {
                 endlessPreferred.observe(this@HomeFragment, Observer {
                     setupRecyclerView(it)
                 })
+                resultsList.observe(this@HomeFragment, Observer {
+                    observeResults(it, searchResultsRv, endlessPreferred.value!!)
+                })
                 nextPageTv.setOnClickListener {
                     changePage(1)
                 }
                 prevPageTv.setOnClickListener {
                     changePage(-1)
                 }
+            }
+        }
+    }
+
+
+    private fun observeResults(results: List<String>, rv: RecyclerView, isEndless: Boolean) {
+        with(rv) {
+            val length = results.size
+            if (!isEndless) {
+                (adapter as RecyclerView.Adapter?)
+                    ?.notifyItemRangeChanged(1, length)
+                scrollToPosition(0)
+            } else {
+                (adapter as RecyclerView.Adapter?)
+                    ?.notifyItemRangeChanged(length - PER_PAGE, length)
             }
         }
     }
@@ -70,8 +89,8 @@ class HomeFragment : Fragment() {
             searchResultsRv.layoutManager = layoutManager
             val onScrollListener = OnBottomScrollListener(homeVM!!, layoutManager)
             if (endlessPreferred) {
-                searchResultsRv.adapter = HomeAdapter(homeVM!!)
                 searchResultsRv.addOnScrollListener(onScrollListener)
+                searchResultsRv.adapter = HomeAdapter(homeVM!!)
             } else {
                 Log.i("NYA", "No endless")
                 searchResultsRv.removeOnScrollListener(onScrollListener)
