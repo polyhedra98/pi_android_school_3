@@ -42,6 +42,7 @@ class HomeFragment : Fragment() {
         setupBindings()
     }
 
+
     private fun setupBindings() {
         with(binding) {
             homeVM?.apply {
@@ -61,31 +62,42 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun setupRecyclerView(endlessPreferred: Boolean) {
         with(binding) {
-            searchResultsRv.layoutManager =
-                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+            val layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+
+            searchResultsRv.layoutManager = layoutManager
+            val onScrollListener = OnBottomScrollListener(homeVM!!, layoutManager)
             if (endlessPreferred) {
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)
-                searchResultsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        homeVM!!.resultsList.value?.let { safeResultsList ->
-                            if (safeResultsList.isNotEmpty() && (searchResultsRv.layoutManager as LinearLayoutManager)
-                                    .findLastVisibleItemPosition() == safeResultsList.size) {
-                                Log.i("NYA", "Reached the bottom")
-                                homeVM!!.continuousSearch()
-                            }
-                        }
-                        super.onScrolled(recyclerView, dx, dy)
-                    }
-                })
+                searchResultsRv.addOnScrollListener(onScrollListener)
             } else {
                 Log.i("NYA", "No endless")
-                searchResultsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {})
+                searchResultsRv.removeOnScrollListener(onScrollListener)
                 searchResultsRv.adapter = HomeAdapter(homeVM!!)
             }
         }
     }
+
+
+    class OnBottomScrollListener(
+        private val homeVM: HomeVM,
+        private val layoutManager: LinearLayoutManager): RecyclerView.OnScrollListener() {
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            homeVM.resultsList.value?.let { safeResultsList ->
+                if (safeResultsList.isNotEmpty() && layoutManager
+                        .findLastVisibleItemPosition() == safeResultsList.size) {
+                    Log.i("NYA", "Reached the bottom")
+                    homeVM.continuousSearch()
+                }
+            }
+            super.onScrolled(recyclerView, dx, dy)
+        }
+
+    }
+
 
     companion object {
 
