@@ -21,7 +21,6 @@ class AuthVM private constructor(
     private val appRepository: AppRepository
 ) : ViewModel() {
 
-
     private val _username = MutableLiveData<String?>().apply { value = null }
     val username: LiveData<String?>
         get() = _username

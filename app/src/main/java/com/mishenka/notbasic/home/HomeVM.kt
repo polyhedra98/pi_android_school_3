@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
@@ -28,6 +30,10 @@ class HomeVM private constructor(
     private val _resultsField = MutableLiveData<String>()
     val resultsField: LiveData<String>
         get() = _resultsField
+
+    private val _endlessChanged = MutableLiveData<Boolean>()
+    val endlessChanged: LiveData<Boolean>
+        get() = _endlessChanged
 
     val searchField = MutableLiveData<String>()
 
@@ -202,6 +208,10 @@ class HomeVM private constructor(
     fun start(context: Context) {
         _resultsField.value = context.getString(R.string.initial_empty_results)
         _loading.value = false
+
+        val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
+            ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
+        _endlessChanged.value = endlessPref
     }
 
     fun getFavourites(userId: Long?, action: (() -> Unit)? = null) {
@@ -244,6 +254,10 @@ class HomeVM private constructor(
                 action?.invoke()
             }
         }
+    }
+
+    fun endlessChanged(newValue: Boolean) {
+        _endlessChanged.value = newValue
     }
 
     suspend fun isAlreadyStarred(userId: Long): Boolean {

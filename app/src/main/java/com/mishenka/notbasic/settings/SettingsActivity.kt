@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
@@ -68,8 +69,19 @@ class SettingsActivity : AppCompatActivity() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            val authVM = (activity as AppCompatActivity).obtainAuthVM()
+            setupPreferences()
+        }
 
+
+        private fun setupPreferences() {
+            val authVM = (activity as AppCompatActivity).obtainAuthVM()
+            val homeVM = (activity as AppCompatActivity).obtainHomeVM()
+
+            findPreference<CheckBoxPreference>(getString(R.string.settings_endless_list_key))
+                ?.setOnPreferenceChangeListener { preference, newValue ->
+                    homeVM.endlessChanged(newValue as Boolean)
+                    true
+                }
             val userPref = findPreference<Preference>(getString(R.string.settings_user_key))
             val authPref = findPreference<Preference>(getString(R.string.settings_auth_key))
             userPref?.let { safePref ->
