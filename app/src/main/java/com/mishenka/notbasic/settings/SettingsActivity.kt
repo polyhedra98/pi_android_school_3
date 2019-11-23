@@ -11,7 +11,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.*
 
-//TODO("Login is very bugged for some reason.")
+
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

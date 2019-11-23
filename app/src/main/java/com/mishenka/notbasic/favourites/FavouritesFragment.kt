@@ -42,8 +42,12 @@ class FavouritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
+        setupBindings()
+    }
 
+
+    private fun setupBindings() {
+        with(binding) {
             authVM?.userId?.observe(this@FavouritesFragment, Observer { userId ->
                 if (userId != null) {
                     homeVM?.let { safeHomeVM ->
