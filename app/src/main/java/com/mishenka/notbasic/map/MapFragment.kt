@@ -77,7 +77,7 @@ class MapFragment : Fragment() {
         with(LocationServices.getFusedLocationProviderClient(context!!)) {
             lastLocation.addOnSuccessListener {
                 (activity as AppCompatActivity).obtainLocationVM()
-                    .locationChanged("${it?.latitude} -- ${it?.longitude}")
+                    .locationChanged(it)
             }
         }
     }
@@ -88,7 +88,7 @@ class MapFragment : Fragment() {
             locVM?.let { safeLocVM ->
                 mapSearchB.setOnClickListener {
                     (activity as AppCompatActivity).obtainHomeVM()
-                        .onMapSearchClicked(safeLocVM.location.value)
+                        .onMapSearchClicked(safeLocVM.location.value!!)
                 }
             }
         }

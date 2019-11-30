@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
-            android:text="@{locVM.location}"
+            app:location="@{locVM.location}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

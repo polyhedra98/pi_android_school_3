@@ -2,6 +2,7 @@ package com.mishenka.notbasic.home
 
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -63,18 +64,22 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
-            mapSearchClicked.observe(this@HomeActivity, Observer<Event<String>> {
+            mapSearchClicked.observe(this@HomeActivity, Observer<Event<Location>> {
                 it.getContentIfNotHandled()?.let { location ->
-                    startActivity(Intent(this@HomeActivity, MapSearchActivity::class.java)
-                        .apply {
-                            putExtra(getString(R.string.intent_location_extra), location)
-                        })
+                    performMapSearch(location)
+                    startActivity(Intent(this@HomeActivity, MapSearchActivity::class.java))
                 }
             })
 
             responseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
                 it.getContentIfNotHandled()?.let { response ->
                     this.processSearchResult(this@HomeActivity, response.first, response.second)
+                }
+            })
+
+            mapResponseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
+                it.getContentIfNotHandled()?.let { response ->
+                    this.processMapSearchResult(this@HomeActivity, response.first, response.second)
                 }
             })
         }
@@ -109,6 +114,12 @@ class HomeActivity : AppCompatActivity() {
             previousSearch = safePreferences.getString(getString(R.string.preferences_search), null)
         }
         return previousSearch
+    }
+
+
+    private fun performMapSearch(location: Location) {
+        obtainHomeVM().mapSearch(this, location.latitude.toString(),
+            location.longitude.toString(), obtainAuthVM().userId.value)
     }
 
 

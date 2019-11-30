@@ -2,8 +2,12 @@ package com.mishenka.notbasic.map
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.mishenka.notbasic.R
-import kotlinx.android.synthetic.main.activity_map_search.*
+import com.mishenka.notbasic.util.obtainAuthVM
+import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.replaceFragmentInActivity
+import com.mishenka.notbasic.util.setupActionBar
 
 class MapSearchActivity : AppCompatActivity() {
 
@@ -11,17 +15,13 @@ class MapSearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_search)
 
-        var location: String? = null
-        intent?.extras?.let { safeExtras ->
-            location = safeExtras.getString(getString(R.string.intent_location_extra))
-        }
-
-        setupLocationRelatedViews(location)
+        setupViewFragment()
     }
 
 
-    private fun setupLocationRelatedViews(location: String?) {
-        map_temp_tv.text = location ?: getString(R.string.empty_location_error)
+    private fun setupViewFragment() {
+        supportFragmentManager.findFragmentById(R.id.map_search_content_frame)
+            ?: replaceFragmentInActivity(R.id.map_search_content_frame, MapSearchFragment.newInstance())
     }
 
 }

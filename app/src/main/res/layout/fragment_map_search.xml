@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".map.MapSearchFragment">
+
+    <data>
+
+        <variable
+            name="homeVM"
+            type="com.mishenka.notbasic.home.HomeVM" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <TextView
+            android:id="@+id/map_prev_page_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/generic_dimen"
+            android:layout_marginLeft="@dimen/generic_dimen"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:text="@string/previous_page"
+            android:textColor="@color/colorAccent"
+            android:visibility="invisible"
+            app:bind_prev="@{homeVM.currentMapPage}"
+            app:endless="@{homeVM.endlessPreferred}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/map_next_page_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:text="@string/next_page"
+            android:textColor="@color/colorAccent"
+            android:visibility="invisible"
+            app:bind_next_current="@{homeVM.currentMapPage}"
+            app:bind_next_last="@{homeVM.lastMapPage}"
+            app:endless="@{homeVM.endlessPreferred}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/map_search_results_rv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/generic_dimen"
+            android:layout_marginLeft="@dimen/generic_dimen"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:layout_marginBottom="@dimen/generic_dimen"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/map_prev_page_tv"
+            app:loading_results="@{homeVM.mapSearchLoading}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

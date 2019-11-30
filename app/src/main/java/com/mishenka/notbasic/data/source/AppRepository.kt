@@ -45,6 +45,33 @@ class AppRepository private constructor(
     }
 
 
+    fun getMapSearchResults(lat: String, lon: String, callback: SearchCallback, page: Int = 1) {
+        val apiKey = "d64c48cfef077371e18078e6e3657da5"
+        val baseUrl = "https://www.flickr.com/"
+        val retrofit = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(ApiService::class.java)
+        val call = service.getMapSearchList(
+            "flickr.photos.geo.photosForLocation",
+            apiKey,
+            lat,
+            lon,
+            page = page
+        )
+        call.enqueue(object : Callback<OuterClass?> {
+            override fun onFailure(call: Call<OuterClass?>, t: Throwable) {
+                callback.onDataNotAvailable(t.localizedMessage ?: "Unexpected error")
+            }
+
+            override fun onResponse(call: Call<OuterClass?>, response: Response<OuterClass?>) {
+                callback.onSearchCompleted(response)
+            }
+        })
+    }
+
+
     suspend fun getFavourites(userId: Long) =
         appDatabase.userDao().getCategoriesAndFavsForUser(userId)
 

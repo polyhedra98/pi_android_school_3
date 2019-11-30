@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.location.Location
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
@@ -35,6 +36,10 @@ class HomeVM private constructor(
     val resultsField: LiveData<String>
         get() = _resultsField
 
+    private val _mapResultsField = MutableLiveData<String>()
+    val mapResultsField: LiveData<String>
+        get() = _mapResultsField
+
     private val _endlessPreferred = MutableLiveData<Boolean>()
     val endlessPreferred: LiveData<Boolean>
         get() = _endlessPreferred
@@ -53,29 +58,49 @@ class HomeVM private constructor(
     val currentPage: LiveData<Int>
         get() = _currentPage
 
+    private val _currentMapPage = MutableLiveData<Int>()
+    val currentMapPage: LiveData<Int>
+        get() = _currentMapPage
+
     private val _lastPage = MutableLiveData<Int>()
     val lastPage: LiveData<Int>
         get() = _lastPage
+
+    private val _lastMapPage = MutableLiveData<Int>()
+    val lastMapPage: LiveData<Int>
+        get() = _lastMapPage
 
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean>
         get() = _loading
 
+    private val _mapSearchLoading = MutableLiveData<Boolean>()
+    val mapSearchLoading: LiveData<Boolean>
+        get() = _mapSearchLoading
+
     private val _loadingContinuation = MutableLiveData<Boolean>().apply { value = false }
     val loadingContinuation: LiveData<Boolean>
         get() = _loadingContinuation
+
+    private val _loadingMapContinuation = MutableLiveData<Boolean>().apply { value = false }
+    val loadingMapContinuation: LiveData<Boolean>
+        get() = _loadingMapContinuation
 
     private val _resultClicked = MutableLiveData<Event<Pair<String, String>>>()
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
 
-    private val _mapSearchClicked = MutableLiveData<Event<String>>()
-    val mapSearchClicked: LiveData<Event<String>>
+    private val _mapSearchClicked = MutableLiveData<Event<Location>>()
+    val mapSearchClicked: LiveData<Event<Location>>
         get() = _mapSearchClicked
 
     private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
     val resultsList: LiveData<List<String>>
         get() = _resultsList
+
+    private val _mapSearchResultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
+    val mapSearchResultsList: LiveData<List<String>>
+        get() = _mapSearchResultsList
 
     private val _historyList = MutableLiveData<List<HistorySelectItem>>().apply { value = emptyList() }
     val historyList: LiveData<List<HistorySelectItem>>
@@ -90,11 +115,23 @@ class HomeVM private constructor(
     val responseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
         get() = _responseAcquired
 
+    private val _mapResponseAcquired = MutableLiveData<Event<Pair<Response<OuterClass?>, Boolean>>>()
+    val mapResponseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
+        get() = _mapResponseAcquired
+
     private var query = ""
+
+    private var lat = ""
+
+    private var lon = ""
 
     private var fullSummary = ""
 
+    private var mapFullSummary = ""
+
     private var summary = ""
+
+    private var mapSummary = ""
 
     var currentSearch: String? = null
         private set
@@ -133,13 +170,8 @@ class HomeVM private constructor(
     }
 
 
-    fun onMapSearchClicked(location: String?) {
-        if (location != null) {
-            _mapSearchClicked.value = Event(location)
-
-        } else {
-            Log.i("NYA", "Unexpected error. Location is null.")
-        }
+    fun onMapSearchClicked(location: Location) {
+        _mapSearchClicked.value = Event(location)
     }
 
 
@@ -211,6 +243,8 @@ class HomeVM private constructor(
     fun start(context: Context) {
         _resultsField.value = context.getString(R.string.initial_empty_results)
         _loading.value = false
+        _mapResultsField.value = context.getString(R.string.initial_map_results)
+        _mapSearchLoading.value = false
 
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
@@ -382,6 +416,49 @@ class HomeVM private constructor(
     }
 
 
+    fun processMapSearchResult(context: Context, response: Response<OuterClass?>, isContinuation: Boolean) {
+        val code = response.code()
+        with(context) {
+            if (code != 200) {
+                _mapResultsField.value = getString(R.string.lat_lon_error_code, lat, lon, code)
+                _mapSearchResultsList.value = emptyList()
+                return
+            }
+            if (response.body()?.photos == null) {
+                _mapResultsField.value = getString(R.string.lat_lon_empty_photos, lat, lon)
+                _mapSearchResultsList.value = emptyList()
+                return
+            }
+            val photos = response.body()!!.photos!!
+            mapSummary = getString(R.string.endless_lat_lon_header, lat, lon, photos.total)
+            mapFullSummary = getString(R.string.lat_lon_header, lat, lon, photos.page,
+                photos.pages, photos.perpage, photos.total)
+            if (photos.pages != null && photos.pages == 0) {
+                _currentMapPage.value = 0
+            } else {
+                _currentMapPage.value = photos.page
+            }
+            _lastMapPage.value = photos.pages
+            if (photos.photo == null) {
+                _mapResultsField.value = getString(R.string.empty_photo_items)
+                _mapSearchResultsList.value = emptyList()
+            } else {
+                _mapResultsField.value = if (endlessPreferred.value!!) {
+                    summary
+                } else {
+                    fullSummary
+                }
+                if (isContinuation) {
+                    _mapSearchResultsList.value = _mapSearchResultsList.value!! + photos.photo!!.map { it.constructURL() }
+                    _loadingMapContinuation.value = false
+                } else {
+                    _mapSearchResultsList.value = photos.photo!!.map { it.constructURL() }
+                }
+            }
+        }
+    }
+
+
     fun search(context: Context, userId: Long?) {
         val tempQuery = searchField.value?.toLowerCase()?.replace(" ", "_") ?: ""
         val validationResult = Validator.validateQuery(tempQuery)
@@ -403,12 +480,38 @@ class HomeVM private constructor(
     }
 
 
+    fun mapSearch(context: Context, lat: String, lon: String, userId: Long?) {
+        this.lat = lat
+        this.lon = lon
+        _currentMapPage.value = null
+        _lastMapPage.value = null
+        _mapSearchLoading.value = true
+        appRepository.getMapSearchResults(this.lat, this.lon, MapSearchCallbackImplementation())
+        userId?.let {
+            //TODO("Change scope")
+            GlobalScope.launch {
+                appRepository.insertHistory(History(0, it, "$lat/$lon", Date()))
+            }
+        }
+    }
+
+
     fun continuousSearch() {
         Log.i("NYA", "Getting results for page ${currentPage.value!! + 1}")
         if (!_loadingContinuation.value!!) {
             _loadingContinuation.value = true
             appRepository.getSearchResults(query, SearchCallbackImplementation(true)
                 ,currentPage.value!! + 1)
+        }
+    }
+
+
+    fun continuousMapSearch() {
+        Log.i("NYA", "Getting results for page ${currentMapPage.value!! + 1}")
+        if (!_loadingMapContinuation.value!!) {
+            _loadingMapContinuation.value = true
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(true),
+                currentMapPage.value!! + 1)
         }
     }
 
@@ -427,9 +530,29 @@ class HomeVM private constructor(
     }
 
 
+    fun changeMapPage(pageChange: Int) {
+        if (currentMapPage.value == null) {
+            return
+        }
+        _mapSearchLoading.value = true
+        if (pageChange == 0) {
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation())
+        } else {
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(),
+                currentMapPage.value!! + pageChange)
+        }
+    }
+
+
     fun trimResultsList() {
         val length = _resultsList.value!!.size
         _resultsList.value = _resultsList.value!!.subList(length - PER_PAGE, length)
+    }
+
+
+    fun trimMapResultsList() {
+        val length = _mapSearchResultsList.value!!.size
+        _mapSearchResultsList.value = _mapSearchResultsList.value!!.subList(length - PER_PAGE, length)
     }
 
 
@@ -460,6 +583,22 @@ class HomeVM private constructor(
             _loading.value = false
         }
     }
+
+
+    inner class MapSearchCallbackImplementation(
+        private val isContinuation: Boolean? = null
+    ) : SearchCallback {
+        override fun onSearchCompleted(response: Response<OuterClass?>) {
+            _mapResponseAcquired.value = Event(Pair(response, isContinuation ?: false))
+            _mapSearchLoading.value = false
+        }
+
+        override fun onDataNotAvailable(message: String) {
+            _mapResultsField.value = message
+            _mapSearchLoading.value = false
+        }
+    }
+
 
     companion object {
 

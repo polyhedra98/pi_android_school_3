@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.util
 
+import android.location.Location
 import android.text.util.Linkify
 import android.view.View
 import android.widget.EditText
@@ -46,6 +47,11 @@ object Bindings {
         with(rv) {
             (adapter as RecyclerView.Adapter?)?.notifyItemChanged(0)
         }
+    }
+
+    @BindingAdapter("location")
+    @JvmStatic fun location(tv: TextView, location: Location?) {
+        tv.text = "${location?.latitude}/${location?.longitude}"
     }
 
     @BindingAdapter("linkified_results")
