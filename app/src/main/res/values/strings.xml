@@ -37,6 +37,7 @@
     <string name="username_existence_error">User does not exist.</string>
     <string name="intent_url_extra">url_extra</string>
     <string name="intent_category_extra">category_extra</string>
+    <string name="intent_location_extra">location_extra</string>
     <string name="category_text">Category: %1$s</string>
     <string name="star_auth_error">You have to be logged in to star.</string>
     <string name="history_auth_error">Log in to save history.</string>
@@ -46,8 +47,10 @@
     <string name="remove">Remove</string>
     <string name="empty_favourites">No favourites added yet.</string>
     <string name="empty_history">No searches saved yet.</string>
+    <string name="empty_location_error">Error. Location is null.</string>
     <string name="fetching_history">Fetching history..</string>
     <string name="fetching_favourites">Fetching favourites..</string>
+    <string name="map_nav_title">Map</string>
 
     <string name="query_error_code">Query: %1$s\nUnsuccessful. Error code: %2$d.</string>
     <string name="query_empty_photos">Query: %1$s\nUnsuccessful. Empty photos.</string>

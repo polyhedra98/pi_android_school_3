@@ -26,6 +26,11 @@ class HomeVM private constructor(
     private val appRepository: AppRepository
 ) : ViewModel() {
 
+    //TODO("Helps with xml-fragment binding for placeholders")
+    private val _temp = MutableLiveData<String>().apply { value = "Temp" }
+    val temp: LiveData<String>
+        get() = _temp
+
     private val _resultsField = MutableLiveData<String>()
     val resultsField: LiveData<String>
         get() = _resultsField
@@ -63,6 +68,10 @@ class HomeVM private constructor(
     private val _resultClicked = MutableLiveData<Event<Pair<String, String>>>()
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
+
+    private val _mapSearchClicked = MutableLiveData<Event<String>>()
+    val mapSearchClicked: LiveData<Event<String>>
+        get() = _mapSearchClicked
 
     private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
     val resultsList: LiveData<List<String>>
@@ -121,6 +130,11 @@ class HomeVM private constructor(
 
     fun onFavouriteClicked(url: String, category: String) {
         _resultClicked.value = Event(Pair(url, category))
+    }
+
+
+    fun onMapSearchClicked(location: String) {
+        _mapSearchClicked.value = Event(location)
     }
 
 

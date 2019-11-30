@@ -20,6 +20,11 @@
             android:title="@string/history_nav_title"
             />
 
+        <item
+            android:id="@+id/map_nav_menu_item"
+            android:title="@string/map_nav_title"
+            />
+
     </group>
 
     <group

@@ -18,6 +18,8 @@ import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.detail.DetailActivity
 import com.mishenka.notbasic.favourites.FavouritesFragment
 import com.mishenka.notbasic.history.HistoryFragment
+import com.mishenka.notbasic.map.MapFragment
+import com.mishenka.notbasic.map.MapSearchActivity
 import com.mishenka.notbasic.settings.SettingsActivity
 import com.mishenka.notbasic.util.*
 import kotlinx.android.synthetic.main.activity_home.*
@@ -57,6 +59,15 @@ class HomeActivity : AppCompatActivity() {
                         .apply {
                             putExtra(getString(R.string.intent_url_extra), pair.first)
                             putExtra(getString(R.string.intent_category_extra), pair.second)
+                        })
+                }
+            })
+
+            mapSearchClicked.observe(this@HomeActivity, Observer<Event<String>> {
+                it.getContentIfNotHandled()?.let { location ->
+                    startActivity(Intent(this@HomeActivity, MapSearchActivity::class.java)
+                        .apply {
+                            putExtra(getString(R.string.intent_location_extra), location)
                         })
                 }
             })
@@ -128,6 +139,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.home_nav_menu_item -> conditionallyReplaceFragment(HomeFragment::class.java)
                 R.id.fav_nav_menu_item -> conditionallyReplaceFragment(FavouritesFragment::class.java)
                 R.id.history_nav_menu_item -> conditionallyReplaceFragment(HistoryFragment::class.java)
+                R.id.map_nav_menu_item -> conditionallyReplaceFragment(MapFragment::class.java)
                 R.id.settings_nav_menu_item -> startActivity(SettingsActivity::class.java)
                 else -> throw IllegalStateException("Illegal menu item")
             }
@@ -156,6 +168,8 @@ class HomeActivity : AppCompatActivity() {
                         replaceFragmentInActivity(R.id.home_content_frame, FavouritesFragment.newInstance())
                     isAssignableFrom(HistoryFragment::class.java) ->
                         replaceFragmentInActivity(R.id.home_content_frame, HistoryFragment.newInstance())
+                    isAssignableFrom(MapFragment::class.java) ->
+                        replaceFragmentInActivity(R.id.home_content_frame, MapFragment.newInstance())
                     else ->
                         throw java.lang.IllegalStateException("Unknown fragment class")
                 }
