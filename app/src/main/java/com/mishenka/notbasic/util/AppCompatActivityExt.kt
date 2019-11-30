@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.mishenka.notbasic.home.AuthVM
 import com.mishenka.notbasic.home.HomeVM
+import com.mishenka.notbasic.map.LocationVM
 
 fun AppCompatActivity.setupActionBar(@IdRes toolbarId: Int, action: ActionBar.() -> Unit) {
     setSupportActionBar(findViewById(toolbarId))
@@ -28,3 +29,9 @@ fun AppCompatActivity.obtainHomeVM(): HomeVM =
 fun AppCompatActivity.obtainAuthVM(): AuthVM =
     ViewModelProviders.of(this, ViewModelFactory.getInstance(this.applicationContext)).get(
         AuthVM::class.java)
+
+
+fun AppCompatActivity.obtainLocationVM(): LocationVM =
+    ViewModelProviders.of(this, ViewModelFactory.getInstance(this.applicationContext)).get(
+        LocationVM::class.java
+    )

@@ -133,8 +133,13 @@ class HomeVM private constructor(
     }
 
 
-    fun onMapSearchClicked(location: String) {
-        _mapSearchClicked.value = Event(location)
+    fun onMapSearchClicked(location: String?) {
+        if (location != null) {
+            _mapSearchClicked.value = Event(location)
+
+        } else {
+            Log.i("NYA", "Unexpected error. Location is null.")
+        }
     }
 
 

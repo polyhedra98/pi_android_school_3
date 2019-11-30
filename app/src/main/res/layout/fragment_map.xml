@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="homeVM"
-            type="com.mishenka.notbasic.home.HomeVM" />
+            name="locVM"
+            type="com.mishenka.notbasic.map.LocationVM" />
 
     </data>
 
@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
-            android:text="@{homeVM.temp}"
+            android:text="@{locVM.location}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

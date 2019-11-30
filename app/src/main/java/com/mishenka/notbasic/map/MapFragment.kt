@@ -11,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.LocationServices
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentMapBinding
 import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.obtainLocationVM
 
 class MapFragment : Fragment() {
 
@@ -28,7 +30,7 @@ class MapFragment : Fragment() {
         (DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
                 as FragmentMapBinding)
             .apply {
-                homeVM = (activity as AppCompatActivity).obtainHomeVM()
+                locVM = (activity as AppCompatActivity).obtainLocationVM()
 
                 lifecycleOwner = activity
             }.also { binding = it }.root
@@ -37,7 +39,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupBindings()
+        setupLocation()
     }
 
 
@@ -52,7 +54,7 @@ class MapFragment : Fragment() {
                     Log.i("NYA", "Permission has been denied")
                 } else {
                     Log.i("NYA", "Permission has been accepted")
-                    setupBindings()
+                    setupLocation()
                 }
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -60,16 +62,33 @@ class MapFragment : Fragment() {
     }
 
 
-    private fun setupBindings() {
+    private fun setupLocation() {
         if (!getFineLocationPermission()) {
             Log.i("NYA", "Permission denied")
             requestPermission()
         } else {
-            with(binding) {
-                homeVM?.let { safeHomeVM ->
-                    mapSearchB.setOnClickListener {
-                        safeHomeVM.onMapSearchClicked("Default location")
-                    }
+            setupFusedLocationClient()
+            setupBindings()
+        }
+    }
+
+
+    private fun setupFusedLocationClient() {
+        with(LocationServices.getFusedLocationProviderClient(context!!)) {
+            lastLocation.addOnSuccessListener {
+                (activity as AppCompatActivity).obtainLocationVM()
+                    .locationChanged("${it?.latitude} -- ${it?.longitude}")
+            }
+        }
+    }
+
+
+    private fun setupBindings() {
+        with(binding) {
+            locVM?.let { safeLocVM ->
+                mapSearchB.setOnClickListener {
+                    (activity as AppCompatActivity).obtainHomeVM()
+                        .onMapSearchClicked(safeLocVM.location.value)
                 }
             }
         }

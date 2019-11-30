@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.home.AuthVM
 import com.mishenka.notbasic.home.HomeVM
+import com.mishenka.notbasic.map.LocationVM
 import java.lang.IllegalArgumentException
 
 class ViewModelFactory private constructor(
@@ -19,6 +20,8 @@ class ViewModelFactory private constructor(
                     HomeVM.getInstance(appRepository)
                 isAssignableFrom(AuthVM::class.java) ->
                     AuthVM.getInstance(appRepository)
+                isAssignableFrom(LocationVM::class.java) ->
+                    LocationVM.getInstance(appRepository)
                 else -> throw IllegalArgumentException("Unknown VM class")
             }
         } as T
