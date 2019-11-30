@@ -1,10 +1,14 @@
 package com.mishenka.notbasic.settings
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -61,6 +65,9 @@ class SettingsActivity : AppCompatActivity() {
 
     class SettingsFragment : PreferenceFragmentCompat() {
 
+        private val LOCATION_PERMISSION_REQUEST_CODE = 1
+
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
@@ -82,6 +89,7 @@ class SettingsActivity : AppCompatActivity() {
                     homeVM.endlessChanged(newValue as Boolean)
                     true
                 }
+            setupLocationPreference()
             val userPref = findPreference<Preference>(getString(R.string.settings_user_key))
             val authPref = findPreference<Preference>(getString(R.string.settings_auth_key))
             userPref?.let { safePref ->
@@ -106,6 +114,59 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 })
             }
+        }
+
+
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ) {
+            when(requestCode) {
+                LOCATION_PERMISSION_REQUEST_CODE -> {
+                    if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        Log.i("NYA", "Permission has been denied")
+                    } else {
+                        Log.i("NYA", "Permission has been accepted")
+                        setupLocationPreference()
+                    }
+                }
+                else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
+
+
+        private fun setupLocationPreference() {
+            findPreference<Preference>(getString(R.string.settings_location_key))
+                ?.let { safePreference ->
+                    with(safePreference) {
+                        if (getFineLocationPermission()) {
+                            title = getString(R.string.settings_location_permission_granted)
+                            isSelectable = false
+                        } else {
+                            title = getString(R.string.settings_grant_location_permission)
+                            isSelectable = true
+                            setOnPreferenceClickListener {
+                                requestPermission()
+                                true
+                            }
+                        }
+                    }
+                }
+        }
+
+
+        private fun getFineLocationPermission() =
+            ContextCompat.checkSelfPermission(
+                context!!, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+
+        private fun requestPermission() {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
         }
 
 

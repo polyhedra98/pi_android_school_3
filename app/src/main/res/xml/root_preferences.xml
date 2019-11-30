@@ -10,6 +10,11 @@
             android:summary="@string/settings_endless_list_summary"
             />
 
+        <Preference
+            android:key="@string/settings_location_key"
+            android:summary="@string/settings_location_summary"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_account_category">
