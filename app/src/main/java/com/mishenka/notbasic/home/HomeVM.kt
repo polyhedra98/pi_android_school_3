@@ -165,6 +165,11 @@ class HomeVM private constructor(
     }
 
 
+    fun onMapResultClicked(url: String) {
+        _resultClicked.value = Event(Pair(url, "$lat/$lon"))
+    }
+
+
     fun onFavouriteClicked(url: String, category: String) {
         _resultClicked.value = Event(Pair(url, category))
     }
@@ -387,6 +392,7 @@ class HomeVM private constructor(
                 return
             }
             val photos = response.body()!!.photos!!
+            Log.i("NYA", "Photos size: ${photos.photo!!.size}")
             summary = getString(R.string.endless_query_header, query, photos.total)
             fullSummary = getString(R.string.query_header, query, photos.page,
                 photos.pages, photos.perpage, photos.total)

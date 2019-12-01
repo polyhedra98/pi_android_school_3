@@ -72,7 +72,7 @@ class HomeFragment : Fragment() {
             val length = results.size
             if (!isEndless) {
                 (adapter as RecyclerView.Adapter?)
-                    ?.notifyItemRangeChanged(1, length)
+                    ?.notifyDataSetChanged()
                 scrollToPosition(0)
             } else {
                 (adapter as RecyclerView.Adapter?)

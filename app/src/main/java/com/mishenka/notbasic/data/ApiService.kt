@@ -26,6 +26,7 @@ interface ApiService {
                          @Query("lat") lat: String,
                          @Query("lon") lon: String,
                          @Query("page") page: Int = 1,
+                         @Query("accuracy") accuracy: Int = 6,
                          @Query("per_page") per_page: Int = PER_PAGE,
                          @Query("format") format: String = "json",
                          @Query("nojsoncallback") nojson: Int = 1

@@ -87,8 +87,12 @@ class MapFragment : Fragment() {
         with(binding) {
             locVM?.let { safeLocVM ->
                 mapSearchB.setOnClickListener {
-                    (activity as AppCompatActivity).obtainHomeVM()
-                        .onMapSearchClicked(safeLocVM.location.value!!)
+                    if (safeLocVM.location.value == null) {
+                        Log.i("NYA", "Location is null")
+                    } else {
+                        (activity as AppCompatActivity).obtainHomeVM()
+                            .onMapSearchClicked(safeLocVM.location.value!!)
+                    }
                 }
             }
         }

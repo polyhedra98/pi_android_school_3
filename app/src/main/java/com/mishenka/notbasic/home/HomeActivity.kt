@@ -76,12 +76,6 @@ class HomeActivity : AppCompatActivity() {
                     this.processSearchResult(this@HomeActivity, response.first, response.second)
                 }
             })
-
-            mapResponseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
-                it.getContentIfNotHandled()?.let { response ->
-                    this.processMapSearchResult(this@HomeActivity, response.first, response.second)
-                }
-            })
         }
     }
 

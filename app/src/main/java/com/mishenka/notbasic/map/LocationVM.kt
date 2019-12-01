@@ -15,7 +15,7 @@ class LocationVM(
         get() = _location
 
 
-    fun locationChanged(location: Location) {
+    fun locationChanged(location: Location?) {
         _location.value = location
     }
 

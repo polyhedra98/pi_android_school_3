@@ -70,7 +70,7 @@ class MapSearchFragment : Fragment() {
             val length = results.size
             if (!isEndless) {
                 (adapter as RecyclerView.Adapter?)
-                    ?.notifyItemRangeChanged(1, length)
+                    ?.notifyDataSetChanged()
                 scrollToPosition(0)
             } else {
                 (adapter as RecyclerView.Adapter?)
@@ -91,14 +91,14 @@ class MapSearchFragment : Fragment() {
                     homeVM!!.changePage(0)
                 }
                 mapSearchResultsRv.addOnScrollListener(onScrollListener)
-                mapSearchResultsRv.adapter = HomeAdapter(homeVM!!)
+                mapSearchResultsRv.adapter = MapAdapter(homeVM!!)
             } else {
                 Log.i("NYA", "No endless")
                 if (!homeVM!!.mapSearchResultsList.value.isNullOrEmpty()) {
                     homeVM!!.trimMapResultsList()
                 }
                 mapSearchResultsRv.removeOnScrollListener(onScrollListener)
-                mapSearchResultsRv.adapter = HomeAdapter(homeVM!!)
+                mapSearchResultsRv.adapter = MapAdapter(homeVM!!)
             }
         }
     }
