@@ -44,6 +44,7 @@
     <string name="intent_category_extra">category_extra</string>
     <string name="intent_lat_extra">lat_extra</string>
     <string name="intent_lon_extra">lon_extra</string>
+    <string name="current_location">Current location</string>
     <string name="category_text">Category: %1$s</string>
     <string name="star_auth_error">You have to be logged in to star.</string>
     <string name="history_auth_error">Log in to save history.</string>
@@ -67,4 +68,5 @@
     <string name="query_header">Query: %1$s\nPage: %2$d\nPages: %3$d\nPer page: %4$d\nTotal: %5$d</string>
     <string name="endless_query_header">Query: %1$s\nTotal: %2$d</string>
     <string name="empty_photo_items">Empty photo items.</string>
+    <string name="title_activity_google_maps">Map</string>
 </resources>

@@ -12,35 +12,45 @@
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/generic_dimen"
+            app:layout_constraintBottom_toTopOf="@+id/map_search_b"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:context=".map.MapFragment" />
+
         <TextView
             android:id="@+id/textView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/generic_dimen"
             android:layout_marginLeft="@dimen/generic_dimen"
-            android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
-            app:location="@{locVM.location}"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@+id/map_search_b"
+            app:layout_constraintEnd_toStartOf="@+id/map_search_b"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:location="@{locVM.location}" />
 
         <Button
             android:id="@+id/map_search_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
+            android:layout_marginBottom="@dimen/generic_dimen"
             android:text="@string/search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

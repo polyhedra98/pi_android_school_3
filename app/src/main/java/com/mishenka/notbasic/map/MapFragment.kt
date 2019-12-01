@@ -12,12 +12,19 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.places.Places
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentMapBinding
 import com.mishenka.notbasic.util.obtainHomeVM
 import com.mishenka.notbasic.util.obtainLocationVM
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -39,6 +46,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupMap()
         setupLocation()
     }
 
@@ -62,6 +70,11 @@ class MapFragment : Fragment() {
     }
 
 
+    private fun setupMap() {
+        (fragmentManager?.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
+    }
+
+
     private fun setupLocation() {
         if (!getFineLocationPermission()) {
             Log.i("NYA", "Permission denied")
@@ -69,6 +82,17 @@ class MapFragment : Fragment() {
         } else {
             setupFusedLocationClient()
             setupBindings()
+        }
+    }
+
+
+    override fun onMapReady(googleMap: GoogleMap?) {
+        (activity as AppCompatActivity).obtainLocationVM().location.value?.let {
+            Log.i("NYA", "(from MapFragment) Location is not null")
+            val latLng = LatLng(it.latitude, it.longitude)
+            googleMap?.addMarker(MarkerOptions().position(latLng)
+                .title(getString(R.string.current_location)))
+            googleMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         }
     }
 
