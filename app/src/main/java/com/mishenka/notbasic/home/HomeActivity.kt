@@ -64,9 +64,9 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
-            mapSearchClicked.observe(this@HomeActivity, Observer<Event<Location>> {
+            mapSearchClicked.observe(this@HomeActivity, Observer<Event<Pair<Double, Double>>> {
                 it.getContentIfNotHandled()?.let { location ->
-                    performMapSearch(location)
+                    performMapSearch(location.first, location.second)
                     startActivity(Intent(this@HomeActivity, MapSearchActivity::class.java))
                 }
             })
@@ -111,9 +111,9 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    private fun performMapSearch(location: Location) {
-        obtainHomeVM().mapSearch(this, location.latitude.toString(),
-            location.longitude.toString(), obtainAuthVM().userId.value)
+    private fun performMapSearch(lat: Double, lng: Double) {
+        obtainHomeVM().mapSearch(this, lat.toString(),
+            lng.toString(), obtainAuthVM().userId.value)
     }
 
 

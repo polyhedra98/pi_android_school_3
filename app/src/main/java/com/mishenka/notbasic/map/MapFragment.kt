@@ -92,19 +92,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap?) {
         Log.i("NYA", "Map is ready. Is null? ${googleMap == null}")
         map = googleMap
+        map?.setOnMapLongClickListener {
+            placeMarker(it.latitude, it.longitude)
+        }
         (activity as AppCompatActivity).obtainLocationVM().location.value?.let {
             Log.i("NYA", "(from MapFragment) Location is not null")
-            centerCamera(it.latitude, it.longitude)
-            placeMarker(it.latitude, it.longitude)
+            centerCamera(it.first, it.second)
+            placeMarker(it.first, it.second)
         }
     }
 
 
     private fun placeMarker(lat: Double, lng: Double) {
+        removeAllMarkers()
         map?.addMarker(MarkerOptions().position(LatLng(lat, lng))
             .title(getString(R.string.current_location))
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-        )
+        )?.also {
+            (activity as AppCompatActivity).obtainLocationVM().locationChanged(lat, lng)
+        }
+    }
+
+
+    private fun removeAllMarkers() {
+        map?.clear()
     }
 
 
@@ -117,10 +128,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupFusedLocationClient() {
         with(LocationServices.getFusedLocationProviderClient(context!!)) {
             lastLocation.addOnSuccessListener {
-                (activity as AppCompatActivity).obtainLocationVM()
-                    .locationChanged(it)
-                centerCamera(it.latitude, it.longitude)
-                placeMarker(it.latitude, it.longitude)
+                if (it == null) {
+                    Log.i("NYA", "(from setupFusedLocationClient) Last known location is null")
+                } else {
+                    (activity as AppCompatActivity).obtainLocationVM()
+                        .locationChanged(it.latitude, it.longitude)
+                    centerCamera(it.latitude, it.longitude)
+                    placeMarker(it.latitude, it.longitude)
+                }
             }
         }
     }
@@ -134,15 +149,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         Log.i("NYA", "Location is null")
                     } else {
                         (activity as AppCompatActivity).obtainHomeVM()
-                            .onMapSearchClicked(safeLocVM.location.value!!)
+                            .onMapSearchClicked(safeLocVM.location.value!!.first,
+                                safeLocVM.location.value!!.second)
                     }
                 }
                 mapCenterB.setOnClickListener {
                     if (safeLocVM.location.value == null) {
                         Log.i("NYA", "Location is null")
                     } else {
-                        centerCamera(safeLocVM.location.value!!.latitude,
-                            safeLocVM.location.value!!.longitude)
+                        centerCamera(safeLocVM.location.value!!.first,
+                            safeLocVM.location.value!!.second)
                     }
                 }
             }

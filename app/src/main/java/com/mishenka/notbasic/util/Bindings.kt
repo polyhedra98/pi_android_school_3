@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.user.FavouriteToShow
 import com.mishenka.notbasic.data.model.user.HistorySelectItem
 import com.mishenka.notbasic.favourites.FavouriteAdapter
@@ -50,8 +51,8 @@ object Bindings {
     }
 
     @BindingAdapter("location")
-    @JvmStatic fun location(tv: TextView, location: Location?) {
-        tv.text = "${location?.latitude}\n${location?.longitude}"
+    @JvmStatic fun location(tv: TextView, location: Pair<Double?, Double?>?) {
+        tv.text = tv.context.getString(R.string.lat_lng_string, location?.first, location?.second)
     }
 
     @BindingAdapter("linkified_results")

@@ -1,7 +1,6 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
-import android.location.Location
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
@@ -90,8 +89,8 @@ class HomeVM private constructor(
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
 
-    private val _mapSearchClicked = MutableLiveData<Event<Location>>()
-    val mapSearchClicked: LiveData<Event<Location>>
+    private val _mapSearchClicked = MutableLiveData<Event<Pair<Double, Double>>>()
+    val mapSearchClicked: LiveData<Event<Pair<Double, Double>>>
         get() = _mapSearchClicked
 
     private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
@@ -175,8 +174,8 @@ class HomeVM private constructor(
     }
 
 
-    fun onMapSearchClicked(location: Location) {
-        _mapSearchClicked.value = Event(location)
+    fun onMapSearchClicked(lat: Double, lng: Double) {
+        _mapSearchClicked.value = Event(Pair(lat, lng))
     }
 
 
@@ -426,18 +425,18 @@ class HomeVM private constructor(
         val code = response.code()
         with(context) {
             if (code != 200) {
-                _mapResultsField.value = getString(R.string.lat_lon_error_code, lat, lon, code)
+                _mapResultsField.value = getString(R.string.lat_lng_error_code, lat, lon, code)
                 _mapSearchResultsList.value = emptyList()
                 return
             }
             if (response.body()?.photos == null) {
-                _mapResultsField.value = getString(R.string.lat_lon_empty_photos, lat, lon)
+                _mapResultsField.value = getString(R.string.lat_lng_empty_photos, lat, lon)
                 _mapSearchResultsList.value = emptyList()
                 return
             }
             val photos = response.body()!!.photos!!
-            mapSummary = getString(R.string.endless_lat_lon_header, lat, lon, photos.total)
-            mapFullSummary = getString(R.string.lat_lon_header, lat, lon, photos.page,
+            mapSummary = getString(R.string.endless_lat_lng_header, lat, lon, photos.total)
+            mapFullSummary = getString(R.string.lat_lng_header, lat, lon, photos.page,
                 photos.pages, photos.perpage, photos.total)
             if (photos.pages != null && photos.pages == 0) {
                 _currentMapPage.value = 0

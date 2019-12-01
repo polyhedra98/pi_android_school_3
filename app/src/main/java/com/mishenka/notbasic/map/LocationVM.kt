@@ -1,6 +1,5 @@
 package com.mishenka.notbasic.map
 
-import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,13 +9,13 @@ class LocationVM(
     private val appRepository: AppRepository
 ) : ViewModel() {
 
-    private val _location = MutableLiveData<Location>()
-    val location: LiveData<Location>
+    private val _location = MutableLiveData<Pair<Double, Double>>()
+    val location: LiveData<Pair<Double, Double>>
         get() = _location
 
 
-    fun locationChanged(location: Location?) {
-        _location.value = location
+    fun locationChanged(lat: Double, lng: Double) {
+        _location.value = Pair(lat, lng)
     }
 
 

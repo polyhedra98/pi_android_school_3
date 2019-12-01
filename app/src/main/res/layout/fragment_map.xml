@@ -29,7 +29,6 @@
             tools:context=".map.MapFragment" />
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/generic_dimen"
@@ -39,7 +38,8 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/map_search_b"
             app:layout_constraintEnd_toStartOf="@+id/map_center_b"
             app:layout_constraintStart_toStartOf="parent"
-            app:location="@{locVM.location}" />
+            app:location="@{locVM.location}"
+            />
 
         <Button
             android:id="@+id/map_search_b"
