@@ -19,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentMapBinding
@@ -95,6 +96,27 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map?.setOnMapLongClickListener {
             placeMarker(it.latitude, it.longitude)
         }
+        map?.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+            override fun onMarkerDragEnd(p0: Marker?) {
+                Log.i("NYA", "Marker drag end. $p0")
+                p0?.let { safeMarker ->
+                    (activity as AppCompatActivity).obtainLocationVM()
+                        .locationChanged(safeMarker.position.latitude, safeMarker.position.longitude)
+                }
+            }
+
+            override fun onMarkerDragStart(p0: Marker?) {
+                Log.i("NYA", "Marker drag start. $p0")
+            }
+
+            override fun onMarkerDrag(p0: Marker?) {
+                Log.i("NYA", "Marker drag. $p0")
+                p0?.let { safeMarker ->
+                    (activity as AppCompatActivity).obtainLocationVM()
+                        .locationChanged(safeMarker.position.latitude, safeMarker.position.longitude)
+                }
+            }
+        })
         (activity as AppCompatActivity).obtainLocationVM().location.value?.let {
             Log.i("NYA", "(from MapFragment) Location is not null")
             centerCamera(it.first, it.second)
@@ -108,6 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map?.addMarker(MarkerOptions().position(LatLng(lat, lng))
             .title(getString(R.string.current_location))
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            .draggable(true)
         )?.also {
             (activity as AppCompatActivity).obtainLocationVM().locationChanged(lat, lng)
         }
