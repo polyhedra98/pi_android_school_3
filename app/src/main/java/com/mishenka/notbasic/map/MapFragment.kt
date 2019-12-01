@@ -17,6 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
@@ -27,6 +28,7 @@ import com.mishenka.notbasic.util.obtainLocationVM
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
+    private var map: GoogleMap? = null
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
 
     override fun onCreateView(
@@ -46,8 +48,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupMap()
         setupLocation()
+        setupMap()
     }
 
 
@@ -63,6 +65,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 } else {
                     Log.i("NYA", "Permission has been accepted")
                     setupLocation()
+                    setupMap()
                 }
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -71,7 +74,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private fun setupMap() {
-        (fragmentManager?.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
+        (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
     }
 
 
@@ -87,13 +90,27 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
+        Log.i("NYA", "Map is ready. Is null? ${googleMap == null}")
+        map = googleMap
         (activity as AppCompatActivity).obtainLocationVM().location.value?.let {
             Log.i("NYA", "(from MapFragment) Location is not null")
-            val latLng = LatLng(it.latitude, it.longitude)
-            googleMap?.addMarker(MarkerOptions().position(latLng)
-                .title(getString(R.string.current_location)))
-            googleMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+            centerCamera(it.latitude, it.longitude)
+            placeMarker(it.latitude, it.longitude)
         }
+    }
+
+
+    private fun placeMarker(lat: Double, lng: Double) {
+        map?.addMarker(MarkerOptions().position(LatLng(lat, lng))
+            .title(getString(R.string.current_location))
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+        )
+    }
+
+
+    private fun centerCamera(lat: Double, lng: Double) {
+        map?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(lat, lng)))
+            ?.also { Log.i("NYA", "Map is not null. Centered.") }
     }
 
 
@@ -102,6 +119,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             lastLocation.addOnSuccessListener {
                 (activity as AppCompatActivity).obtainLocationVM()
                     .locationChanged(it)
+                centerCamera(it.latitude, it.longitude)
+                placeMarker(it.latitude, it.longitude)
             }
         }
     }
@@ -116,6 +135,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     } else {
                         (activity as AppCompatActivity).obtainHomeVM()
                             .onMapSearchClicked(safeLocVM.location.value!!)
+                    }
+                }
+                mapCenterB.setOnClickListener {
+                    if (safeLocVM.location.value == null) {
+                        Log.i("NYA", "Location is null")
+                    } else {
+                        centerCamera(safeLocVM.location.value!!.latitude,
+                            safeLocVM.location.value!!.longitude)
                     }
                 }
             }

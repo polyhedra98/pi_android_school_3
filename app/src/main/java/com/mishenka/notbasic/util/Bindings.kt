@@ -51,7 +51,7 @@ object Bindings {
 
     @BindingAdapter("location")
     @JvmStatic fun location(tv: TextView, location: Location?) {
-        tv.text = "${location?.latitude}/${location?.longitude}"
+        tv.text = "${location?.latitude}\n${location?.longitude}"
     }
 
     @BindingAdapter("linkified_results")

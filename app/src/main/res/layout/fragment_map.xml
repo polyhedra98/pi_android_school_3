@@ -37,7 +37,7 @@
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
             app:layout_constraintBaseline_toBaselineOf="@+id/map_search_b"
-            app:layout_constraintEnd_toStartOf="@+id/map_search_b"
+            app:layout_constraintEnd_toStartOf="@+id/map_center_b"
             app:layout_constraintStart_toStartOf="parent"
             app:location="@{locVM.location}" />
 
@@ -51,6 +51,16 @@
             android:text="@string/search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/map_center_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:text="@string/center"
+            app:layout_constraintBaseline_toBaselineOf="@+id/map_search_b"
+            app:layout_constraintEnd_toStartOf="@+id/map_search_b" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
