@@ -250,6 +250,8 @@ class HomeVM private constructor(
         _mapResultsField.value = context.getString(R.string.initial_map_results)
         _mapSearchLoading.value = false
 
+        appRepository.getRequestToken()
+
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
         _endlessPreferred.value = endlessPref
