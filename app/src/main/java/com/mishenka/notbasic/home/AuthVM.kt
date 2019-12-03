@@ -51,7 +51,7 @@ class AuthVM private constructor(
         getSavedUser(context)
 
         //TODO("Temporary for testing purposes only. Remove later.")
-        getRequestToken()
+        //getRequestToken()
     }
 
 

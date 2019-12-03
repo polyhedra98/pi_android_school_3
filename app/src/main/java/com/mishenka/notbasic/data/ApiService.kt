@@ -22,11 +22,23 @@ interface ApiService {
 
 
     @GET("services/rest/?")
-    fun getMapSearchList(@Query("api_key") apiKey: String,
+    fun getMapSearchList(@Query("method") method: String,
+                         @Query("api_key") apiKey: String,
+                         @Query("lat") lat: String,
+                         @Query("lon") lon: String,
+                         @Query("page") page: Int = 1,
+                         @Query("per_page") per_page: Int = PER_PAGE,
+                         @Query("format") format: String = "json",
+                         @Query("nojsoncallback") nojson: Int = 1
+    ): Call<OuterClass?>
+
+
+    @GET("services/rest/?")
+    fun getMapSearchListBAD(@Query("api_key") apiKey: String,
                          @Query("lat") lat: String,
                          @Query("lon") lon: String,
                          @Query("method") method: String,
-                         @Query("oauth_consumer_key") oauthConsumerKey: String,
+                         //@Query("oauth_consumer_key") oauthConsumerKey: String,
                          @Query("oauth_nonce") oauthNonce: Long,
                          @Query("oauth_signature") signature: String,
                          @Query("oauth_signature_method") signatureMethod: String,

@@ -114,13 +114,13 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun performMapSearch(lat: Double, lng: Double) {
-        val oauthToken = obtainAuthVM().oauthToken.value
-        Log.i("NYA", "(from HomeActivity performMapSearch) oauthToken is $oauthToken")
-        if (oauthToken == null) {
-            return
-        }
+        //val oauthToken = obtainAuthVM().oauthToken.value
+        //Log.i("NYA", "(from HomeActivity performMapSearch) oauthToken is $oauthToken")
+        //if (oauthToken == null) {
+        //  return
+        //}
         obtainHomeVM().mapSearch(this, lat.toString(),
-            lng.toString(), oauthToken, obtainAuthVM().userId.value)
+            lng.toString(), obtainAuthVM().userId.value)
     }
 
 

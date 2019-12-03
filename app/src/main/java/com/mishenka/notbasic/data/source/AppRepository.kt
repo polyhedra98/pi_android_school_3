@@ -64,10 +64,10 @@ class AppRepository private constructor(
     }
 
 
-    fun getMapSearchResults(lat: String, lng: String, oauthToken: String,
+    fun getMapSearchResults(lat: String, lng: String,
                             callback: SearchCallback, page: Int = 1) {
-        val time = Date().time
-        val signature = getMapSearchSignature(lat, lng, page, oauthToken, time)
+        //val time = Date().time
+        //val signature = getMapSearchSignature(lat, lng, page, oauthToken, time)
 
 
         val baseUrl = "https://www.flickr.com/"
@@ -77,17 +77,11 @@ class AppRepository private constructor(
             .build()
         val service = retrofit.create(ApiService::class.java)
         val call = service.getMapSearchList(
-            apiKey,
-            lat,
-            lng,
-            "flickr.photos.geo.photosForLocation",
-            apiKey,
-            time,
-            signature,
-            "HMAC-SHA1",
-            time / 1000,
-            oauthToken,
-            page
+            apiKey = apiKey,
+            lat = "%.6f".format(lat.toDouble()),
+            lon = "%.6f".format(lng.toDouble()),
+            method = "flickr.photos.search",
+            page = page
         )
         call.enqueue(object : Callback<OuterClass?> {
             override fun onFailure(call: Call<OuterClass?>, t: Throwable) {
@@ -158,7 +152,7 @@ class AppRepository private constructor(
         val lonParameter = "lon=%.6f".format(lng.toDouble())
         val methodParameter = "method=flickr.photos.geo.photosForLocation"
         val nojsonParameter = "nojsoncallback=1"
-        val consumerKeyParameter = "oauth_consumer_key=$apiKey"
+        //val consumerKeyParameter = "oauth_consumer_key=$apiKey"
         val nonceParameter = "oauth_nonce=$time"
         val oauthSignatureMethodParameter = "oauth_signature_method=HMAC-SHA1"
         val oauthTimestampParameter = "oauth_timestamp=${time / 1000}"
@@ -176,7 +170,7 @@ class AppRepository private constructor(
                 lonParameter,
                 methodParameter,
                 nojsonParameter,
-                consumerKeyParameter,
+                //consumerKeyParameter,
                 nonceParameter,
                 oauthSignatureMethodParameter,
                 oauthTimestampParameter,

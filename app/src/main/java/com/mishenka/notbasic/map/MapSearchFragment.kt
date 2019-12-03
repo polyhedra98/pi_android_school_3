@@ -55,12 +55,10 @@ class MapSearchFragment : Fragment() {
                     observeResults(it, mapSearchResultsRv, endlessPreferred.value!!)
                 })
                 mapNextPageTv.setOnClickListener {
-                    changeMapPage(1,
-                        (activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
+                    changeMapPage(1)
                 }
                 mapPrevPageTv.setOnClickListener {
-                    changeMapPage(-1,
-                        (activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
+                    changeMapPage(-1)
                 }
             }
         }
@@ -117,7 +115,7 @@ class MapSearchFragment : Fragment() {
                 if (safeResultsList.isNotEmpty() && layoutManager
                         .findLastVisibleItemPosition() == safeResultsList.size) {
                     Log.i("NYA", "Reached the bottom")
-                    homeVM.continuousMapSearch((activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
+                    homeVM.continuousMapSearch()
                 }
             }
             super.onScrolled(recyclerView, dx, dy)

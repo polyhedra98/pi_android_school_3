@@ -450,9 +450,9 @@ class HomeVM private constructor(
                 _mapSearchResultsList.value = emptyList()
             } else {
                 _mapResultsField.value = if (endlessPreferred.value!!) {
-                    summary
+                    mapSummary
                 } else {
-                    fullSummary
+                    mapFullSummary
                 }
                 if (isContinuation) {
                     _mapSearchResultsList.value = _mapSearchResultsList.value!! + photos.photo!!.map { it.constructURL() }
@@ -486,13 +486,13 @@ class HomeVM private constructor(
     }
 
 
-    fun mapSearch(context: Context, lat: String, lon: String, oauthToken: String, userId: Long?) {
+    fun mapSearch(context: Context, lat: String, lon: String, userId: Long?) {
         this.lat = lat
         this.lon = lon
         _currentMapPage.value = null
         _lastMapPage.value = null
         _mapSearchLoading.value = true
-        appRepository.getMapSearchResults(this.lat, this.lon, oauthToken, MapSearchCallbackImplementation())
+        appRepository.getMapSearchResults(this.lat, this.lon, MapSearchCallbackImplementation())
         userId?.let {
             //TODO("Change scope")
             GlobalScope.launch {
@@ -512,11 +512,11 @@ class HomeVM private constructor(
     }
 
 
-    fun continuousMapSearch(oauthToken: String) {
+    fun continuousMapSearch() {
         Log.i("NYA", "Getting results for page ${currentMapPage.value!! + 1}")
         if (!_loadingMapContinuation.value!!) {
             _loadingMapContinuation.value = true
-            appRepository.getMapSearchResults(lat, lon, oauthToken, MapSearchCallbackImplementation(true),
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(true),
                 currentMapPage.value!! + 1)
         }
     }
@@ -536,15 +536,15 @@ class HomeVM private constructor(
     }
 
 
-    fun changeMapPage(pageChange: Int, oauthToken: String) {
+    fun changeMapPage(pageChange: Int) {
         if (currentMapPage.value == null) {
             return
         }
         _mapSearchLoading.value = true
         if (pageChange == 0) {
-            appRepository.getMapSearchResults(lat, lon, oauthToken, MapSearchCallbackImplementation())
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation())
         } else {
-            appRepository.getMapSearchResults(lat, lon, oauthToken, MapSearchCallbackImplementation(),
+            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(),
                 currentMapPage.value!! + pageChange)
         }
     }
