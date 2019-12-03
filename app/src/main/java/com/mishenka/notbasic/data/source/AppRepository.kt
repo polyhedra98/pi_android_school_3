@@ -7,6 +7,7 @@ import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.model.user.*
+import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.ResponseCallback
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -63,7 +64,12 @@ class AppRepository private constructor(
     }
 
 
-    fun getMapSearchResults(lat: String, lon: String, callback: SearchCallback, page: Int = 1) {
+    fun getMapSearchResults(lat: String, lng: String, oauthToken: String,
+                            callback: SearchCallback, page: Int = 1) {
+        val time = Date().time
+        val signature = getMapSearchSignature(lat, lng, page, oauthToken, time)
+
+
         val baseUrl = "https://www.flickr.com/"
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -71,11 +77,17 @@ class AppRepository private constructor(
             .build()
         val service = retrofit.create(ApiService::class.java)
         val call = service.getMapSearchList(
-            "flickr.photos.geo.photosForLocation",
             apiKey,
             lat,
-            lon,
-            page = page
+            lng,
+            "flickr.photos.geo.photosForLocation",
+            apiKey,
+            time,
+            signature,
+            "HMAC-SHA1",
+            time / 1000,
+            oauthToken,
+            page
         )
         call.enqueue(object : Callback<OuterClass?> {
             override fun onFailure(call: Call<OuterClass?>, t: Throwable) {
@@ -137,6 +149,47 @@ class AppRepository private constructor(
         appDatabase.userDao().deleteFavToSearchToUserByIds(userId, favId, categoryId)
 
 
+    private fun getMapSearchSignature(lat: String, lng: String, page: Int,
+                                      oauthToken: String, time: Long): String {
+        val requestUrl = "https://www.flickr.com/services/rest"
+        val apiKeyParameter = "api_key=$apiKey"
+        val formatParameter = "format=json"
+        val latParameter = "lat=%.6f".format(lat.toDouble())
+        val lonParameter = "lon=%.6f".format(lng.toDouble())
+        val methodParameter = "method=flickr.photos.geo.photosForLocation"
+        val nojsonParameter = "nojsoncallback=1"
+        val consumerKeyParameter = "oauth_consumer_key=$apiKey"
+        val nonceParameter = "oauth_nonce=$time"
+        val oauthSignatureMethodParameter = "oauth_signature_method=HMAC-SHA1"
+        val oauthTimestampParameter = "oauth_timestamp=${time / 1000}"
+        val oauthTokenParameter = "oauth_token=$oauthToken"
+        val oauthVersionParameter = "oauth_version=2.0"
+        val pageParameter = "page=$page"
+        val perPageParameter = "per_page=$PER_PAGE"
+
+        val signature = getSignature(
+            requestUrl,
+            listOf(
+                apiKeyParameter,
+                formatParameter,
+                latParameter,
+                lonParameter,
+                methodParameter,
+                nojsonParameter,
+                consumerKeyParameter,
+                nonceParameter,
+                oauthSignatureMethodParameter,
+                oauthTimestampParameter,
+                oauthTokenParameter,
+                oauthVersionParameter,
+                pageParameter,
+                perPageParameter
+            )
+        )
+        return signature
+    }
+
+
     fun getRequestToken(responseCallback: ResponseCallback) {
         val requestUrl = "https://www.flickr.com/services/oauth/request_token"
         val callbackParameter = "oauth_callback=$callbackUrl"
@@ -177,26 +230,6 @@ class AppRepository private constructor(
                 MainScope().launch {
                     responseCallback.onResponseAcquired(responseMap)
                 }
-            }
-        }
-    }
-
-
-    fun startAuthenticationFlow(oauthToken: String) {
-        val url = "https://www.flickr.com/services/oauth/authorize?oauth_token=$oauthToken"
-
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        //TODO("Change scope")
-        GlobalScope.launch {
-            val response =  client.newCall(request).execute()
-            if (response.body() == null) {
-                Log.i("NYA", "Tried to start authentication flow. Response is null.")
-            } else {
-                Log.i("NYA", "Auth HTML: ${response.body()!!.string()}")
             }
         }
     }

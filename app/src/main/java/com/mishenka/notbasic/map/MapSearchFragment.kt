@@ -18,6 +18,7 @@ import com.mishenka.notbasic.databinding.FragmentMapSearchBinding
 import com.mishenka.notbasic.home.HomeAdapter
 import com.mishenka.notbasic.home.HomeVM
 import com.mishenka.notbasic.util.Constants.PER_PAGE
+import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
 class MapSearchFragment : Fragment() {
@@ -54,10 +55,12 @@ class MapSearchFragment : Fragment() {
                     observeResults(it, mapSearchResultsRv, endlessPreferred.value!!)
                 })
                 mapNextPageTv.setOnClickListener {
-                    changeMapPage(1)
+                    changeMapPage(1,
+                        (activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
                 }
                 mapPrevPageTv.setOnClickListener {
-                    changeMapPage(-1)
+                    changeMapPage(-1,
+                        (activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
                 }
             }
         }
@@ -104,7 +107,7 @@ class MapSearchFragment : Fragment() {
     }
 
 
-    class OnBottomScrollListener(
+    inner class OnBottomScrollListener(
         private val homeVM: HomeVM,
         private val layoutManager: LinearLayoutManager
     ) : RecyclerView.OnScrollListener() {
@@ -114,7 +117,7 @@ class MapSearchFragment : Fragment() {
                 if (safeResultsList.isNotEmpty() && layoutManager
                         .findLastVisibleItemPosition() == safeResultsList.size) {
                     Log.i("NYA", "Reached the bottom")
-                    homeVM.continuousMapSearch()
+                    homeVM.continuousMapSearch((activity as AppCompatActivity).obtainAuthVM().oauthToken.value!!)
                 }
             }
             super.onScrolled(recyclerView, dx, dy)

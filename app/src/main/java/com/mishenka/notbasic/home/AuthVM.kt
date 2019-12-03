@@ -68,11 +68,6 @@ class AuthVM private constructor(
     }
 
 
-    fun startAuthFlow(oauthToken: String) {
-        appRepository.startAuthenticationFlow(oauthToken)
-    }
-
-
     fun createUser(username: String, context: Context, callback: AuthCallback? = null) {
         if (!Validator.validateUsername(username)) {
             _loginError.value = Event(context.getString(R.string.username_validation_error))

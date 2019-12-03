@@ -79,15 +79,6 @@ class HomeActivity : AppCompatActivity() {
 
         }
 
-        //TODO("Move to map activity later")
-        obtainAuthVM().apply {
-
-            oauthToken.observe(this@HomeActivity, Observer {
-                Log.i("NYA", "oauthToken observed: $it")
-                this.startAuthFlow(it)
-            })
-
-        }
     }
 
 
@@ -123,8 +114,13 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun performMapSearch(lat: Double, lng: Double) {
+        val oauthToken = obtainAuthVM().oauthToken.value
+        Log.i("NYA", "(from HomeActivity performMapSearch) oauthToken is $oauthToken")
+        if (oauthToken == null) {
+            return
+        }
         obtainHomeVM().mapSearch(this, lat.toString(),
-            lng.toString(), obtainAuthVM().userId.value)
+            lng.toString(), oauthToken, obtainAuthVM().userId.value)
     }
 
 
