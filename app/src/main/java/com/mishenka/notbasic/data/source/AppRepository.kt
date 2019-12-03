@@ -7,6 +7,7 @@ import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.model.user.*
+import com.mishenka.notbasic.util.ResponseCallback
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ import java.net.URLEncoder
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.HashMap
 
 
 class AppRepository private constructor(
@@ -30,6 +32,8 @@ class AppRepository private constructor(
 
     private val apiKey = "d64c48cfef077371e18078e6e3657da5"
     private val secretKey = "d3569413296ebecf"
+    private val authUrl = "https://www.flickr.com/auth-72157711681300693"
+    private val callbackUrl = "http%3A%2F%2Fwww.example.com"
 
     fun getSearchResults(query: String, callback: SearchCallback, page: Int = 1) {
         val baseUrl = "https://www.flickr.com/"
@@ -133,14 +137,14 @@ class AppRepository private constructor(
         appDatabase.userDao().deleteFavToSearchToUserByIds(userId, favId, categoryId)
 
 
-    fun getRequestToken() {
+    fun getRequestToken(responseCallback: ResponseCallback) {
         val requestUrl = "https://www.flickr.com/services/oauth/request_token"
-        val callbackParameter = "oauth_callback=http%3A%2F%2Fwww.example.com"
+        val callbackParameter = "oauth_callback=$callbackUrl"
         val consumerKeyParameter = "oauth_consumer_key=$apiKey"
         val nonceParameter = "oauth_nonce=${Date().time}"
         val signatureMethodParameter = "oauth_signature_method=HMAC-SHA1"
         val timestampParameter = "oauth_timestamp=${Date().time / 1000}"
-        val versionParameter = "oauth_version=1.0"
+        val versionParameter = "oauth_version=2.0"
 
         val signature = getSignature(
             requestUrl,
@@ -165,15 +169,54 @@ class AppRepository private constructor(
 
         //TODO("Change scope")
         GlobalScope.launch {
-            Log.i("NYA", "(from getRequestToken) at the start of the coroutine")
             val response = client.newCall(request).execute()
-            MainScope().launch {
-                Log.i("NYA", "(from getRequestToken) at the MainScope of the coroutine")
-                Log.i("NYA", "Response: ${response.body()?.string()}")
+            if (response.body() == null) {
+                responseCallback.onFailure("Tried to get request token. Response is null.")
+            } else {
+                val responseMap = parseResponseBody(response.body()!!.string())
+                MainScope().launch {
+                    responseCallback.onResponseAcquired(responseMap)
+                }
             }
-            Log.i("NYA", "(from getRequestToken) at the end of the coroutine")
         }
-        Log.i("NYA", "(from getRequestToken) outside of the coroutine")
+    }
+
+
+    fun startAuthenticationFlow(oauthToken: String) {
+        val url = "https://www.flickr.com/services/oauth/authorize?oauth_token=$oauthToken"
+
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        //TODO("Change scope")
+        GlobalScope.launch {
+            val response =  client.newCall(request).execute()
+            if (response.body() == null) {
+                Log.i("NYA", "Tried to start authentication flow. Response is null.")
+            } else {
+                Log.i("NYA", "Auth HTML: ${response.body()!!.string()}")
+            }
+        }
+    }
+
+
+    private fun parseResponseBody(responseBody: String): HashMap<String, String> {
+        Log.i("NYA", "Parsing $responseBody")
+        val returnMap = HashMap<String, String>()
+        responseBody.split("&")
+            .forEach {
+                val index = it.indexOf("=")
+                if (index != -1) {
+                    returnMap[it.substring(0.until(index))] = it.substring(index + 1)
+                } else {
+                    Log.i("NYA", "Invalid response. Error parsing $it")
+                    return@forEach
+                }
+            }
+
+        return returnMap
     }
 
 
@@ -200,7 +243,7 @@ class AppRepository private constructor(
     private fun oauthEncodeParams(params: List<String>): String {
         val builder = StringBuilder()
         for (param in params) {
-            builder.append("$param&")
+            builder.append("${param}&")
         }
         builder.deleteCharAt(builder.length - 1)
         return oauthEncode(builder.toString())

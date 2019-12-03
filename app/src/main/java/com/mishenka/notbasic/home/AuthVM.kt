@@ -12,6 +12,7 @@ import com.mishenka.notbasic.data.model.user.User
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.settings.AuthCallback
 import com.mishenka.notbasic.util.Event
+import com.mishenka.notbasic.util.ResponseCallback
 import com.mishenka.notbasic.util.Validator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -41,9 +42,34 @@ class AuthVM private constructor(
     val userLogOut: LiveData<Event<Unit>>
         get() = _userLogOut
 
+    private val _oauthToken = MutableLiveData<String>()
+    val oauthToken: LiveData<String>
+        get() = _oauthToken
+
 
     fun start(context: Context) {
         getSavedUser(context)
+
+        //TODO("Temporary for testing purposes only. Remove later.")
+        getRequestToken()
+    }
+
+
+    fun getRequestToken() {
+        appRepository.getRequestToken(object : ResponseCallback {
+            override fun onResponseAcquired(responseMap: HashMap<String, String>) {
+                _oauthToken.value = responseMap["oauth_token"]
+            }
+
+            override fun onFailure(msg: String) {
+                Log.i("NYA", "Failed trying to get request token. Message: $msg")
+            }
+        })
+    }
+
+
+    fun startAuthFlow(oauthToken: String) {
+        appRepository.startAuthenticationFlow(oauthToken)
     }
 
 

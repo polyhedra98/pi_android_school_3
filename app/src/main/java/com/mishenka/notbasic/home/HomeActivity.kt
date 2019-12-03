@@ -76,6 +76,17 @@ class HomeActivity : AppCompatActivity() {
                     this.processSearchResult(this@HomeActivity, response.first, response.second)
                 }
             })
+
+        }
+
+        //TODO("Move to map activity later")
+        obtainAuthVM().apply {
+
+            oauthToken.observe(this@HomeActivity, Observer {
+                Log.i("NYA", "oauthToken observed: $it")
+                this.startAuthFlow(it)
+            })
+
         }
     }
 

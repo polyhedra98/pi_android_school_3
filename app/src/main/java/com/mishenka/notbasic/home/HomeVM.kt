@@ -12,6 +12,7 @@ import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.Event
+import com.mishenka.notbasic.util.ResponseCallback
 import com.mishenka.notbasic.util.Validator
 import com.mishenka.notbasic.util.Validator.validateFavAndCategoryId
 import com.mishenka.notbasic.util.Validator.validateSearchAndUrl
@@ -249,8 +250,6 @@ class HomeVM private constructor(
         _loading.value = false
         _mapResultsField.value = context.getString(R.string.initial_map_results)
         _mapSearchLoading.value = false
-
-        appRepository.getRequestToken()
 
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
