@@ -10,9 +10,11 @@ import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppRepository
+import com.mishenka.notbasic.map.MapPhotosSearchController
+import com.mishenka.notbasic.map.MapSearchParams
 import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.Event
-import com.mishenka.notbasic.util.ResponseCallback
+import com.mishenka.notbasic.util.PhotosSearchController
 import com.mishenka.notbasic.util.Validator
 import com.mishenka.notbasic.util.Validator.validateFavAndCategoryId
 import com.mishenka.notbasic.util.Validator.validateSearchAndUrl
@@ -32,13 +34,51 @@ class HomeVM private constructor(
     val temp: LiveData<String>
         get() = _temp
 
-    private val _resultsField = MutableLiveData<String>()
-    val resultsField: LiveData<String>
-        get() = _resultsField
 
-    private val _mapResultsField = MutableLiveData<String>()
+    //TODO("Since these values are basically the same, could probably make 2 separate VMs,
+    // passing the controller to use. Don't have time though.. Maybe next week.")
+    val responseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
+        get() = homePhotosSearchController._responseAcquired
+
+    val currentPage: LiveData<Int>
+        get() = homePhotosSearchController._currentPage
+
+    val lastPage: LiveData<Int>
+        get() = homePhotosSearchController._lastPage
+
+    val loading: LiveData<Boolean>
+        get() = homePhotosSearchController._loading
+
+    val loadingContinuation: LiveData<Boolean>
+        get() = homePhotosSearchController._loadingContinuation
+
+    val resultsList: LiveData<List<String>>
+        get() = homePhotosSearchController._resultsList
+
+    val resultsField: LiveData<String>
+        get() = homePhotosSearchController._resultsField
+
+
+    val mapResponseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
+        get() = mapPhotosSearchController._responseAcquired
+
+    val currentMapPage: LiveData<Int>
+        get() = mapPhotosSearchController._currentPage
+
+    val lastMapPage: LiveData<Int>
+        get() = mapPhotosSearchController._lastPage
+
+    val mapSearchLoading: LiveData<Boolean>
+        get() = mapPhotosSearchController._loading
+
+    val loadingMapContinuation: LiveData<Boolean>
+        get() = mapPhotosSearchController._loadingContinuation
+
+    val mapSearchResultsList: LiveData<List<String>>
+        get() = mapPhotosSearchController._resultsList
+
     val mapResultsField: LiveData<String>
-        get() = _mapResultsField
+        get() = mapPhotosSearchController._resultsField
 
     private val _endlessPreferred = MutableLiveData<Boolean>()
     val endlessPreferred: LiveData<Boolean>
@@ -54,38 +94,6 @@ class HomeVM private constructor(
     val observableError: LiveData<String?>
         get() = _observableError
 
-    private val _currentPage = MutableLiveData<Int>()
-    val currentPage: LiveData<Int>
-        get() = _currentPage
-
-    private val _currentMapPage = MutableLiveData<Int>()
-    val currentMapPage: LiveData<Int>
-        get() = _currentMapPage
-
-    private val _lastPage = MutableLiveData<Int>()
-    val lastPage: LiveData<Int>
-        get() = _lastPage
-
-    private val _lastMapPage = MutableLiveData<Int>()
-    val lastMapPage: LiveData<Int>
-        get() = _lastMapPage
-
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean>
-        get() = _loading
-
-    private val _mapSearchLoading = MutableLiveData<Boolean>()
-    val mapSearchLoading: LiveData<Boolean>
-        get() = _mapSearchLoading
-
-    private val _loadingContinuation = MutableLiveData<Boolean>().apply { value = false }
-    val loadingContinuation: LiveData<Boolean>
-        get() = _loadingContinuation
-
-    private val _loadingMapContinuation = MutableLiveData<Boolean>().apply { value = false }
-    val loadingMapContinuation: LiveData<Boolean>
-        get() = _loadingMapContinuation
-
     private val _resultClicked = MutableLiveData<Event<Pair<String, String>>>()
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
@@ -93,14 +101,6 @@ class HomeVM private constructor(
     private val _mapSearchClicked = MutableLiveData<Event<Pair<Double, Double>>>()
     val mapSearchClicked: LiveData<Event<Pair<Double, Double>>>
         get() = _mapSearchClicked
-
-    private val _resultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
-    val resultsList: LiveData<List<String>>
-        get() = _resultsList
-
-    private val _mapSearchResultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
-    val mapSearchResultsList: LiveData<List<String>>
-        get() = _mapSearchResultsList
 
     private val _historyList = MutableLiveData<List<HistorySelectItem>>().apply { value = emptyList() }
     val historyList: LiveData<List<HistorySelectItem>>
@@ -111,25 +111,13 @@ class HomeVM private constructor(
     val favouritesList: LiveData<ArrayList<FavouriteToShow>>
         get() = _favouritesList
 
-    private val _responseAcquired = MutableLiveData<Event<Pair<Response<OuterClass?>, Boolean>>>()
-    val responseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
-        get() = _responseAcquired
-
-    private val _mapResponseAcquired = MutableLiveData<Event<Pair<Response<OuterClass?>, Boolean>>>()
-    val mapResponseAcquired: LiveData<Event<Pair<Response<OuterClass?>, Boolean>>>
-        get() = _mapResponseAcquired
-
     private var query = ""
 
     private var lat = ""
 
     private var lon = ""
 
-    private var fullSummary = ""
-
     private var mapFullSummary = ""
-
-    private var summary = ""
 
     private var mapSummary = ""
 
@@ -147,6 +135,10 @@ class HomeVM private constructor(
 
     val TYPE_HEADER = 1
     val TYPE_CARD = 2
+
+    private val homePhotosSearchController = HomePhotosSearchController(appRepository, endlessPreferred)
+    private val mapPhotosSearchController = MapPhotosSearchController(appRepository, endlessPreferred)
+
 
     fun setCurrentSearchAndUrl(search: String?, url: String?) {
         currentSearch = search
@@ -246,10 +238,8 @@ class HomeVM private constructor(
 
 
     fun start(context: Context) {
-        _resultsField.value = context.getString(R.string.initial_empty_results)
-        _loading.value = false
-        _mapResultsField.value = context.getString(R.string.initial_map_results)
-        _mapSearchLoading.value = false
+        homePhotosSearchController.initStartingValues(context)
+        mapPhotosSearchController.initStartingValues(context)
 
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false
@@ -302,11 +292,7 @@ class HomeVM private constructor(
 
 
     fun endlessChanged(newValue: Boolean) {
-        if (newValue && summary.isNotBlank()) {
-            _resultsField.value = summary
-        } else if (!newValue && fullSummary.isNotBlank()) {
-            _resultsField.value = fullSummary
-        }
+        homePhotosSearchController.endlessChanged(newValue)
         _endlessPreferred.value = newValue
     }
 
@@ -379,89 +365,12 @@ class HomeVM private constructor(
 
 
     fun processSearchResult(context: Context, response: Response<OuterClass?>, isContinuation: Boolean) {
-        val code = response.code()
-        with(context) {
-            if (code != 200) {
-                _resultsField.value = getString(R.string.query_error_code, query, code)
-                _resultsList.value =  emptyList()
-                return
-            }
-            if (response.body()?.photos == null) {
-                _resultsField.value = getString(R.string.query_empty_photos, query)
-                _resultsList.value = emptyList()
-                return
-            }
-            val photos = response.body()!!.photos!!
-            Log.i("NYA", "Photos size: ${photos.photo!!.size}")
-            summary = getString(R.string.endless_query_header, query, photos.total)
-            fullSummary = getString(R.string.query_header, query, photos.page,
-                photos.pages, photos.perpage, photos.total)
-            if (photos.pages != null && photos.pages == 0) {
-                _currentPage.value = 0
-            } else {
-                _currentPage.value = photos.page
-            }
-            _lastPage.value = photos.pages
-            if (photos.photo == null) {
-                _resultsField.value = getString(R.string.empty_photo_items)
-                _resultsList.value = emptyList()
-            } else {
-                _resultsField.value = if (endlessPreferred.value!!) {
-                    summary
-                } else {
-                    fullSummary
-                }
-                if (isContinuation) {
-                    _resultsList.value = _resultsList.value!! + photos.photo!!.map { it.constructURL() }
-                    _loadingContinuation.value = false
-                } else {
-                    _resultsList.value = photos.photo!!.map { it.constructURL() }
-                }
-            }
-        }
+        homePhotosSearchController.processSearchResult(context, response, isContinuation)
     }
 
 
     fun processMapSearchResult(context: Context, response: Response<OuterClass?>, isContinuation: Boolean) {
-        val code = response.code()
-        with(context) {
-            if (code != 200) {
-                _mapResultsField.value = getString(R.string.lat_lng_error_code, lat, lon, code)
-                _mapSearchResultsList.value = emptyList()
-                return
-            }
-            if (response.body()?.photos == null) {
-                _mapResultsField.value = getString(R.string.lat_lng_empty_photos, lat, lon)
-                _mapSearchResultsList.value = emptyList()
-                return
-            }
-            val photos = response.body()!!.photos!!
-            mapSummary = getString(R.string.endless_lat_lng_header, lat, lon, photos.total)
-            mapFullSummary = getString(R.string.lat_lng_header, lat, lon, photos.page,
-                photos.pages, photos.perpage, photos.total)
-            if (photos.pages != null && photos.pages == 0) {
-                _currentMapPage.value = 0
-            } else {
-                _currentMapPage.value = photos.page
-            }
-            _lastMapPage.value = photos.pages
-            if (photos.photo == null) {
-                _mapResultsField.value = getString(R.string.empty_photo_items)
-                _mapSearchResultsList.value = emptyList()
-            } else {
-                _mapResultsField.value = if (endlessPreferred.value!!) {
-                    mapSummary
-                } else {
-                    mapFullSummary
-                }
-                if (isContinuation) {
-                    _mapSearchResultsList.value = _mapSearchResultsList.value!! + photos.photo!!.map { it.constructURL() }
-                    _loadingMapContinuation.value = false
-                } else {
-                    _mapSearchResultsList.value = photos.photo!!.map { it.constructURL() }
-                }
-            }
-        }
+        mapPhotosSearchController.processSearchResult(context, response, isContinuation)
     }
 
 
@@ -473,10 +382,7 @@ class HomeVM private constructor(
             return
         }
         query = tempQuery
-        _currentPage.value = null
-        _lastPage.value = null
-        _loading.value = true
-        appRepository.getSearchResults(query, SearchCallbackImplementation())
+        homePhotosSearchController.search(HomeSearchParams(query))
         userId?.let {
             //TODO("Change scope")
             GlobalScope.launch {
@@ -489,10 +395,7 @@ class HomeVM private constructor(
     fun mapSearch(context: Context, lat: String, lon: String, userId: Long?) {
         this.lat = lat
         this.lon = lon
-        _currentMapPage.value = null
-        _lastMapPage.value = null
-        _mapSearchLoading.value = true
-        appRepository.getMapSearchResults(this.lat, this.lon, MapSearchCallbackImplementation())
+        mapPhotosSearchController.search(MapSearchParams(lat, lon))
         userId?.let {
             //TODO("Change scope")
             GlobalScope.launch {
@@ -503,62 +406,32 @@ class HomeVM private constructor(
 
 
     fun continuousSearch() {
-        Log.i("NYA", "Getting results for page ${currentPage.value!! + 1}")
-        if (!_loadingContinuation.value!!) {
-            _loadingContinuation.value = true
-            appRepository.getSearchResults(query, SearchCallbackImplementation(true)
-                ,currentPage.value!! + 1)
-        }
+        homePhotosSearchController.continuousSearch(HomeSearchParams(query))
     }
 
 
     fun continuousMapSearch() {
-        Log.i("NYA", "Getting results for page ${currentMapPage.value!! + 1}")
-        if (!_loadingMapContinuation.value!!) {
-            _loadingMapContinuation.value = true
-            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(true),
-                currentMapPage.value!! + 1)
-        }
+        mapPhotosSearchController.continuousSearch(MapSearchParams(lat, lon))
     }
 
 
     fun changePage(pageChange: Int) {
-        if (currentPage.value == null) {
-            return
-        }
-        _loading.value = true
-        if (pageChange == 0) {
-            appRepository.getSearchResults(query, SearchCallbackImplementation())
-        } else {
-            appRepository.getSearchResults(query, SearchCallbackImplementation(),
-                currentPage.value!! + pageChange)
-        }
+        homePhotosSearchController.changePage(HomeSearchParams(query), pageChange)
     }
 
 
     fun changeMapPage(pageChange: Int) {
-        if (currentMapPage.value == null) {
-            return
-        }
-        _mapSearchLoading.value = true
-        if (pageChange == 0) {
-            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation())
-        } else {
-            appRepository.getMapSearchResults(lat, lon, MapSearchCallbackImplementation(),
-                currentMapPage.value!! + pageChange)
-        }
+        mapPhotosSearchController.changePage(MapSearchParams(lat, lon), pageChange)
     }
 
 
     fun trimResultsList() {
-        val length = _resultsList.value!!.size
-        _resultsList.value = _resultsList.value!!.subList(length - PER_PAGE, length)
+        homePhotosSearchController.trimResults()
     }
 
 
     fun trimMapResultsList() {
-        val length = _mapSearchResultsList.value!!.size
-        _mapSearchResultsList.value = _mapSearchResultsList.value!!.subList(length - PER_PAGE, length)
+        mapPhotosSearchController.trimResults()
     }
 
 
@@ -572,36 +445,6 @@ class HomeVM private constructor(
             null
         } else {
             context.getString(R.string.english_or_digits_only)
-        }
-    }
-
-
-    inner class SearchCallbackImplementation(
-        private val isContinuation: Boolean? = null
-    ) : SearchCallback {
-        override fun onSearchCompleted(response: Response<OuterClass?>) {
-            _responseAcquired.value = Event(Pair(response, isContinuation ?: false))
-            _loading.value = false
-        }
-
-        override fun onDataNotAvailable(message: String) {
-            _resultsField.value = message
-            _loading.value = false
-        }
-    }
-
-
-    inner class MapSearchCallbackImplementation(
-        private val isContinuation: Boolean? = null
-    ) : SearchCallback {
-        override fun onSearchCompleted(response: Response<OuterClass?>) {
-            _mapResponseAcquired.value = Event(Pair(response, isContinuation ?: false))
-            _mapSearchLoading.value = false
-        }
-
-        override fun onDataNotAvailable(message: String) {
-            _mapResultsField.value = message
-            _mapSearchLoading.value = false
         }
     }
 

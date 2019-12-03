@@ -36,7 +36,7 @@ class AppRepository private constructor(
     private val authUrl = "https://www.flickr.com/auth-72157711681300693"
     private val callbackUrl = "http%3A%2F%2Fwww.example.com"
 
-    fun getSearchResults(query: String, callback: SearchCallback, page: Int = 1) {
+    fun getSearchResults(query: String, callback: SearchCallback, isContinuation: Boolean, page: Int = 1) {
         val baseUrl = "https://www.flickr.com/"
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -58,14 +58,14 @@ class AppRepository private constructor(
                 call: Call<OuterClass?>,
                 response: Response<OuterClass?>
             ) {
-                callback.onSearchCompleted(response)
+                callback.onSearchCompleted(response, isContinuation)
             }
         })
     }
 
 
     fun getMapSearchResults(lat: String, lng: String,
-                            callback: SearchCallback, page: Int = 1) {
+                            callback: SearchCallback, isContinuation: Boolean = false, page: Int = 1) {
         //val time = Date().time
         //val signature = getMapSearchSignature(lat, lng, page, oauthToken, time)
 
@@ -89,7 +89,7 @@ class AppRepository private constructor(
             }
 
             override fun onResponse(call: Call<OuterClass?>, response: Response<OuterClass?>) {
-                callback.onSearchCompleted(response)
+                callback.onSearchCompleted(response, isContinuation)
             }
         })
     }

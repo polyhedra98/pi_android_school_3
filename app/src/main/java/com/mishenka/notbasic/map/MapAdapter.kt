@@ -47,11 +47,9 @@ class MapAdapter (
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HomeAdapter.HeaderHolder) {
-            Log.i("NYA", "(from MapAdapter) Binding header: ${homeVM.mapResultsField.value}")
             holder.headerTV?.text = homeVM.mapResultsField.value
                 ?: holder.itemView.context.getString(R.string.initial_empty_results)
         } else if (holder is HomeAdapter.PicHolder) {
-            Log.i("NYA", "(from MapAdapter) Binding pic: ${homeVM.mapSearchResultsList.value!![position - 1]}")
             holder.picIV?.let { safePicView ->
                 Glide.with(safePicView.context)
                     .load(homeVM.mapSearchResultsList.value!![position - 1])

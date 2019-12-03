@@ -54,18 +54,12 @@
             android:id="@+id/map_search_results_rv"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/generic_dimen"
-            android:layout_marginLeft="@dimen/generic_dimen"
             android:layout_marginTop="@dimen/generic_dimen"
-            android:layout_marginEnd="@dimen/generic_dimen"
-            android:layout_marginRight="@dimen/generic_dimen"
-            android:layout_marginBottom="@dimen/generic_dimen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/map_prev_page_tv"
-            app:observable_home_summary="@{homeVM.mapResultsField}"
-            />
+            app:observable_home_summary="@{homeVM.mapResultsField}" />
 
         <ProgressBar
             android:id="@+id/map_progressBar"
