@@ -9,11 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
-import com.mishenka.notbasic.util.Constants.PER_PAGE
+import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
+import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
@@ -54,7 +56,10 @@ class HomeFragment : Fragment() {
                     setupRecyclerView(it)
                 })
                 resultsList.observe(this@HomeFragment, Observer {
-                    observeResults(it, searchResultsRv, endlessPreferred.value!!)
+                    observeResults(it, searchResultsRv)
+                })
+                resultsField.observe(this@HomeFragment, Observer {
+                    observeHeader(it, searchResultsRv)
                 })
                 nextPageTv.setOnClickListener {
                     changePage(1)
@@ -67,16 +72,20 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun observeResults(results: List<String>, rv: RecyclerView, isEndless: Boolean) {
+    private fun observeHeader(header: String, rv: RecyclerView) {
+        (rv.adapter as HomeAdapter?)?.replaceHeader(header)
+    }
+
+
+    private fun observeResults(results: List<String>, rv: RecyclerView) {
+        val homeVM = (activity as AppCompatActivity).obtainHomeVM()
+        Log.i("NYA", "Observing results in Home Fragment. Results: $results")
         with(rv) {
-            val length = results.size
-            if (!isEndless) {
-                (adapter as RecyclerView.Adapter?)
-                    ?.notifyDataSetChanged()
+            if (!homeVM.endlessPreferred.value!!) {
+                (adapter as HomeAdapter?)?.replaceItems(results)
                 scrollToPosition(0)
             } else {
-                (adapter as RecyclerView.Adapter?)
-                    ?.notifyItemRangeChanged(length - PER_PAGE + 1, length)
+                (adapter as HomeAdapter?)?.pseudoAddItems(results)
             }
         }
     }
@@ -88,19 +97,27 @@ class HomeFragment : Fragment() {
 
             searchResultsRv.layoutManager = layoutManager
             val onScrollListener = OnBottomScrollListener(homeVM!!, layoutManager)
+            ItemTouchHelper(SwipeItemTouchHelperCallback(HomeSwipeListener()))
+                .attachToRecyclerView(searchResultsRv)
+
             if (endlessPreferred) {
-                if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
+                val items = if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
                     homeVM!!.changePage(0)
+                    homeVM!!.resultsList.value!!
+                } else {
+                    listOf(homeVM!!.resultsField.value!!)
                 }
                 searchResultsRv.addOnScrollListener(onScrollListener)
-                searchResultsRv.adapter = HomeAdapter(homeVM!!)
+                searchResultsRv.adapter = HomeAdapter(items, homeVM!!)
             } else {
-                Log.i("NYA", "No endless")
-                if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
+                val items = if (!homeVM!!.resultsList.value.isNullOrEmpty()) {
                     homeVM!!.trimResultsList()
+                    homeVM!!.resultsList.value!!
+                } else {
+                    listOf(homeVM!!.resultsField.value!!)
                 }
                 searchResultsRv.removeOnScrollListener(onScrollListener)
-                searchResultsRv.adapter = HomeAdapter(homeVM!!)
+                searchResultsRv.adapter = HomeAdapter(items, homeVM!!)
             }
         }
     }
@@ -119,6 +136,16 @@ class HomeFragment : Fragment() {
                 }
             }
             super.onScrolled(recyclerView, dx, dy)
+        }
+
+    }
+
+
+    inner class HomeSwipeListener: SwipeListener {
+
+        override fun onItemDismiss(position: Int) {
+            Log.i("NYA", "Item $position dismiss")
+            (binding.searchResultsRv.adapter as HomeAdapter?)?.removeItem(position)
         }
 
     }

@@ -10,6 +10,7 @@ import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.home.HomeSearchParams
 import com.mishenka.notbasic.util.Constants.PER_PAGE
 import retrofit2.Response
+import kotlin.math.max
 
 abstract class PhotosSearchController(
     private val endlessPreferred: LiveData<Boolean>
@@ -93,7 +94,8 @@ abstract class PhotosSearchController(
 
     override fun trimResults() {
         val length = _resultsList.value!!.size
-        _resultsList.value = _resultsList.value!!.subList(length - PER_PAGE, length)
+        _resultsList.value = _resultsList.value!!
+            .subList(max(length - PER_PAGE, 0), length)
     }
 
 

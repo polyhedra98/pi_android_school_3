@@ -13,6 +13,8 @@ import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.map.MapPhotosSearchController
 import com.mishenka.notbasic.map.MapSearchParams
 import com.mishenka.notbasic.util.Constants.PER_PAGE
+import com.mishenka.notbasic.util.Constants.TYPE_HEADER
+import com.mishenka.notbasic.util.Constants.TYPE_PHOTO
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.PhotosSearchController
 import com.mishenka.notbasic.util.Validator
@@ -106,10 +108,19 @@ class HomeVM private constructor(
     val historyList: LiveData<List<HistorySelectItem>>
         get() = _historyList
 
-    private val _favouritesList = MutableLiveData<ArrayList<FavouriteToShow>>()
-        .apply { value = ArrayList() }
-    val favouritesList: LiveData<ArrayList<FavouriteToShow>>
-        get() = _favouritesList
+    private val _requestedFavDismiss = MutableLiveData<Event<Int>>()
+    val requestedFavDismiss: LiveData<Event<Int>>
+        get() = _requestedFavDismiss
+
+    private val _favouriteItems = MutableLiveData<MutableList<String>>()
+        .apply { value = emptyList<String>().toMutableList() }
+    val favouriteItems: LiveData<MutableList<String>>
+        get() = _favouriteItems
+
+    private val _favouriteItemsInfo = MutableLiveData<MutableList<Int>>()
+        .apply { value = emptyList<Int>().toMutableList() }
+    val favouriteItemsInfo: LiveData<MutableList<Int>>
+        get() = _favouriteItemsInfo
 
     private var query = ""
 
@@ -132,9 +143,6 @@ class HomeVM private constructor(
 
     var currentCategoryId: Long = -1
         private set
-
-    val TYPE_HEADER = 1
-    val TYPE_CARD = 2
 
     private val homePhotosSearchController = HomePhotosSearchController(appRepository, endlessPreferred)
     private val mapPhotosSearchController = MapPhotosSearchController(appRepository, endlessPreferred)
@@ -162,8 +170,13 @@ class HomeVM private constructor(
     }
 
 
-    fun onFavouriteClicked(url: String, category: String) {
-        _resultClicked.value = Event(Pair(url, category))
+    fun onFavouriteClicked(position: Int) {
+        _resultClicked.value = Event(
+            Pair(
+                favouriteItems.value!![position],
+                getCategoryForPosition(position)
+            )
+        )
     }
 
 
@@ -172,10 +185,16 @@ class HomeVM private constructor(
     }
 
 
+    fun requestFavouriteDismiss(position: Int) {
+        _requestedFavDismiss.value = Event(position)
+    }
+
+
     fun dismissFavourite(userId: Long, position: Int) {
-        val category = favouritesList.value!![getCategoryPosForPosition(position)].value
-        val url = favouritesList.value!![position].value
-        favouritesList.value!!.removeAt(position)
+        val category = getCategoryForPosition(position)
+        val url = favouriteItems.value!![position]
+        favouriteItems.value!!.removeAt(position)
+        favouriteItemsInfo.value!!.removeAt(position)
         //TODO("Change scope")
         GlobalScope.launch {
             appRepository.deleteFSUbyIds(
@@ -187,12 +206,12 @@ class HomeVM private constructor(
     }
 
 
-    fun getCategoryPosForPosition(position: Int): Int {
+    fun getCategoryForPosition(position: Int): String {
         var pos = position
-        while (favouritesList.value!![pos].type != TYPE_HEADER) {
+        while (favouriteItemsInfo.value!![pos] != TYPE_HEADER) {
             pos--
         }
-        return pos
+        return favouriteItems.value!![pos]
     }
 
 
@@ -203,7 +222,8 @@ class HomeVM private constructor(
 
 
     fun flashData() {
-        _favouritesList.value = ArrayList()
+        _favouriteItems.value?.clear()
+        _favouriteItemsInfo.value?.clear()
         _historyList.value = emptyList()
     }
 
@@ -249,26 +269,29 @@ class HomeVM private constructor(
 
     fun getFavourites(userId: Long?, action: (() -> Unit)? = null) {
         if (userId == null) {
-            _favouritesList.value = ArrayList()
+            _favouriteItems.value?.clear()
+            _favouriteItemsInfo.value?.clear()
             return
         }
         //TODO("Change scope")
         GlobalScope.launch {
             //TODO("Probably not the best way to group favs by categories")
             val dbFavList = appRepository.getFavourites(userId) ?: return@launch
-            val list: ArrayList<FavouriteToShow> = ArrayList(dbFavList.size + 1)
+            val favouritesItemsList = emptyList<String>().toMutableList()
+            val favouritesItemsInfo = emptyList<Int>().toMutableList()
             var previousCategory: String? = null
             for (dbFavItem in dbFavList) {
                 if (previousCategory != dbFavItem.category) {
                     previousCategory = dbFavItem.category
-                    list.add(FavouriteToShow(previousCategory, TYPE_HEADER))
-                    list.add(FavouriteToShow(dbFavItem.url, TYPE_CARD))
-                } else {
-                    list.add(FavouriteToShow(dbFavItem.url, TYPE_CARD))
+                    favouritesItemsList.add(previousCategory)
+                    favouritesItemsInfo.add(TYPE_HEADER)
                 }
+                favouritesItemsList.add(dbFavItem.url)
+                favouritesItemsInfo.add(TYPE_PHOTO)
             }
             MainScope().launch {
-                _favouritesList.value = list
+                _favouriteItems.value = favouritesItemsList
+                _favouriteItemsInfo.value = favouritesItemsInfo
                 action?.invoke()
             }
         }

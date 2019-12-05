@@ -1,6 +1,6 @@
 package com.mishenka.notbasic.util
 
-interface SwipeItemTouchHelperAdapter {
+interface SwipeListener {
 
     fun onItemDismiss(position: Int)
 

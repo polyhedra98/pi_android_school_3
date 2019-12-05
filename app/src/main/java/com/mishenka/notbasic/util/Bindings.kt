@@ -1,6 +1,5 @@
 package com.mishenka.notbasic.util
 
-import android.location.Location
 import android.text.util.Linkify
 import android.view.View
 import android.widget.EditText
@@ -11,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.user.FavouriteToShow
 import com.mishenka.notbasic.data.model.user.HistorySelectItem
-import com.mishenka.notbasic.favourites.FavouriteAdapter
-import com.mishenka.notbasic.home.HomeVM
 
 object Bindings {
 

@@ -2,11 +2,10 @@ package com.mishenka.notbasic.util
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.mishenka.notbasic.home.HomeVM
+import com.mishenka.notbasic.util.Constants.TYPE_PHOTO
 
 class SwipeItemTouchHelperCallback(
-    private val adapter: SwipeItemTouchHelperAdapter,
-    private val homeVM: HomeVM
+    private val listener: SwipeListener
 ) : ItemTouchHelper.Callback() {
 
     override fun isLongPressDragEnabled() = false
@@ -17,7 +16,7 @@ class SwipeItemTouchHelperCallback(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ) =
-        if (viewHolder.itemViewType == homeVM.TYPE_CARD) {
+        if (viewHolder.itemViewType == TYPE_PHOTO) {
             makeMovementFlags(0, ItemTouchHelper.START.or(ItemTouchHelper.END))
         } else {
             makeMovementFlags(0, 0)
@@ -32,6 +31,6 @@ class SwipeItemTouchHelperCallback(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        adapter.onItemDismiss(viewHolder.adapterPosition)
+        listener.onItemDismiss(viewHolder.adapterPosition)
     }
 }

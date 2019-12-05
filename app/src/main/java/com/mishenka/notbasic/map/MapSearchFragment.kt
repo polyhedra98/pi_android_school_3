@@ -10,15 +10,16 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentMapSearchBinding
-import com.mishenka.notbasic.home.HomeAdapter
 import com.mishenka.notbasic.home.HomeVM
 import com.mishenka.notbasic.util.Constants.PER_PAGE
-import com.mishenka.notbasic.util.obtainAuthVM
+import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
+import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainHomeVM
 
 class MapSearchFragment : Fragment() {
@@ -52,7 +53,10 @@ class MapSearchFragment : Fragment() {
                     setupRecyclerView(it)
                 })
                 mapSearchResultsList.observe(this@MapSearchFragment, Observer {
-                    observeResults(it, mapSearchResultsRv, endlessPreferred.value!!)
+                    observeResults(it, mapSearchResultsRv)
+                })
+                mapResultsField.observe(this@MapSearchFragment, Observer {
+                    observeHeader(it, mapSearchResultsRv)
                 })
                 mapNextPageTv.setOnClickListener {
                     changeMapPage(1)
@@ -65,17 +69,19 @@ class MapSearchFragment : Fragment() {
     }
 
 
-    private fun observeResults(results: List<String>, rv: RecyclerView, isEndless: Boolean) {
-        Log.i("NYA", "(from MapSearchFragment) Results: $results")
+    private fun observeHeader(header: String, rv: RecyclerView) {
+        (rv.adapter as MapAdapter?)?.replaceHeader(header)
+    }
+
+
+    private fun observeResults(results: List<String>, rv: RecyclerView) {
+        val homeVM = (activity as AppCompatActivity).obtainHomeVM()
         with(rv) {
-            val length = results.size
-            if (!isEndless) {
-                (adapter as RecyclerView.Adapter?)
-                    ?.notifyDataSetChanged()
+            if (!homeVM.endlessPreferred.value!!) {
+                (adapter as MapAdapter?)?.replaceItems(results)
                 scrollToPosition(0)
             } else {
-                (adapter as RecyclerView.Adapter?)
-                    ?.notifyItemRangeChanged(length - PER_PAGE + 1, length)
+                (adapter as MapAdapter?)?.pseudoAddItems(results)
             }
         }
     }
@@ -87,25 +93,33 @@ class MapSearchFragment : Fragment() {
 
             mapSearchResultsRv.layoutManager = layoutManager
             val onScrollListener = OnBottomScrollListener(homeVM!!, layoutManager)
+            ItemTouchHelper(SwipeItemTouchHelperCallback(MapSwipeListener()))
+                .attachToRecyclerView(mapSearchResultsRv)
+
             if (endlessPreferred) {
-                if (!homeVM!!.mapSearchResultsList.value.isNullOrEmpty()) {
-                    homeVM!!.changePage(0)
+                val items = if (!homeVM!!.mapSearchResultsList.value.isNullOrEmpty()) {
+                    homeVM!!.changeMapPage(0)
+                    homeVM!!.mapSearchResultsList.value!!
+                } else {
+                    listOf(homeVM!!.resultsField.value!!)
                 }
                 mapSearchResultsRv.addOnScrollListener(onScrollListener)
-                mapSearchResultsRv.adapter = MapAdapter(homeVM!!)
+                mapSearchResultsRv.adapter = MapAdapter(items, homeVM!!)
             } else {
-                Log.i("NYA", "No endless")
-                if (!homeVM!!.mapSearchResultsList.value.isNullOrEmpty()) {
+                val items = if (!homeVM!!.mapSearchResultsList.value.isNullOrEmpty()) {
                     homeVM!!.trimMapResultsList()
+                    homeVM!!.mapSearchResultsList.value!!
+                } else {
+                    listOf(homeVM!!.mapResultsField.value!!)
                 }
                 mapSearchResultsRv.removeOnScrollListener(onScrollListener)
-                mapSearchResultsRv.adapter = MapAdapter(homeVM!!)
+                mapSearchResultsRv.adapter = MapAdapter(items, homeVM!!)
             }
         }
     }
 
 
-    inner class OnBottomScrollListener(
+    class OnBottomScrollListener(
         private val homeVM: HomeVM,
         private val layoutManager: LinearLayoutManager
     ) : RecyclerView.OnScrollListener() {
@@ -119,6 +133,15 @@ class MapSearchFragment : Fragment() {
                 }
             }
             super.onScrolled(recyclerView, dx, dy)
+        }
+
+    }
+
+
+    inner class MapSwipeListener: SwipeListener {
+
+        override fun onItemDismiss(position: Int) {
+            (binding.mapSearchResultsRv.adapter as MapAdapter?)?.removeItem(position)
         }
 
     }

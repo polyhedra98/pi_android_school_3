@@ -2,7 +2,6 @@ package com.mishenka.notbasic.favourites
 
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentFavouritesBinding
 import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
+import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
@@ -54,23 +54,18 @@ class FavouritesFragment : Fragment() {
                         favouritesAuthErrorTv.text = getString(R.string.fetching_favourites)
                         favouritesAuthErrorTv.visibility = View.VISIBLE
                         safeHomeVM.getFavourites(userId) {
-                            if (safeHomeVM.favouritesList.value!!.isEmpty()) {
-                                favouritesAuthErrorTv.text = getString(R.string.empty_favourites)
-                                favouritesRv.visibility = View.GONE
-                                favouritesAuthErrorTv.visibility = View.VISIBLE
-                            } else {
-                                if (favouritesRv.adapter == null) {
-                                    val adapter = FavouriteAdapter(userId, homeVM!!)
-                                    favouritesRv.adapter = adapter
-                                    ItemTouchHelper(SwipeItemTouchHelperCallback(adapter, homeVM!!))
-                                        .attachToRecyclerView(favouritesRv)
-                                    favouritesRv.layoutManager =
-                                        LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-                                }
-                                favouritesAuthErrorTv.visibility = View.GONE
-                                favouritesRv.visibility = View.VISIBLE
-                            }
+                            setupRecyclerView()
                         }
+                    }
+                    homeVM?.apply {
+                        favouriteItems.observe(this@FavouritesFragment, Observer {
+                            observeResults(it, favouriteItemsInfo.value!!, favouritesRv)
+                        })
+                        requestedFavDismiss.observe(this@FavouritesFragment, Observer {
+                            it.getContentIfNotHandled()?.let { pos ->
+                                dismissFavourite(authVM!!.userId.value!!, pos)
+                            }
+                        })
                     }
                 } else {
                     favouritesAuthErrorTv.text = getString(R.string.favourites_auth_error)
@@ -78,6 +73,46 @@ class FavouritesFragment : Fragment() {
                     favouritesAuthErrorTv.visibility = View.VISIBLE
                 }
             })
+        }
+    }
+
+
+    private fun observeResults(results: List<String>, additionalInfo: List<Int>, rv: RecyclerView) {
+        (rv.adapter as FavouritesAdapter?)?.replaceFavItems(results, additionalInfo)
+    }
+
+
+    private fun setupRecyclerView() {
+        with(binding) {
+            if (homeVM!!.favouriteItems.value!!.isEmpty()) {
+                favouritesAuthErrorTv.text = getString(R.string.empty_favourites)
+                favouritesRv.visibility = View.GONE
+                favouritesAuthErrorTv.visibility = View.VISIBLE
+            } else {
+                if (favouritesRv.adapter == null) {
+                    val adapter = FavouritesAdapter(
+                        homeVM!!.favouriteItems.value!!,
+                        homeVM!!,
+                        homeVM!!.favouriteItemsInfo.value!!
+                    )
+                    favouritesRv.adapter = adapter
+                    ItemTouchHelper(SwipeItemTouchHelperCallback(FavouritesSwipeListener()))
+                        .attachToRecyclerView(favouritesRv)
+
+                    favouritesRv.layoutManager =
+                        LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+                }
+                favouritesAuthErrorTv.visibility = View.GONE
+                favouritesRv.visibility = View.VISIBLE
+            }
+        }
+    }
+
+
+    inner class FavouritesSwipeListener: SwipeListener {
+
+        override fun onItemDismiss(position: Int) {
+            (binding.favouritesRv.adapter as FavouritesAdapter?)?.removeFavItem(position)
         }
     }
 
