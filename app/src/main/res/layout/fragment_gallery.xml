@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@{homeVM.temp}"
+            android:visibility="gone"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,6 +41,7 @@
                 android:layout_marginEnd="@dimen/generic_dimen"
                 android:layout_marginRight="@dimen/generic_dimen"
                 android:text="@string/take_a_photo"
+                android:onClick="@{() -> homeVM.requestTakingPhoto()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

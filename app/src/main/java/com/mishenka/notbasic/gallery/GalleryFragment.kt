@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.gallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,8 +51,15 @@ class GalleryFragment : Fragment() {
                 galleryResultsField.observe(this@GalleryFragment, Observer {
                     observeHeader(it, galleryRv)
                 })
-                galleryResultsList.observe(this@GalleryFragment, Observer {
-                    observeResults(it, galleryRv)
+                galleryItemInserted.observe(this@GalleryFragment, Observer {
+                    it.getContentIfNotHandled()?.let { safeUri ->
+                        (galleryRv.adapter as GalleryAdapter?)?.addItem(safeUri)
+                    }
+                })
+                requestedGalDismiss.observe(this@GalleryFragment, Observer {
+                    it.getContentIfNotHandled()?.let { safePosition ->
+                        dismissGalleryItem(context!!, safePosition)
+                    }
                 })
             }
         }
@@ -63,11 +71,6 @@ class GalleryFragment : Fragment() {
     }
 
 
-    private fun observeResults(results: List<String>, rv: RecyclerView) {
-        (rv.adapter as GalleryAdapter?)?.replaceItems(results)
-    }
-
-
     private fun setupRecyclerView() {
         with(binding) {
             val layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
@@ -76,8 +79,11 @@ class GalleryFragment : Fragment() {
             ItemTouchHelper(SwipeItemTouchHelperCallback(GallerySwipeListener()))
                 .attachToRecyclerView(galleryRv)
 
-            val items = if (!homeVM!!.galleryResultsList.value.isNullOrEmpty()) {
-                homeVM!!.galleryResultsList.value!!
+            val items: List<String> = if (!homeVM!!.galleryResultsList.value.isNullOrEmpty()) {
+                //TODO("Is combining a string with a list really that complicated? I might just not know kotlin syntax..")
+                mutableListOf(homeVM!!.galleryResultsField.value!!)
+                    .apply { addAll(homeVM!!.galleryResultsList.value!!) }
+                    .toList()
             } else {
                 listOf(homeVM!!.galleryResultsField.value!!)
             }

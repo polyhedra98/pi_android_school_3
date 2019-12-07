@@ -31,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
 
             userLogIn.observe(this@SettingsActivity, Observer<Event<Long>> {
                 it.getContentIfNotHandled()?.let { safeId ->
-                    obtainHomeVM().prefetchData(safeId)
+                    obtainHomeVM().prefetchUserData(safeId)
                 }
             })
 

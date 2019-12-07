@@ -1,22 +1,20 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
-import com.mishenka.notbasic.data.model.photo.SearchCallback
 import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppRepository
 import com.mishenka.notbasic.map.MapPhotosSearchController
 import com.mishenka.notbasic.map.MapSearchParams
-import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.Constants.TYPE_HEADER
 import com.mishenka.notbasic.util.Constants.TYPE_PHOTO
 import com.mishenka.notbasic.util.Event
-import com.mishenka.notbasic.util.PhotosSearchController
 import com.mishenka.notbasic.util.Validator
 import com.mishenka.notbasic.util.Validator.validateFavAndCategoryId
 import com.mishenka.notbasic.util.Validator.validateSearchAndUrl
@@ -24,8 +22,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HomeVM private constructor(
     private val appRepository: AppRepository
@@ -86,8 +84,8 @@ class HomeVM private constructor(
     val galleryResultsField: LiveData<String>
         get() = _galleryResultsField
 
-    private val _galleryResultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
-    val galleryResultsList: LiveData<List<String>>
+    private val _galleryResultsList = MutableLiveData<MutableList<String>>()
+    val galleryResultsList: LiveData<MutableList<String>>
         get() = _galleryResultsList
 
     private val _endlessPreferred = MutableLiveData<Boolean>()
@@ -112,6 +110,10 @@ class HomeVM private constructor(
     val galleryItemClicked: LiveData<Event<String>>
         get() = _galleryItemClicked
 
+    private val _galleryItemInserted = MutableLiveData<Event<String>>()
+    val galleryItemInserted: LiveData<Event<String>>
+        get() = _galleryItemInserted
+
     private val _mapSearchClicked = MutableLiveData<Event<Pair<Double, Double>>>()
     val mapSearchClicked: LiveData<Event<Pair<Double, Double>>>
         get() = _mapSearchClicked
@@ -124,9 +126,13 @@ class HomeVM private constructor(
     val requestedFavDismiss: LiveData<Event<Int>>
         get() = _requestedFavDismiss
 
-    private val _requestGalDismiss = MutableLiveData<Event<Int>>()
+    private val _requestedGalDismiss = MutableLiveData<Event<Int>>()
     val requestedGalDismiss: LiveData<Event<Int>>
-        get() = _requestGalDismiss
+        get() = _requestedGalDismiss
+
+    private val _requestedTakingPhoto = MutableLiveData<Event<Unit>>()
+    val requestedTakingPhoto: LiveData<Event<Unit>>
+        get() = _requestedTakingPhoto
 
     private val _favouriteItems = MutableLiveData<MutableList<String>>()
         .apply { value = emptyList<String>().toMutableList() }
@@ -208,7 +214,7 @@ class HomeVM private constructor(
 
 
     fun requestGalleryDismiss(position: Int) {
-        _requestGalDismiss.value = Event(position)
+        _requestedGalDismiss.value = Event(position)
     }
 
 
@@ -237,16 +243,63 @@ class HomeVM private constructor(
     }
 
 
-    fun prefetchData(userId: Long) {
+    fun prefetchData(context: Context) {
+        getGalleryPhotos(context)
+    }
+
+
+    fun prefetchUserData(userId: Long) {
         getFavourites(userId)
         getUserHistory(userId)
     }
 
 
     fun flashData() {
+        _galleryResultsList.value?.clear()
         _favouriteItems.value?.clear()
         _favouriteItemsInfo.value?.clear()
         _historyList.value = emptyList()
+    }
+
+
+    fun dismissGalleryItem(context: Context, position: Int) {
+        val uri = _galleryResultsList.value!![position - 1]
+        _galleryResultsList.value!!.removeAt(position - 1)
+
+        //TODO("Delete photo on the device")
+
+        updateGalleryHeader(context)
+    }
+
+
+    fun insertGalleryItem(context: Context, uri: String) {
+        _galleryResultsList.value!!.add(uri)
+        updateGalleryHeader(context)
+        _galleryItemInserted.value = Event(uri)
+    }
+
+
+    private fun getGalleryPhotos(context: Context) {
+        Log.i("NYA", "Getting gallery photos")
+        val directory: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        _galleryResultsList.value = directory?.listFiles()?.map { it.toURI().toString() }?.toMutableList()
+            ?: emptyList<String>().toMutableList()
+        updateGalleryHeader(context)
+    }
+
+
+    private fun updateGalleryHeader(context: Context) {
+        val length = _galleryResultsList.value!!.size
+        _galleryResultsField.value = if (length == 0) {
+            context.getString(R.string.gallery_empty)
+        } else {
+            context.getString(R.string.gallery_not_empty, length)
+        }
+    }
+
+
+    fun requestTakingPhoto() {
+        _requestedTakingPhoto.value = Event(Unit)
     }
 
 

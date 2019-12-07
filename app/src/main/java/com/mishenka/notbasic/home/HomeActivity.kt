@@ -1,13 +1,18 @@
 package com.mishenka.notbasic.home
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -24,8 +29,15 @@ import com.mishenka.notbasic.map.MapFragment
 import com.mishenka.notbasic.map.MapSearchActivity
 import com.mishenka.notbasic.settings.SettingsActivity
 import com.mishenka.notbasic.util.*
+import com.mishenka.notbasic.util.Constants.JPEG_QUALITY
+import com.mishenka.notbasic.util.Constants.TAKE_PHOTO_RC
 import kotlinx.android.synthetic.main.activity_home.*
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
+import java.util.*
 
 class HomeActivity : AppCompatActivity() {
 
@@ -65,6 +77,12 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
+            requestedTakingPhoto.observe(this@HomeActivity, Observer<Event<Unit>> {
+                it.getContentIfNotHandled()?.let {
+                    takePhoto()
+                }
+            })
+
             mapSearchClicked.observe(this@HomeActivity, Observer<Event<Pair<Double, Double>>> {
                 it.getContentIfNotHandled()?.let { location ->
                     performMapSearch(location.first, location.second)
@@ -101,6 +119,18 @@ class HomeActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
+
+
+    private fun takePhoto() {
+        Log.i("NYA", "Taking a photo")
+
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takePictureIntent, TAKE_PHOTO_RC)
+            }
+        }
+
+    }
 
 
     private fun loadSearch(): String? {
@@ -220,5 +250,47 @@ class HomeActivity : AppCompatActivity() {
             inputManager.hideSoftInputFromWindow(safeCurrentFocus.windowToken, InputMethodManager.SHOW_FORCED)
         }
     }
+
+
+    private fun saveImage(imageBitmap: Bitmap) {
+        val photoFile = try {
+            createImageFile()
+        } catch (e: IOException) {
+            Log.i("NYA", "Exception thrown while trying to create image file")
+            null
+        } ?: return
+        Log.i("NYA", "Saving the image")
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, FileOutputStream(photoFile))
+        obtainHomeVM().insertGalleryItem(this, photoFile.toURI().toString())
+        Log.i("NYA", "Saved successfully")
+    }
+
+
+    private fun createImageFile(): File? {
+        val filename = "not_basic_${Date().time}"
+        val directory: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: return null
+        return File.createTempFile(filename, ".jpg", directory)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when(requestCode) {
+            TAKE_PHOTO_RC -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val imageBitmap = data?.extras?.get("data") as Bitmap?
+                    Log.i("NYA", "Received Bitmap $imageBitmap")
+                    imageBitmap?.let { safeBitmap ->
+                        //TODO("Add filters")
+                        saveImage(safeBitmap)
+                    }
+                } else {
+                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK")
+                }
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+
+        }
+    }
+
 
 }

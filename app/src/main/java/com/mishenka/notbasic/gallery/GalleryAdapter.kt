@@ -21,14 +21,16 @@ class GalleryAdapter(items: List<String>, private val homeVM: HomeVM)
             this::removeGalItem
             )
 
+
     override fun hFactory(parent: ViewGroup) =
         HeaderVH(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_picture_header, parent, false))
 
+
     fun removeGalItem(position: Int) {
         homeVM.requestGalleryDismiss(position)
-        notifyItemRemoved(position)
+        removeItem(position)
     }
 
 }

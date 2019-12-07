@@ -44,7 +44,7 @@ class FavouritesAdapter(private var items: MutableList<String>,
 
     fun removeFavItem(position: Int) {
         homeVM.requestFavouriteDismiss(position)
-        notifyItemRemoved(position)
+        removeItem(position)
     }
 
 }

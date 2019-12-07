@@ -48,6 +48,13 @@ abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
     }
 
 
+    fun addItem(value: String) {
+        Log.i("NYA", "Adding item $value")
+        items.add(value)
+        notifyItemInserted(items.size)
+    }
+
+
     fun replaceHeader(newHeader: String) {
         items[0] = newHeader
         notifyItemChanged(0)

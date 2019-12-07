@@ -31,10 +31,11 @@ class SplashActivity : AppCompatActivity() {
 
         obtainHomeVM().apply {
             start(this@SplashActivity)
+            prefetchData(this@SplashActivity)
 
             if(userId != null) {
                 Log.i("NYA", "User is not null. Pre-fetching.")
-                prefetchData(userId!!)
+                prefetchUserData(userId!!)
             }
         }
     }
