@@ -67,7 +67,7 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
-            resultClicked.observe(this@HomeActivity, Observer<Event<Pair<String, String>>> {
+            resultClicked.observe(this@HomeActivity, Observer<Event<Pair<String?, String?>>> {
                 it.getContentIfNotHandled()?.let { pair ->
                     startActivity(Intent(this@HomeActivity, DetailActivity::class.java)
                         .apply {

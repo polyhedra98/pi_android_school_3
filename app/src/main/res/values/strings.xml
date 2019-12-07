@@ -7,6 +7,7 @@
     <string name="initial_gallery_results">Gallery items.</string>
     <string name="gallery_empty">Gallery is empty.</string>
     <string name="gallery_not_empty">Gallery photos. Total: %1$d.</string>
+    <string name="storage">Storage</string>
     <string name="search">Search</string>
     <string name="search_autohint">Search...</string>
     <string name="url_error">Error. Invalid URL.</string>

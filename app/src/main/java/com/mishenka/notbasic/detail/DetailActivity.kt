@@ -29,33 +29,33 @@ class DetailActivity : AppCompatActivity() {
             obtainHomeVM().setCurrentSearchAndUrl(category, url)
         }
 
-        setupUrlRelatedViews(url)
-
-        setupCategoryRelatedViews(category)
+        setupViews(url, category)
 
         setupStarButton(url, category)
     }
 
 
-    private fun setupCategoryRelatedViews(category: String?) {
-        if (category == null) return
-        detail_category_tv.text = getString(R.string.category_text, category)
-    }
-
-
-    private fun setupUrlRelatedViews(url: String?) {
+    private fun setupViews(url: String?, category: String?) {
         if (url == null) return
+
         Glide.with(detail_photo_iv.context)
             .load(url)
             .into(detail_photo_iv)
 
-        detail_url_tv.text = url
-        Linkify.addLinks(detail_url_tv, Linkify.WEB_URLS)
+        if (category == null) {
+            detail_url_tv.text = getString(R.string.storage)
+        } else {
+            detail_url_tv.text = url
+            Linkify.addLinks(detail_url_tv, Linkify.WEB_URLS)
+        }
     }
 
 
     private fun setupStarButton(url: String?, category: String?) {
-        if (url == null || category == null) return
+        if (url == null || category == null) {
+            detail_star_b.visibility = View.INVISIBLE
+            return
+        }
         val userId = obtainAuthVM().userId.value
         val homeVM = obtainHomeVM()
         if (userId == null) {

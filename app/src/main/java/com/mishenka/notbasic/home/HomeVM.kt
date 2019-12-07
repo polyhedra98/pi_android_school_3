@@ -102,13 +102,9 @@ class HomeVM private constructor(
     val observableError: LiveData<String?>
         get() = _observableError
 
-    private val _resultClicked = MutableLiveData<Event<Pair<String, String>>>()
-    val resultClicked: LiveData<Event<Pair<String, String>>>
+    private val _resultClicked = MutableLiveData<Event<Pair<String?, String?>>>()
+    val resultClicked: LiveData<Event<Pair<String?, String?>>>
         get() = _resultClicked
-
-    private val _galleryItemClicked = MutableLiveData<Event<String>>()
-    val galleryItemClicked: LiveData<Event<String>>
-        get() = _galleryItemClicked
 
     private val _galleryItemInserted = MutableLiveData<Event<String>>()
     val galleryItemInserted: LiveData<Event<String>>
@@ -189,7 +185,7 @@ class HomeVM private constructor(
 
 
     fun onGalleryItemClicked(position: Int) {
-        _galleryItemClicked.value = Event(galleryResultsList.value!![position])
+        _resultClicked.value = Event(Pair(galleryResultsList.value!![position - 1], null))
     }
 
 
