@@ -263,11 +263,7 @@ class HomeVM private constructor(
 
 
     fun dismissGalleryItem(context: Context, position: Int) {
-        val uri = _galleryResultsList.value!![position - 1]
         _galleryResultsList.value!!.removeAt(position - 1)
-
-        //TODO("Delete photo on the device")
-
         updateGalleryHeader(context)
     }
 

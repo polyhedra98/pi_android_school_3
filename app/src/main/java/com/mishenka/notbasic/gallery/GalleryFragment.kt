@@ -1,11 +1,13 @@
 package com.mishenka.notbasic.gallery
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,6 +19,7 @@ import com.mishenka.notbasic.databinding.FragmentGalleryBinding
 import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainHomeVM
+import java.io.File
 
 
 class GalleryFragment : Fragment() {
@@ -58,10 +61,22 @@ class GalleryFragment : Fragment() {
                 })
                 requestedGalDismiss.observe(this@GalleryFragment, Observer {
                     it.getContentIfNotHandled()?.let { safePosition ->
+                        deleteFile(galleryResultsList.value!![safePosition - 1])
                         dismissGalleryItem(context!!, safePosition)
                     }
                 })
             }
+        }
+    }
+
+
+    private fun deleteFile(uriString: String) {
+        val fileToDelete = File(uriString.toUri().path!!)
+        if (fileToDelete.exists()) {
+            Log.i("NYA", "File exists. Deleting")
+            fileToDelete.delete()
+        } else {
+            Log.i("NYA", "File doesn't exists. $uriString")
         }
     }
 

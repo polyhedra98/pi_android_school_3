@@ -46,6 +46,7 @@ class FavouritesFragment : Fragment() {
     }
 
 
+    //TODO("Fix unstar bug")
     private fun setupBindings() {
         with(binding) {
             authVM?.userId?.observe(this@FavouritesFragment, Observer { userId ->
