@@ -82,6 +82,14 @@ class HomeVM private constructor(
     val mapResultsField: LiveData<String>
         get() = mapPhotosSearchController._resultsField
 
+    private val _galleryResultsField = MutableLiveData<String>()
+    val galleryResultsField: LiveData<String>
+        get() = _galleryResultsField
+
+    private val _galleryResultsList = MutableLiveData<List<String>>().apply { value = emptyList() }
+    val galleryResultsList: LiveData<List<String>>
+        get() = _galleryResultsList
+
     private val _endlessPreferred = MutableLiveData<Boolean>()
     val endlessPreferred: LiveData<Boolean>
         get() = _endlessPreferred
@@ -100,6 +108,10 @@ class HomeVM private constructor(
     val resultClicked: LiveData<Event<Pair<String, String>>>
         get() = _resultClicked
 
+    private val _galleryItemClicked = MutableLiveData<Event<String>>()
+    val galleryItemClicked: LiveData<Event<String>>
+        get() = _galleryItemClicked
+
     private val _mapSearchClicked = MutableLiveData<Event<Pair<Double, Double>>>()
     val mapSearchClicked: LiveData<Event<Pair<Double, Double>>>
         get() = _mapSearchClicked
@@ -111,6 +123,10 @@ class HomeVM private constructor(
     private val _requestedFavDismiss = MutableLiveData<Event<Int>>()
     val requestedFavDismiss: LiveData<Event<Int>>
         get() = _requestedFavDismiss
+
+    private val _requestGalDismiss = MutableLiveData<Event<Int>>()
+    val requestedGalDismiss: LiveData<Event<Int>>
+        get() = _requestGalDismiss
 
     private val _favouriteItems = MutableLiveData<MutableList<String>>()
         .apply { value = emptyList<String>().toMutableList() }
@@ -127,10 +143,6 @@ class HomeVM private constructor(
     private var lat = ""
 
     private var lon = ""
-
-    private var mapFullSummary = ""
-
-    private var mapSummary = ""
 
     var currentSearch: String? = null
         private set
@@ -170,6 +182,11 @@ class HomeVM private constructor(
     }
 
 
+    fun onGalleryItemClicked(position: Int) {
+        _galleryItemClicked.value = Event(galleryResultsList.value!![position])
+    }
+
+
     fun onFavouriteClicked(position: Int) {
         _resultClicked.value = Event(
             Pair(
@@ -187,6 +204,11 @@ class HomeVM private constructor(
 
     fun requestFavouriteDismiss(position: Int) {
         _requestedFavDismiss.value = Event(position)
+    }
+
+
+    fun requestGalleryDismiss(position: Int) {
+        _requestGalDismiss.value = Event(position)
     }
 
 
@@ -260,6 +282,7 @@ class HomeVM private constructor(
     fun start(context: Context) {
         homePhotosSearchController.initStartingValues(context)
         mapPhotosSearchController.initStartingValues(context)
+        _galleryResultsField.value = context.getString(R.string.initial_gallery_results)
 
         val endlessPref = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_endless_list_key), false) ?: false

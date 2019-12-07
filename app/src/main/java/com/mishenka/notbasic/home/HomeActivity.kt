@@ -18,6 +18,7 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.detail.DetailActivity
 import com.mishenka.notbasic.favourites.FavouritesFragment
+import com.mishenka.notbasic.gallery.GalleryFragment
 import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.map.MapFragment
 import com.mishenka.notbasic.map.MapSearchActivity
@@ -152,6 +153,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.fav_nav_menu_item -> conditionallyReplaceFragment(FavouritesFragment::class.java)
                 R.id.history_nav_menu_item -> conditionallyReplaceFragment(HistoryFragment::class.java)
                 R.id.map_nav_menu_item -> conditionallyReplaceFragment(MapFragment::class.java)
+                R.id.gallery_nav_menu_item -> conditionallyReplaceFragment(GalleryFragment::class.java)
                 R.id.settings_nav_menu_item -> startActivity(SettingsActivity::class.java)
                 else -> throw IllegalStateException("Illegal menu item")
             }
@@ -182,6 +184,8 @@ class HomeActivity : AppCompatActivity() {
                         replaceFragmentInActivity(R.id.home_content_frame, HistoryFragment.newInstance())
                     isAssignableFrom(MapFragment::class.java) ->
                         replaceFragmentInActivity(R.id.home_content_frame, MapFragment.newInstance())
+                    isAssignableFrom(GalleryFragment::class.java) ->
+                        replaceFragmentInActivity(R.id.home_content_frame, GalleryFragment.newInstance())
                     else ->
                         throw java.lang.IllegalStateException("Unknown fragment class")
                 }
