@@ -1,6 +1,5 @@
 package com.mishenka.notbasic.gallery
 
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -61,6 +60,7 @@ class GalleryFragment : Fragment() {
                 })
                 requestedGalDismiss.observe(this@GalleryFragment, Observer {
                     it.getContentIfNotHandled()?.let { safePosition ->
+                        (galleryRv.adapter as GalleryAdapter?)?.removeItem(safePosition)
                         deleteFile(galleryResultsList.value!![safePosition - 1])
                         dismissGalleryItem(context!!, safePosition)
                     }
@@ -110,7 +110,7 @@ class GalleryFragment : Fragment() {
     inner class GallerySwipeListener: SwipeListener {
 
         override fun onItemDismiss(position: Int) {
-            (binding.galleryRv.adapter as GalleryAdapter?)?.removeGalItem(position)
+            (binding.galleryRv.adapter as GalleryAdapter?)?.requestRemoval(position)
         }
     }
 

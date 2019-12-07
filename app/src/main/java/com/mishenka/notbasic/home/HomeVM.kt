@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.home
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Environment
 import android.util.Log
 import android.widget.Button
@@ -23,6 +24,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.File
+import java.net.URL
 import java.util.*
 
 class HomeVM private constructor(
@@ -125,6 +127,10 @@ class HomeVM private constructor(
     private val _requestedGalDismiss = MutableLiveData<Event<Int>>()
     val requestedGalDismiss: LiveData<Event<Int>>
         get() = _requestedGalDismiss
+
+    private val _requestedDownloadingPhoto = MutableLiveData<Event<String>>()
+    val requestedDownloadingPhoto: LiveData<Event<String>>
+        get() = _requestedDownloadingPhoto
 
     private val _requestedTakingPhoto = MutableLiveData<Event<Unit>>()
     val requestedTakingPhoto: LiveData<Event<Unit>>
@@ -264,10 +270,12 @@ class HomeVM private constructor(
     }
 
 
-    fun insertGalleryItem(context: Context, uri: String) {
+    fun insertGalleryItem(context: Context, uri: String, downloaded: Boolean? = null) {
         _galleryResultsList.value!!.add(uri)
         updateGalleryHeader(context)
-        _galleryItemInserted.value = Event(uri)
+        if (downloaded == null) {
+            _galleryItemInserted.value = Event(uri)
+        }
     }
 
 
@@ -292,6 +300,16 @@ class HomeVM private constructor(
 
     fun requestTakingPhoto() {
         _requestedTakingPhoto.value = Event(Unit)
+    }
+
+
+    fun downloadPhoto(urlString: String) {
+        _requestedDownloadingPhoto.value = Event(urlString)
+    }
+
+
+    fun deletePhoto(uri: String) {
+        _requestedGalDismiss.value = Event(_galleryResultsList.value!!.indexOf(uri) + 1)
     }
 
 

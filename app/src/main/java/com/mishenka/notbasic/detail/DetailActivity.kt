@@ -3,6 +3,7 @@ package com.mishenka.notbasic.detail
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.util.Linkify
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.bumptech.glide.Glide
@@ -17,12 +18,17 @@ import kotlinx.coroutines.launch
 class DetailActivity : AppCompatActivity() {
 
 
+    private var downloadState = 0
+
+    private var url: String? = null
+    private var category: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        var url: String? = null
-        var category: String? = null
+        Log.i("NYA", "Download state: $downloadState")
+
         intent?.extras?.let { safeExtras ->
             url = safeExtras.getString(getString(R.string.intent_url_extra))
             category = safeExtras.getString(getString(R.string.intent_category_extra))
@@ -30,8 +36,6 @@ class DetailActivity : AppCompatActivity() {
         }
 
         setupViews(url, category)
-
-        setupStarButton(url, category)
     }
 
 
@@ -48,9 +52,38 @@ class DetailActivity : AppCompatActivity() {
             detail_url_tv.text = url
             Linkify.addLinks(detail_url_tv, Linkify.WEB_URLS)
         }
+
+        setupDownloadButton(category)
+
+        setupStarButton(url, category)
     }
 
 
+    private fun setupDownloadButton(category: String?) {
+        if (category == null) {
+            detail_download_b.text = getString(R.string.detail_delete)
+        } else {
+            detail_download_b.text = getString(R.string.detail_download)
+        }
+        detail_download_b.setOnClickListener {
+            switchDownload()
+        }
+    }
+
+
+    private fun switchDownload() {
+        detail_download_b.text = if (detail_download_b.text == getString(R.string.detail_delete)) {
+            downloadState = -1
+            getString(R.string.detail_download)
+        } else {
+            downloadState = 1
+            getString(R.string.detail_delete)
+        }
+    }
+
+
+    //TODO("Star button can be implemented the same way as download button,
+    // only doing its work after the activity is finished")
     private fun setupStarButton(url: String?, category: String?) {
         if (url == null || category == null) {
             detail_star_b.visibility = View.INVISIBLE
@@ -93,6 +126,17 @@ class DetailActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    override fun onPause() {
+        if (downloadState == 1 && category != null && url != null) {
+            obtainHomeVM().downloadPhoto(url!!)
+        } else if (downloadState == -1 && category == null && url != null) {
+            obtainHomeVM().deletePhoto(url!!)
+        }
+
+        super.onPause()
     }
 
 }

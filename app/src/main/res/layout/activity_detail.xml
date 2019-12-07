@@ -57,13 +57,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv" />
 
+        <Button
+            android:id="@+id/detail_download_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/generic_dimen"
+            android:layout_marginEnd="@dimen/generic_dimen"
+            android:layout_marginRight="@dimen/generic_dimen"
+            android:layout_marginBottom="@dimen/generic_dimen"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_star_b" />
+
         <TextView
             android:id="@+id/detail_category_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/generic_dimen"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/detail_url_tv"
             app:layout_constraintStart_toStartOf="@+id/detail_url_tv"
             app:layout_constraintTop_toBottomOf="@+id/detail_url_tv" />

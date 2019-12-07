@@ -18,7 +18,7 @@ class GalleryAdapter(items: List<String>, private val homeVM: HomeVM)
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_favourite_picture_card, parent, false),
             homeVM::onGalleryItemClicked,
-            this::removeGalItem
+            this::requestRemoval
             )
 
 
@@ -28,9 +28,8 @@ class GalleryAdapter(items: List<String>, private val homeVM: HomeVM)
                 .inflate(R.layout.item_picture_header, parent, false))
 
 
-    fun removeGalItem(position: Int) {
+    fun requestRemoval(position: Int) {
         homeVM.requestGalleryDismiss(position)
-        removeItem(position)
     }
 
 }

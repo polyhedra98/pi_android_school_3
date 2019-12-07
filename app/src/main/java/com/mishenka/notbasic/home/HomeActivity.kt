@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -32,11 +33,15 @@ import com.mishenka.notbasic.util.*
 import com.mishenka.notbasic.util.Constants.JPEG_QUALITY
 import com.mishenka.notbasic.util.Constants.TAKE_PHOTO_RC
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.net.URL
 import java.util.*
 
 class HomeActivity : AppCompatActivity() {
@@ -93,6 +98,12 @@ class HomeActivity : AppCompatActivity() {
             responseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
                 it.getContentIfNotHandled()?.let { response ->
                     this.processSearchResult(this@HomeActivity, response.first, response.second)
+                }
+            })
+
+            requestedDownloadingPhoto.observe(this@HomeActivity, Observer {
+                it.getContentIfNotHandled()?.let { downloadUrl ->
+                    downloadImage(downloadUrl)
                 }
             })
 
@@ -252,7 +263,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    private fun saveImage(imageBitmap: Bitmap) {
+    private fun saveImage(imageBitmap: Bitmap, downloaded: Boolean? = null) {
         val photoFile = try {
             createImageFile()
         } catch (e: IOException) {
@@ -261,8 +272,25 @@ class HomeActivity : AppCompatActivity() {
         } ?: return
         Log.i("NYA", "Saving the image")
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, FileOutputStream(photoFile))
-        obtainHomeVM().insertGalleryItem(this, photoFile.toURI().toString())
+        obtainHomeVM().insertGalleryItem(this, photoFile.toURI().toString(), downloaded)
         Log.i("NYA", "Saved successfully")
+    }
+
+
+    //TODO(Old java way of downloading)
+    private fun downloadImage(urlString: String) {
+        //TODO(Change scope)
+        GlobalScope.launch {
+            val url = URL(urlString)
+            val connection = url.openConnection()
+            connection.doInput = true
+            connection.connect()
+            val inputStream = connection.getInputStream()
+            val downloadedBitmap = BitmapFactory.decodeStream(inputStream)
+            MainScope().launch {
+                saveImage(downloadedBitmap, true)
+            }
+        }
     }
 
 
