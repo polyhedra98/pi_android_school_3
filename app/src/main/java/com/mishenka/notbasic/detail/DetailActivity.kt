@@ -1,11 +1,14 @@
 package com.mishenka.notbasic.detail
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.util.Linkify
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.obtainAuthVM
@@ -60,14 +63,22 @@ class DetailActivity : AppCompatActivity() {
 
 
     private fun setupDownloadButton(category: String?) {
-        if (category == null) {
-            detail_download_b.text = getString(R.string.detail_delete)
+        if (getExternalStoragePermission()) {
+            detail_download_error_tv.visibility = View.INVISIBLE
+            if (category == null) {
+                detail_download_b.text = getString(R.string.detail_delete)
+            } else {
+                detail_download_b.text = getString(R.string.detail_download)
+            }
+            detail_download_b.setOnClickListener {
+                switchDownload()
+            }
         } else {
-            detail_download_b.text = getString(R.string.detail_download)
+            detail_download_error_tv.text = getString(R.string.gallery_insufficient_permissions)
+            detail_download_error_tv.visibility = View.VISIBLE
+            detail_download_b.visibility = View.INVISIBLE
         }
-        detail_download_b.setOnClickListener {
-            switchDownload()
-        }
+
     }
 
 
@@ -80,6 +91,13 @@ class DetailActivity : AppCompatActivity() {
             getString(R.string.detail_delete)
         }
     }
+
+
+    //TODO(This method should be written as an extension method just once, and not recopied 10 times)
+    private fun getExternalStoragePermission() =
+        ContextCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
 
 
     //TODO("Star button can be implemented the same way as download button,

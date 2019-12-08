@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentMapBinding
+import com.mishenka.notbasic.util.Constants.LOCATION_PERM_RC
 import com.mishenka.notbasic.util.obtainHomeVM
 import com.mishenka.notbasic.util.obtainLocationVM
 
@@ -30,7 +31,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
     private var map: GoogleMap? = null
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +60,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         grantResults: IntArray
     ) {
         when(requestCode) {
-            LOCATION_PERMISSION_REQUEST_CODE -> {
+            LOCATION_PERM_RC -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Log.i("NYA", "Permission has been denied")
                 } else {
@@ -198,7 +198,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun requestPermission() {
         requestPermissions(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_PERMISSION_REQUEST_CODE
+            LOCATION_PERM_RC
         )
     }
 

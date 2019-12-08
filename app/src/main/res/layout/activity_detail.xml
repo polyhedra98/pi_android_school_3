@@ -77,6 +77,16 @@
             app:layout_constraintEnd_toEndOf="@+id/detail_url_tv"
             app:layout_constraintStart_toStartOf="@+id/detail_url_tv"
             app:layout_constraintTop_toBottomOf="@+id/detail_url_tv" />
+
+        <TextView
+            android:id="@+id/detail_download_error_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#F11313"
+            app:layout_constraintEnd_toEndOf="@+id/detail_download_b"
+            app:layout_constraintStart_toStartOf="@+id/detail_download_b"
+            app:layout_constraintTop_toTopOf="@+id/detail_download_b"
+            tools:visibility="invisible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

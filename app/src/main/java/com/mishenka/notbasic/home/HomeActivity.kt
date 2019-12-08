@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.home
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -135,28 +136,16 @@ class HomeActivity : AppCompatActivity() {
         }
 
 
+
     private fun takePhoto() {
         Log.i("NYA", "Taking a photo")
 
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(packageManager)?.also {
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (e: IOException) {
-                    Log.i("NYA", "Exception thrown while creating" +
-                            " a file for photo intent. $e")
-                    null
-                } ?: return
+            val imageUri = obtainHomeVM().obtainUriForNewGalleryItem(this)
 
-                photoFile?.let {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        this,
-                        "com.mishenka.notbasic.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, TAKE_PHOTO_RC)
-                }
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                startActivityForResult(takePictureIntent, TAKE_PHOTO_RC)
             }
         }
 
@@ -283,16 +272,7 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun saveImage(imageBitmap: Bitmap, downloaded: Boolean? = null) {
-        val photoFile = try {
-            createImageFile()
-        } catch (e: IOException) {
-            Log.i("NYA", "Exception thrown while trying to create image file")
-            null
-        } ?: return
-        Log.i("NYA", "Saving the image")
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, FileOutputStream(photoFile))
-        obtainHomeVM().insertGalleryItem(this, photoFile.toURI().toString(), downloaded)
-        Log.i("NYA", "Saved successfully")
+        obtainHomeVM().saveGalleryItem(this, imageBitmap, downloaded)
     }
 
 
@@ -313,29 +293,12 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    private fun createImageFile(): File? {
-        //TODO(Potentially bad?)
-        val imagePath = getExternalFilesDir("images")!!
-        if (!imagePath.exists()) {
-            imagePath.mkdir()
-        }
-        val filename = "not_basic_${Date().time}"
-        return File.createTempFile(filename, ".jpg", imagePath)
-    }
-
-
-    private fun checkForNewGalleryItem(): String? {
-        val directory = getExternalFilesDir("images")
-        return directory?.listFiles()?.last()?.toURI()?.toString()
-    }
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode) {
             TAKE_PHOTO_RC -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    checkForNewGalleryItem()?.let { newUri ->
-                        UCrop.of(newUri.toUri(), newUri.toUri()).start(this)
+                    obtainHomeVM().getLastObtainedUri()?.let { safeUri ->
+                        UCrop.of(safeUri.toUri(), safeUri.toUri()).start(this)
                     }
                 } else {
                     Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK (from camera)")
@@ -350,7 +313,7 @@ class HomeActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK (from UCrop)")
+                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK (from UCrop) ${UCrop.getError(data!!)}")
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)

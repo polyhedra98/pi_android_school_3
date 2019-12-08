@@ -1,11 +1,14 @@
 package com.mishenka.notbasic.gallery
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -15,10 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentGalleryBinding
+import com.mishenka.notbasic.util.Constants.STORAGE_PERM_RC
 import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainHomeVM
-import java.io.File
 
 
 class GalleryFragment : Fragment() {
@@ -41,13 +44,56 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupBindings()
+        if (getExternalStoragePermission()) {
+            setupBindings(false)
+        } else {
+            requestPermission()
+        }
     }
 
 
-    private fun setupBindings() {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode) {
+
+            STORAGE_PERM_RC -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("NYA", "Permission has been denied")
+                    setupError()
+                } else {
+                    Log.i("NYA", "Permission has been accepted")
+                    setupBindings(true)
+                }
+            }
+
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+
+    private fun setupError() {
         with(binding) {
+            galleryCl.visibility = View.GONE
+
+            galleryErrorTv.text = getString(R.string.gallery_insufficient_permissions)
+            galleryErrorTv.visibility = View.VISIBLE
+        }
+    }
+
+
+    private fun setupBindings(needsRefetching: Boolean) {
+        with(binding) {
+            galleryErrorTv.visibility = View.GONE
+            galleryCl.visibility = View.VISIBLE
+
             homeVM?.apply {
+                if (needsRefetching) {
+                    prefetchData(context!!)
+                }
+
                 setupRecyclerView()
 
                 galleryResultsField.observe(this@GalleryFragment, Observer {
@@ -71,13 +117,7 @@ class GalleryFragment : Fragment() {
 
 
     private fun deleteFile(uriString: String) {
-        val fileToDelete = File(uriString.toUri().path!!)
-        if (fileToDelete.exists()) {
-            Log.i("NYA", "File exists. Deleting")
-            fileToDelete.delete()
-        } else {
-            Log.i("NYA", "File doesn't exists. $uriString")
-        }
+        (activity as AppCompatActivity).obtainHomeVM().deleteGalleryItem(context!!, uriString)
     }
 
 
@@ -104,6 +144,20 @@ class GalleryFragment : Fragment() {
             }
             galleryRv.adapter = GalleryAdapter(items, homeVM!!)
         }
+    }
+
+
+    private fun getExternalStoragePermission() =
+        ContextCompat.checkSelfPermission(
+            context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+
+    private fun requestPermission() {
+        requestPermissions(
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            STORAGE_PERM_RC
+        )
     }
 
 

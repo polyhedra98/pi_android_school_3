@@ -1,11 +1,14 @@
 package com.mishenka.notbasic.home
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
@@ -31,7 +34,12 @@ class SplashActivity : AppCompatActivity() {
 
         obtainHomeVM().apply {
             start(this@SplashActivity)
-            prefetchData(this@SplashActivity)
+
+            if (getExternalStoragePermission()) {
+                prefetchData(this@SplashActivity)
+            } else {
+                Log.i("NYA", "(from SplashActivity) WRITE_EXTERNAL_STORAGE permission denied")
+            }
 
             if(userId != null) {
                 Log.i("NYA", "User is not null. Pre-fetching.")
@@ -39,6 +47,12 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun getExternalStoragePermission() =
+        ContextCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
 
 
     private fun prepareWindow() {

@@ -5,6 +5,7 @@
     <string name="initial_empty_results">Enter a keyword to search.</string>
     <string name="initial_map_results">Lat / Lon</string>
     <string name="initial_gallery_results">Gallery items.</string>
+    <string name="gallery_insufficient_permissions">Insufficient permissions.</string>
     <string name="detail_download">Download</string>
     <string name="detail_delete">Delete</string>
     <string name="gallery_empty">Gallery is empty.</string>

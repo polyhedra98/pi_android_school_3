@@ -1,8 +1,13 @@
 package com.mishenka.notbasic.data.source
 
+import android.content.ContentUris
 import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import androidx.core.net.toUri
 import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.data.model.photo.SearchCallback
@@ -19,6 +24,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.lang.StringBuilder
 import java.net.URLEncoder
 import java.util.*
@@ -181,6 +187,93 @@ class AppRepository private constructor(
             )
         )
         return signature
+    }
+
+
+    fun getGalleryImages(context: Context): List<String> {
+        var listToReturn: MutableList<String>? = null
+        val cursor = context.contentResolver
+            .query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null,
+                null,
+                null,
+                MediaStore.Images.Media.DEFAULT_SORT_ORDER
+            )
+
+        cursor?.let { safeCursor ->
+            listToReturn = mutableListOf()
+            safeCursor.moveToFirst()
+            while(!safeCursor.isAfterLast) {
+                listToReturn!!.add(safeCursor.getString(safeCursor.getColumnIndex(MediaStore.Images.Media.DATA)))
+                safeCursor.moveToNext()
+            }
+        }
+
+        cursor?.close()
+        return listToReturn?.toList() ?: emptyList()
+    }
+
+
+    fun getGalleryAbsolutePathByUri(context: Context, uri: String): String? {
+        var pathToReturn: String? = null
+
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context.contentResolver
+            .query(
+                uri.toUri(),
+                projection,
+                null,
+                null,
+                null
+            )
+
+        cursor?.let { safeCursor ->
+            if (safeCursor.moveToFirst()) {
+                pathToReturn = safeCursor.getString(safeCursor.getColumnIndex(MediaStore.Images.Media.DATA))
+            }
+        }
+
+        cursor?.close()
+        if (pathToReturn != null) {
+            pathToReturn = Uri.fromFile(File(pathToReturn!!)).toString()
+        }
+        Log.i("NYA", "(from getAbsolutePath) returning $pathToReturn")
+        return pathToReturn
+    }
+
+
+    fun insertGalleryImage(context: Context, bitmap: Bitmap): String {
+        return MediaStore.Images.Media.insertImage(context.contentResolver, bitmap,
+            "not_basic_${Date().time}", "")
+    }
+
+
+    fun deleteGalleryImage(context: Context, uri: String) {
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val selection = MediaStore.Images.Media.DATA + " = ?"
+        val selectionArgs = arrayOf(uri)
+        val cr = context.contentResolver
+
+        val cursor = cr.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.let { safeCursor ->
+            if (safeCursor.moveToFirst()) {
+                val id = safeCursor.getLong(safeCursor.getColumnIndex(MediaStore.Images.Media._ID))
+                val deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                cr.delete(deleteUri, null, null)
+            } else {
+                Log.i("NYA", "File not found")
+            }
+        }
+
+        cursor?.close()
     }
 
 

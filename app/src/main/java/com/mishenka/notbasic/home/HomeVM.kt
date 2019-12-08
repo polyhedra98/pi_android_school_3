@@ -1,8 +1,12 @@
 package com.mishenka.notbasic.home
 
+import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.*
@@ -152,6 +156,8 @@ class HomeVM private constructor(
 
     private var lon = ""
 
+    private var lastObtainedUri: String? = null
+
     var currentSearch: String? = null
         private set
 
@@ -273,17 +279,51 @@ class HomeVM private constructor(
     fun insertGalleryItem(context: Context, uri: String, downloaded: Boolean? = null) {
         _galleryResultsList.value!!.add(uri)
         updateGalleryHeader(context)
-        if (downloaded == null) {
+        if (downloaded == null || !downloaded) {
             _galleryItemInserted.value = Event(uri)
         }
     }
 
 
+    fun saveGalleryItem(context: Context, bitmap: Bitmap, downloaded: Boolean? = null) {
+        val uri = appRepository.insertGalleryImage(context, bitmap)
+        Log.i("NYA", "(from saveGalleryItem) Inserted uri: $uri")
+        insertGalleryItem(context, uri, downloaded)
+    }
+
+
+    fun deleteGalleryItem(context: Context, uri: String) {
+        appRepository.deleteGalleryImage(context, uri)
+    }
+
+
+    fun obtainUriForNewGalleryItem(context: Context): Uri? =
+        context.contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            ContentValues()
+        )?.also { lastObtainedUri = appRepository.getGalleryAbsolutePathByUri(context, it.toString())}
+
+
+    fun getLastObtainedUri(): String? {
+        Log.i("NYA", "Last obtained Uri: $lastObtainedUri")
+        return if (lastObtainedUri.isNullOrEmpty()) {
+            null
+        } else {
+            lastObtainedUri
+        }
+    }
+
+
+
     private fun getGalleryPhotos(context: Context) {
+        Log.i("NYA", "Media store ones:")
+        _galleryResultsList.value = appRepository.getGalleryImages(context).toMutableList()
+        Log.i("NYA", _galleryResultsList.value.toString())
+        /*
         Log.i("NYA", "Getting gallery photos")
         val directory = context.getExternalFilesDir("images")
         _galleryResultsList.value = directory?.listFiles()?.map { it.toURI().toString() }?.toMutableList()
-            ?: emptyList<String>().toMutableList()
+            ?: emptyList<String>().toMutableList()*/
         updateGalleryHeader(context)
     }
 
