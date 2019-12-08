@@ -279,9 +279,20 @@ class HomeVM private constructor(
     }
 
 
+    fun checkForNewGalleryItem(context: Context) {
+        Log.i("NYA", "Updating gallery list")
+        val directory = context.getExternalFilesDir("images")
+        directory?.listFiles()?.last()?.toURI()?.toString()?.let { safeUri ->
+            _galleryResultsList.value?.add(safeUri)
+            _galleryItemInserted.value = Event(safeUri)
+        }
+        updateGalleryHeader(context)
+    }
+
+
     private fun getGalleryPhotos(context: Context) {
         Log.i("NYA", "Getting gallery photos")
-        val directory: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val directory = context.getExternalFilesDir("images")
         _galleryResultsList.value = directory?.listFiles()?.map { it.toURI().toString() }?.toMutableList()
             ?: emptyList<String>().toMutableList()
         updateGalleryHeader(context)

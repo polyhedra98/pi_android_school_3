@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -137,7 +138,23 @@ class HomeActivity : AppCompatActivity() {
 
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
-                startActivityForResult(takePictureIntent, TAKE_PHOTO_RC)
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (e: IOException) {
+                    Log.i("NYA", "Exception thrown while creating" +
+                            " a file for photo intent. $e")
+                    null
+                } ?: return
+
+                photoFile?.let {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.mishenka.notbasic.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, TAKE_PHOTO_RC)
+                }
             }
         }
 
@@ -295,9 +312,13 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun createImageFile(): File? {
+        //TODO(Potentially bad?)
+        val imagePath = getExternalFilesDir("images")!!
+        if (!imagePath.exists()) {
+            imagePath.mkdir()
+        }
         val filename = "not_basic_${Date().time}"
-        val directory: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: return null
-        return File.createTempFile(filename, ".jpg", directory)
+        return File.createTempFile(filename, ".jpg", imagePath)
     }
 
 
@@ -305,12 +326,13 @@ class HomeActivity : AppCompatActivity() {
         when(requestCode) {
             TAKE_PHOTO_RC -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val imageBitmap = data?.extras?.get("data") as Bitmap?
+                    obtainHomeVM().checkForNewGalleryItem(this)
+                    /*val imageBitmap = data?.extras?.get("data") as Bitmap?
                     Log.i("NYA", "Received Bitmap $imageBitmap")
                     imageBitmap?.let { safeBitmap ->
                         //TODO("Add filters")
-                        saveImage(safeBitmap)
-                    }
+                        //saveImage(safeBitmap)
+                    }*/
                 } else {
                     Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK")
                 }
