@@ -9,6 +9,6 @@ object Constants {
 
     const val TAKE_PHOTO_RC = 1
 
-    const val JPEG_QUALITY = 85
+    const val JPEG_QUALITY = 100
 
 }

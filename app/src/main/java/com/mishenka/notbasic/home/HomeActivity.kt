@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -33,6 +34,7 @@ import com.mishenka.notbasic.settings.SettingsActivity
 import com.mishenka.notbasic.util.*
 import com.mishenka.notbasic.util.Constants.JPEG_QUALITY
 import com.mishenka.notbasic.util.Constants.TAKE_PHOTO_RC
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -322,19 +324,33 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
+    private fun checkForNewGalleryItem(): String? {
+        val directory = getExternalFilesDir("images")
+        return directory?.listFiles()?.last()?.toURI()?.toString()
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode) {
             TAKE_PHOTO_RC -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    obtainHomeVM().checkForNewGalleryItem(this)
-                    /*val imageBitmap = data?.extras?.get("data") as Bitmap?
-                    Log.i("NYA", "Received Bitmap $imageBitmap")
-                    imageBitmap?.let { safeBitmap ->
-                        //TODO("Add filters")
-                        //saveImage(safeBitmap)
-                    }*/
+                    checkForNewGalleryItem()?.let { newUri ->
+                        UCrop.of(newUri.toUri(), newUri.toUri()).start(this)
+                    }
                 } else {
-                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK")
+                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK (from camera)")
+                }
+            }
+            UCrop.REQUEST_CROP -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    data?.let {
+                        val uri = UCrop.getOutput(it)
+                        uri?.let { safeUri ->
+                            obtainHomeVM().insertGalleryItem(this, safeUri.toString())
+                        }
+                    }
+                } else {
+                    Log.i("NYA", "(from HomeActivity onActivityResult) Result code is not OK (from UCrop)")
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
