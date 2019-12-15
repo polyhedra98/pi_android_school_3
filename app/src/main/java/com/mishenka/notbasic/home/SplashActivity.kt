@@ -1,13 +1,16 @@
 package com.mishenka.notbasic.home
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.util.obtainAuthVM
@@ -17,6 +20,9 @@ import com.mishenka.notbasic.util.obtainHomeVM
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        setupNightMode()
+
         prepareWindow()
 
         super.onCreate(savedInstanceState)
@@ -46,6 +52,20 @@ class SplashActivity : AppCompatActivity() {
                 prefetchUserData(userId!!)
             }
         }
+    }
+
+
+    private fun setupNightMode() {
+        val nightModeString = PreferenceManager.getDefaultSharedPreferences(
+            this
+        ).getString(getString(R.string.settings_theme_key), "theme_empty")
+        Log.i("NYA", "Night mode string: $nightModeString")
+        val nightModeValue = when(nightModeString) {
+            "theme_light" -> MODE_NIGHT_NO
+            "theme_dark" -> MODE_NIGHT_YES
+            else -> MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        setDefaultNightMode(nightModeValue)
     }
 
 

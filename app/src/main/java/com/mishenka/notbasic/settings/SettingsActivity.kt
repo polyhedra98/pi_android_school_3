@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -92,7 +91,7 @@ class SettingsActivity : AppCompatActivity() {
                     homeVM.endlessChanged(newValue as Boolean)
                     true
                 }
-            findPreference<ListPreference>(getString(R.string.setting_theme_key))
+            findPreference<ListPreference>(getString(R.string.settings_theme_key))
                 ?.setOnPreferenceChangeListener { _, newValue ->
                     themeChanged(newValue.toString())
                     true

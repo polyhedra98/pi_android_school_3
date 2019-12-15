@@ -21,7 +21,7 @@
 
         <ListPreference
             android:title="@string/settings_theme_title"
-            android:key="@string/setting_theme_key"
+            android:key="@string/settings_theme_key"
             android:defaultValue="theme_auto"
             android:entries="@array/theme_entries"
             android:entryValues="@array/theme_values"

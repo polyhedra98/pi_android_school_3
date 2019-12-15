@@ -29,7 +29,7 @@
     <string name="settings_endless_list_summary">Output method for search queries.</string>
     <string name="settings_appearance_category">Appearance</string>
     <string name="settings_theme_title">Change theme</string>
-    <string name="setting_theme_key">theme_key</string>
+    <string name="settings_theme_key">theme_key</string>
     <string name="settings_account_category">Account</string>
     <string name="settings_user_key">user_key</string>
     <string name="settings_auth_key">auth_key</string>
