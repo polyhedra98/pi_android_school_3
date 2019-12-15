@@ -8,7 +8,8 @@
     android:layout_marginRight="@dimen/generic_dimen">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_picture_header_tv"
+        android:id="@+id/item_picture_header_category_tv"
+        style="@style/CategoryHeadline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

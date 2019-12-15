@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         >
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/map_prev_page_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/map_next_page_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

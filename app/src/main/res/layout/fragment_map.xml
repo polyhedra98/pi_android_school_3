@@ -28,7 +28,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:context=".map.MapFragment" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/generic_dimen"
@@ -41,8 +41,9 @@
             app:location="@{locVM.location}"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/map_search_b"
+            style="@style/SearchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/generic_dimen"
@@ -52,7 +53,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/map_center_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

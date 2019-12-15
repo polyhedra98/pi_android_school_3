@@ -20,20 +20,52 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:color/darker_gray" />
 
-        <TextView
-            android:id="@+id/detail_url_tv"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/materialCardView"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/generic_dimen"
             android:layout_marginEnd="@dimen/generic_dimen"
             android:layout_marginRight="@dimen/generic_dimen"
+            android:layout_marginBottom="@dimen/generic_dimen"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/detail_star_b"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv" />
+            app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv">
 
-        <TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/detail_category_tv"
+                    style="@style/CategoryHeadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:layout_marginBottom="@dimen/generic_dimen"
+                    android:layout_marginStart="@dimen/generic_dimen"
+                    android:layout_marginLeft="@dimen/generic_dimen"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/detail_url_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:layout_marginEnd="@dimen/generic_dimen"
+                    android:layout_marginRight="@dimen/generic_dimen" />
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/detail_error_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,20 +76,18 @@
             android:layout_marginRight="@dimen/generic_dimen"
             android:textColor="#F11313"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/detail_url_tv"
             app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/detail_star_b"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/generic_dimen"
-            android:layout_marginEnd="@dimen/generic_dimen"
-            android:layout_marginRight="@dimen/generic_dimen"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/detail_download_b"
+            app:layout_constraintStart_toStartOf="@+id/detail_download_b"
             app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/detail_download_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,16 +99,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_star_b" />
 
-        <TextView
-            android:id="@+id/detail_category_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/generic_dimen"
-            app:layout_constraintEnd_toEndOf="@+id/detail_url_tv"
-            app:layout_constraintStart_toStartOf="@+id/detail_url_tv"
-            app:layout_constraintTop_toBottomOf="@+id/detail_url_tv" />
-
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/detail_download_error_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

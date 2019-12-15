@@ -53,6 +53,7 @@ class DetailActivity : AppCompatActivity() {
             detail_url_tv.text = getString(R.string.storage)
         } else {
             detail_url_tv.text = url
+            detail_category_tv.text = category
             Linkify.addLinks(detail_url_tv, Linkify.WEB_URLS)
         }
 

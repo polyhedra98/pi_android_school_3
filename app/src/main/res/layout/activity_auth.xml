@@ -18,8 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/auth_create_b"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/auth_dimen"
@@ -31,7 +32,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/auth_login_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,27 +42,27 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/auth_create_b"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/auth_username_tv"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/auth_dimen"
             android:layout_marginLeft="@dimen/auth_dimen"
-            android:layout_marginBottom="@dimen/auth_dimen"
-            android:text="@string/username"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            app:layout_constraintBottom_toTopOf="@+id/auth_create_b"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/auth_username_et"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/auth_dimen"
             android:layout_marginRight="@dimen/auth_dimen"
-            android:ems="10"
-            android:inputType="textPersonName"
-            app:layout_constraintBaseline_toBaselineOf="@+id/auth_username_tv"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginBottom="@dimen/auth_dimen"
+            android:hint="@string/username"
+            app:layout_constraintBottom_toTopOf="@+id/auth_create_b"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/auth_username_et"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:inputType="textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

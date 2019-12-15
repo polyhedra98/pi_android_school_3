@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_et"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -35,8 +35,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:observable_error="@{homeVM.observableError}" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/search_b"
+            style="@style/SearchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/generic_dimen"
@@ -45,7 +46,7 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/search_et"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/prev_page_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +61,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_et" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/next_page_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

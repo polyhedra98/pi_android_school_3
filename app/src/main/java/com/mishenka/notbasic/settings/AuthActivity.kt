@@ -9,6 +9,9 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.ActivityAuthBinding
 import com.mishenka.notbasic.util.obtainAuthVM
 
+
+//TODO("Switching to this activity from the HomeActivity is a little slow.
+// Performance issues, don't quite know the cause yet.")
 class AuthActivity : AppCompatActivity(), AuthCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {

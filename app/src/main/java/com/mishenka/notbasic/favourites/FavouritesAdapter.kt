@@ -3,14 +3,13 @@ package com.mishenka.notbasic.favourites
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.home.HeaderVH
 import com.mishenka.notbasic.home.HomeVM
 import com.mishenka.notbasic.util.PhotosAdapter
 
 class FavouritesAdapter(private var items: MutableList<String>,
                         private val homeVM: HomeVM,
                         private var additionalInfo: MutableList<Int>)
-    : PhotosAdapter<FavouritesVH, HeaderVH>(items.toMutableList()) {
+    : PhotosAdapter<FavouritesVH, CategoryHeaderVH>(items.toMutableList()) {
 
 
     override fun pFactory(parent: ViewGroup) =
@@ -23,8 +22,10 @@ class FavouritesAdapter(private var items: MutableList<String>,
 
 
     override fun hFactory(parent: ViewGroup) =
-        HeaderVH(LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_picture_header, parent, false))
+        CategoryHeaderVH(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_picture_header_category, parent, false)
+        )
 
 
     override fun getItemViewType(position: Int) =
