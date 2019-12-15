@@ -8,9 +8,12 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.preference.CheckBoxPreference
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
@@ -85,8 +88,13 @@ class SettingsActivity : AppCompatActivity() {
             val homeVM = (activity as AppCompatActivity).obtainHomeVM()
 
             findPreference<CheckBoxPreference>(getString(R.string.settings_endless_list_key))
-                ?.setOnPreferenceChangeListener { preference, newValue ->
+                ?.setOnPreferenceChangeListener { _, newValue ->
                     homeVM.endlessChanged(newValue as Boolean)
+                    true
+                }
+            findPreference<ListPreference>(getString(R.string.setting_theme_key))
+                ?.setOnPreferenceChangeListener { _, newValue ->
+                    themeChanged(newValue.toString())
                     true
                 }
             setupLocationPreference()
@@ -114,6 +122,16 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 })
             }
+        }
+
+
+        private fun themeChanged(newValue: String) {
+            val nightModeValue = when(newValue) {
+                "theme_light" -> MODE_NIGHT_NO
+                "theme_dark" -> MODE_NIGHT_YES
+                else -> MODE_NIGHT_FOLLOW_SYSTEM
+            }
+            setDefaultNightMode(nightModeValue)
         }
 
 
