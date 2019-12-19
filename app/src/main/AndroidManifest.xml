@@ -41,9 +41,6 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity
-            android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings" />
         <activity android:name=".detail.DetailActivity" />
         <activity android:name=".home.SplashActivity">
             <intent-filter>

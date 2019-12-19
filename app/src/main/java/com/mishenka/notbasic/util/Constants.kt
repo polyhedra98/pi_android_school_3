@@ -11,6 +11,6 @@ object Constants {
     const val LOCATION_PERM_RC = 2
     const val STORAGE_PERM_RC = 3
 
-    const val JPEG_QUALITY = 100
+    const val BACK_STACK_ROOT_TAG = "root_fragment"
 
 }

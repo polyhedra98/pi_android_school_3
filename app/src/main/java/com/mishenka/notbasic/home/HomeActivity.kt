@@ -1,27 +1,22 @@
 package com.mishenka.notbasic.home
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.location.Location
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.FileProvider
+import androidx.annotation.IdRes
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
@@ -31,9 +26,8 @@ import com.mishenka.notbasic.gallery.GalleryFragment
 import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.map.MapFragment
 import com.mishenka.notbasic.map.MapSearchActivity
-import com.mishenka.notbasic.settings.SettingsActivity
+import com.mishenka.notbasic.settings.SettingsFragment
 import com.mishenka.notbasic.util.*
-import com.mishenka.notbasic.util.Constants.JPEG_QUALITY
 import com.mishenka.notbasic.util.Constants.TAKE_PHOTO_RC
 import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_home.*
@@ -41,12 +35,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
 import java.net.URL
-import java.util.*
 
 class HomeActivity : AppCompatActivity() {
 
@@ -113,6 +102,23 @@ class HomeActivity : AppCompatActivity() {
 
         }
 
+
+        obtainAuthVM().apply {
+
+            userLogIn.observe(this@HomeActivity, Observer<Event<Long>> {
+                it.getContentIfNotHandled()?.let { safeId ->
+                    obtainHomeVM().prefetchUserData(safeId)
+                }
+            })
+
+            userLogOut.observe(this@HomeActivity, Observer<Event<Unit>> {
+                it.getContentIfNotHandled()?.let {
+                    obtainHomeVM().flashData()
+                }
+            })
+
+        }
+
     }
 
 
@@ -127,7 +133,16 @@ class HomeActivity : AppCompatActivity() {
             android.R.id.home -> {
                 hideKeyboard()
                 currentFocus?.clearFocus()
-                drawerLayout.openDrawer(GravityCompat.START)
+                with(supportFragmentManager) {
+                    if (backStackEntryCount == 1) {
+                        drawerLayout.openDrawer(GravityCompat.START)
+                    } else {
+                        popBackStackImmediate()
+                        if (backStackEntryCount == 1) {
+                            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24px)
+                        }
+                    }
+                }
                 true
             }
             else -> {
@@ -198,12 +213,12 @@ class HomeActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener { menuItem ->
 
             when (menuItem.itemId) {
-                R.id.home_nav_menu_item -> conditionallyReplaceFragment(HomeFragment::class.java)
-                R.id.fav_nav_menu_item -> conditionallyReplaceFragment(FavouritesFragment::class.java)
-                R.id.history_nav_menu_item -> conditionallyReplaceFragment(HistoryFragment::class.java)
-                R.id.map_nav_menu_item -> conditionallyReplaceFragment(MapFragment::class.java)
-                R.id.gallery_nav_menu_item -> conditionallyReplaceFragment(GalleryFragment::class.java)
-                R.id.settings_nav_menu_item -> startActivity(SettingsActivity::class.java)
+                R.id.home_nav_menu_item -> conditionallyReplaceFragment(R.id.home_content_frame, HomeFragment::class.java)
+                R.id.fav_nav_menu_item -> conditionallyReplaceFragment(R.id.home_content_frame, FavouritesFragment::class.java)
+                R.id.history_nav_menu_item -> conditionallyReplaceFragment(R.id.home_content_frame, HistoryFragment::class.java)
+                R.id.map_nav_menu_item -> conditionallyReplaceFragment(R.id.home_content_frame, MapFragment::class.java)
+                R.id.gallery_nav_menu_item -> conditionallyReplaceFragment(R.id.home_content_frame, GalleryFragment::class.java)
+                R.id.settings_nav_menu_item -> addFragmentOnTop(R.id.home_content_frame, SettingsFragment::class.java)
                 else -> throw IllegalStateException("Illegal menu item")
             }
 
@@ -218,26 +233,51 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    private fun <F: Fragment> conditionallyReplaceFragment(fragment: Class<F>) {
+    private fun <F: Fragment> conditionallyReplaceFragment(@IdRes contentFrame: Int, fragment: Class<F>) {
         if (fragment.isAssignableFrom(supportFragmentManager
-                .findFragmentById(R.id.home_content_frame)!!::class.java)) {
+                .findFragmentById(contentFrame)!!::class.java)) {
             Log.i("NYA", "Already in $fragment")
         } else {
             with(fragment) {
                 when {
                     isAssignableFrom(HomeFragment::class.java) ->
-                        replaceFragmentInActivity(R.id.home_content_frame, HomeFragment.newInstance())
+                        replaceFragmentInActivity(contentFrame, HomeFragment.newInstance())
                     isAssignableFrom(FavouritesFragment::class.java) ->
-                        replaceFragmentInActivity(R.id.home_content_frame, FavouritesFragment.newInstance())
+                        replaceFragmentInActivity(contentFrame, FavouritesFragment.newInstance())
                     isAssignableFrom(HistoryFragment::class.java) ->
-                        replaceFragmentInActivity(R.id.home_content_frame, HistoryFragment.newInstance())
+                        replaceFragmentInActivity(contentFrame, HistoryFragment.newInstance())
                     isAssignableFrom(MapFragment::class.java) ->
-                        replaceFragmentInActivity(R.id.home_content_frame, MapFragment.newInstance())
+                        replaceFragmentInActivity(contentFrame, MapFragment.newInstance())
                     isAssignableFrom(GalleryFragment::class.java) ->
-                        replaceFragmentInActivity(R.id.home_content_frame, GalleryFragment.newInstance())
+                        replaceFragmentInActivity(contentFrame, GalleryFragment.newInstance())
+                    isAssignableFrom(SettingsFragment::class.java) ->
+                        replaceFragmentInActivity(contentFrame, SettingsFragment.newInstance())
                     else ->
                         throw java.lang.IllegalStateException("Unknown fragment class")
                 }
+            }
+        }
+    }
+
+    //TODO("This doesn't really follow SOLID principles, but I can't really change it now,
+    // I would have to rework my fragments logic, which is harder than it is to write everything over")
+    private fun <F: Fragment> addFragmentOnTop(@IdRes contentFrame: Int, fragment: Class<F>) {
+        with(fragment) {
+            when {
+                isAssignableFrom(HomeFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, HomeFragment.newInstance())
+                isAssignableFrom(FavouritesFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, FavouritesFragment.newInstance())
+                isAssignableFrom(HistoryFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, HistoryFragment.newInstance())
+                isAssignableFrom(MapFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, MapFragment.newInstance())
+                isAssignableFrom(GalleryFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, GalleryFragment.newInstance())
+                isAssignableFrom(SettingsFragment::class.java) ->
+                    addFragmentOnTop(contentFrame, SettingsFragment.newInstance())
+                else ->
+                    throw java.lang.IllegalStateException("Unknown fragment class")
             }
         }
     }
