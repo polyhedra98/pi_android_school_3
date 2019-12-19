@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentFavouritesBinding
-import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
-import com.mishenka.notbasic.util.SwipeListener
-import com.mishenka.notbasic.util.obtainAuthVM
-import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.*
 
 class FavouritesFragment : Fragment() {
 
@@ -41,6 +38,8 @@ class FavouritesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar(R.string.fav_nav_title)
 
         setupBindings()
     }

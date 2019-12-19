@@ -46,6 +46,10 @@ class AuthVM private constructor(
     val oauthToken: LiveData<String>
         get() = _oauthToken
 
+    private val _loginRequested = MutableLiveData<Event<Unit>>()
+    val loginRequested: LiveData<Event<Unit>>
+        get() = _loginRequested
+
 
     fun start(context: Context) {
         getSavedUser(context)
@@ -65,6 +69,11 @@ class AuthVM private constructor(
                 Log.i("NYA", "Failed trying to get request token. Message: $msg")
             }
         })
+    }
+
+
+    fun requestLogIn() {
+        _loginRequested.value = Event(Unit)
     }
 
 

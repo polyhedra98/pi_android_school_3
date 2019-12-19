@@ -66,8 +66,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     safePref.title = getString(R.string.anonymous_user)
                     authPref?.let { authPref ->
                         authPref.title = getString(R.string.log_in)
-                        authPref.intent = Intent(activity, AuthActivity::class.java)
-                        authPref.onPreferenceClickListener = null
+                        authPref.setOnPreferenceClickListener {
+                            authVM.requestLogIn()
+                            true
+                        }
                     }
                 } else {
                     safePref.title = username

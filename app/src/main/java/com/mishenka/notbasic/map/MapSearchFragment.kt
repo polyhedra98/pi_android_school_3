@@ -21,6 +21,7 @@ import com.mishenka.notbasic.util.Constants.PER_PAGE
 import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.setupToolbar
 
 class MapSearchFragment : Fragment() {
 
@@ -36,7 +37,10 @@ class MapSearchFragment : Fragment() {
             .apply {
                 homeVM = (activity as AppCompatActivity).obtainHomeVM()
                 lifecycleOwner = activity
-            }.also { binding = it }.root
+            }.also {
+                binding = it
+                setupToolbar(R.string.search, true)
+            }.root
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

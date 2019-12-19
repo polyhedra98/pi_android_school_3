@@ -14,10 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.databinding.FragmentHomeBinding
-import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
-import com.mishenka.notbasic.util.SwipeListener
-import com.mishenka.notbasic.util.obtainAuthVM
-import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.*
 
 
 class HomeFragment : Fragment() {
@@ -41,6 +38,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar(R.string.home_nav_title)
 
         setupBindings()
     }

@@ -26,6 +26,7 @@ import com.mishenka.notbasic.databinding.FragmentMapBinding
 import com.mishenka.notbasic.util.Constants.LOCATION_PERM_RC
 import com.mishenka.notbasic.util.obtainHomeVM
 import com.mishenka.notbasic.util.obtainLocationVM
+import com.mishenka.notbasic.util.setupToolbar
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
@@ -48,6 +49,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar(R.string.map_nav_title)
 
         setupLocation()
         setupMap()

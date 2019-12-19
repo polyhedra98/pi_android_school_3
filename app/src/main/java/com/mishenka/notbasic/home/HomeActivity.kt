@@ -20,12 +20,13 @@ import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.photo.OuterClass
-import com.mishenka.notbasic.detail.DetailActivity
+import com.mishenka.notbasic.detail.DetailFragment
 import com.mishenka.notbasic.favourites.FavouritesFragment
 import com.mishenka.notbasic.gallery.GalleryFragment
 import com.mishenka.notbasic.history.HistoryFragment
 import com.mishenka.notbasic.map.MapFragment
-import com.mishenka.notbasic.map.MapSearchActivity
+import com.mishenka.notbasic.map.MapSearchFragment
+import com.mishenka.notbasic.settings.AuthFragment
 import com.mishenka.notbasic.settings.SettingsFragment
 import com.mishenka.notbasic.util.*
 import com.mishenka.notbasic.util.Constants.TAKE_PHOTO_RC
@@ -67,11 +68,9 @@ class HomeActivity : AppCompatActivity() {
 
             resultClicked.observe(this@HomeActivity, Observer<Event<Pair<String?, String?>>> {
                 it.getContentIfNotHandled()?.let { pair ->
-                    startActivity(Intent(this@HomeActivity, DetailActivity::class.java)
-                        .apply {
-                            putExtra(getString(R.string.intent_url_extra), pair.first)
-                            putExtra(getString(R.string.intent_category_extra), pair.second)
-                        })
+                    //TODO("For simplification, no real need to implement additional extras to pass")
+                    addFragmentOnTop(R.id.home_content_frame,
+                        DetailFragment.newInstance(this@HomeActivity, pair.first, pair.second))
                 }
             })
 
@@ -84,7 +83,8 @@ class HomeActivity : AppCompatActivity() {
             mapSearchClicked.observe(this@HomeActivity, Observer<Event<Pair<Double, Double>>> {
                 it.getContentIfNotHandled()?.let { location ->
                     performMapSearch(location.first, location.second)
-                    startActivity(Intent(this@HomeActivity, MapSearchActivity::class.java))
+                    addFragmentOnTop(R.id.home_content_frame,
+                        MapSearchFragment::class.java)
                 }
             })
 
@@ -100,6 +100,13 @@ class HomeActivity : AppCompatActivity() {
                 }
             })
 
+            mapResponseAcquired.observe(this@HomeActivity, Observer<Event<Pair<Response<OuterClass?>, Boolean>>> {
+                it.getContentIfNotHandled()?.let { response ->
+                    this.processMapSearchResult(this@HomeActivity, response.first, response.second)
+                    Log.i("NYA", "(from HomeActivity) Response: ${response.first}, ${response.second}")
+                }
+            })
+
         }
 
 
@@ -108,12 +115,19 @@ class HomeActivity : AppCompatActivity() {
             userLogIn.observe(this@HomeActivity, Observer<Event<Long>> {
                 it.getContentIfNotHandled()?.let { safeId ->
                     obtainHomeVM().prefetchUserData(safeId)
+                    hideKeyboard()
                 }
             })
 
             userLogOut.observe(this@HomeActivity, Observer<Event<Unit>> {
                 it.getContentIfNotHandled()?.let {
                     obtainHomeVM().flashData()
+                }
+            })
+
+            loginRequested.observe(this@HomeActivity, Observer<Event<Unit>> {
+                it.getContentIfNotHandled()?.let {
+                    addFragmentOnTop(R.id.home_content_frame, AuthFragment::class.java)
                 }
             })
 
@@ -132,7 +146,6 @@ class HomeActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> {
                 hideKeyboard()
-                currentFocus?.clearFocus()
                 with(supportFragmentManager) {
                     if (backStackEntryCount == 1) {
                         drawerLayout.openDrawer(GravityCompat.START)
@@ -248,10 +261,14 @@ class HomeActivity : AppCompatActivity() {
                         replaceFragmentInActivity(contentFrame, HistoryFragment.newInstance())
                     isAssignableFrom(MapFragment::class.java) ->
                         replaceFragmentInActivity(contentFrame, MapFragment.newInstance())
+                    isAssignableFrom(MapSearchFragment::class.java) ->
+                        replaceFragmentInActivity(contentFrame, MapSearchFragment.newInstance())
                     isAssignableFrom(GalleryFragment::class.java) ->
                         replaceFragmentInActivity(contentFrame, GalleryFragment.newInstance())
                     isAssignableFrom(SettingsFragment::class.java) ->
                         replaceFragmentInActivity(contentFrame, SettingsFragment.newInstance())
+                    isAssignableFrom(AuthFragment::class.java) ->
+                        replaceFragmentInActivity(contentFrame, AuthFragment.newInstance())
                     else ->
                         throw java.lang.IllegalStateException("Unknown fragment class")
                 }
@@ -262,22 +279,31 @@ class HomeActivity : AppCompatActivity() {
     //TODO("This doesn't really follow SOLID principles, but I can't really change it now,
     // I would have to rework my fragments logic, which is harder than it is to write everything over")
     private fun <F: Fragment> addFragmentOnTop(@IdRes contentFrame: Int, fragment: Class<F>) {
-        with(fragment) {
-            when {
-                isAssignableFrom(HomeFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, HomeFragment.newInstance())
-                isAssignableFrom(FavouritesFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, FavouritesFragment.newInstance())
-                isAssignableFrom(HistoryFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, HistoryFragment.newInstance())
-                isAssignableFrom(MapFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, MapFragment.newInstance())
-                isAssignableFrom(GalleryFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, GalleryFragment.newInstance())
-                isAssignableFrom(SettingsFragment::class.java) ->
-                    addFragmentOnTop(contentFrame, SettingsFragment.newInstance())
-                else ->
-                    throw java.lang.IllegalStateException("Unknown fragment class")
+        if (fragment.isAssignableFrom(supportFragmentManager
+                .findFragmentById(contentFrame)!!::class.java)) {
+            Log.i("NYA", "Already in $fragment")
+        } else {
+            with(fragment) {
+                when {
+                    isAssignableFrom(HomeFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, HomeFragment.newInstance())
+                    isAssignableFrom(FavouritesFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, FavouritesFragment.newInstance())
+                    isAssignableFrom(HistoryFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, HistoryFragment.newInstance())
+                    isAssignableFrom(MapFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, MapFragment.newInstance())
+                    isAssignableFrom(MapSearchFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, MapSearchFragment.newInstance())
+                    isAssignableFrom(GalleryFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, GalleryFragment.newInstance())
+                    isAssignableFrom(SettingsFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, SettingsFragment.newInstance())
+                    isAssignableFrom(AuthFragment::class.java) ->
+                        addFragmentOnTop(contentFrame, AuthFragment.newInstance())
+                    else ->
+                        throw java.lang.IllegalStateException("Unknown fragment class")
+                }
             }
         }
     }
@@ -308,6 +334,7 @@ class HomeActivity : AppCompatActivity() {
             val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(safeCurrentFocus.windowToken, InputMethodManager.SHOW_FORCED)
         }
+        currentFocus?.clearFocus()
     }
 
 

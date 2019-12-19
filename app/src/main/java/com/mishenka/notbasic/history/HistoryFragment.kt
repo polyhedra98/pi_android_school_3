@@ -18,6 +18,7 @@ import com.mishenka.notbasic.databinding.FragmentHistoryBinding
 import com.mishenka.notbasic.util.Event
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.setupToolbar
 import kotlinx.android.synthetic.main.fragment_history.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -46,6 +47,8 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar(R.string.history_nav_title)
 
         setupBindings()
     }

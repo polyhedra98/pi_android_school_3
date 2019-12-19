@@ -22,6 +22,7 @@ import com.mishenka.notbasic.util.Constants.STORAGE_PERM_RC
 import com.mishenka.notbasic.util.SwipeItemTouchHelperCallback
 import com.mishenka.notbasic.util.SwipeListener
 import com.mishenka.notbasic.util.obtainHomeVM
+import com.mishenka.notbasic.util.setupToolbar
 
 
 class GalleryFragment : Fragment() {
@@ -43,6 +44,8 @@ class GalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar(R.string.gallery_nav_title)
 
         if (getExternalStoragePermission()) {
             setupBindings(false)
