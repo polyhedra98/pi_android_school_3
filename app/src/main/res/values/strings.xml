@@ -70,6 +70,10 @@
     <string name="fetching_history">Fetching history..</string>
     <string name="fetching_favourites">Fetching favourites..</string>
     <string name="map_nav_title">Map</string>
+    <string name="broadcast_battery_changed">Battery power changed</string>
+    <string name="broadcast_power_connected">Power connected</string>
+    <string name="broadcast_power_disconnected">Power disconnected</string>
+    <string name="broadcast_error">Broadcast error</string>
 
     <string name="lat_lng_error_code">Lat: %1$s \\ Lon: %2$s\nUnsuccessful. Error code: %3$d</string>
     <string name="lat_lng_empty_photos">Lat: %1$s \\ Lon: %2$s\nUnsuccessful. Empty photos.</string>

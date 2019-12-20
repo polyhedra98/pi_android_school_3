@@ -3,6 +3,7 @@ package com.mishenka.notbasic.home
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +43,9 @@ class HomeActivity : AppCompatActivity() {
 
 
     private lateinit var drawerLayout: DrawerLayout
+
+    private val systemReceiver = SystemReceiver()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,12 +137,26 @@ class HomeActivity : AppCompatActivity() {
 
         }
 
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_BATTERY_CHANGED)
+            addAction(Intent.ACTION_POWER_CONNECTED)
+            addAction(Intent.ACTION_POWER_DISCONNECTED)
+        }
+
+        registerReceiver(systemReceiver, filter)
+
     }
 
 
     override fun onStop() {
         saveSearch()
         super.onStop()
+    }
+
+
+    override fun onDestroy() {
+        this.unregisterReceiver(systemReceiver)
+        super.onDestroy()
     }
 
 
