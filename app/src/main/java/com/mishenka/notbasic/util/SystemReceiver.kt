@@ -10,9 +10,7 @@ class SystemReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        val intentAction = intent.action
-
-        intentAction?.let { safeAction ->
+        intent.action?.let { safeAction ->
             with(context) {
                 val msg = when(safeAction) {
                     Intent.ACTION_BATTERY_CHANGED -> getString(R.string.broadcast_battery_changed)
@@ -22,7 +20,6 @@ class SystemReceiver : BroadcastReceiver() {
                 }
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             }
-
         }
 
     }

@@ -37,6 +37,9 @@
     <string name="settings_location_permission_granted">Location tracking allowed</string>
     <string name="settings_location_summary">Required in order to properly search photos using a map.</string>
     <string name="settings_location_key">location_key</string>
+    <string name="settings_startup_key">startup_key</string>
+    <string name="settings_startup_title">Start on boot</string>
+    <string name="settings_startup_summary">Automatically start application on boot.</string>
     <string name="log_in">Log In</string>
     <string name="log_out">Log Out</string>
     <string name="create">Create</string>

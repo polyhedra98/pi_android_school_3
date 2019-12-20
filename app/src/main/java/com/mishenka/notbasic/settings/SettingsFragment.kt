@@ -1,11 +1,10 @@
 package com.mishenka.notbasic.settings
 
 import android.Manifest
-import android.content.Intent
+import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -16,6 +15,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.util.BootReceiver
 import com.mishenka.notbasic.util.obtainAuthVM
 import com.mishenka.notbasic.util.obtainHomeVM
 
@@ -52,6 +52,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 homeVM.endlessChanged(newValue as Boolean)
                 true
             }
+        findPreference<CheckBoxPreference>(getString(R.string.settings_startup_key))
+            ?.setOnPreferenceChangeListener { _, newValue ->
+                changeBootReceiverState(newValue as Boolean)
+                true
+            }
         findPreference<ListPreference>(getString(R.string.settings_theme_key))
             ?.setOnPreferenceChangeListener { _, newValue ->
                 themeChanged(newValue.toString())
@@ -83,6 +88,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             })
+        }
+    }
+
+
+    private fun changeBootReceiverState(newValue: Boolean) {
+        val componentName = ComponentName(context!!, BootReceiver::class.java)
+        if (newValue) {
+            context!!.packageManager.setComponentEnabledSetting(componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED , PackageManager.DONT_KILL_APP)
+        } else {
+            context!!.packageManager.setComponentEnabledSetting(componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
         }
     }
 

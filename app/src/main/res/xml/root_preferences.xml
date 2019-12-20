@@ -10,6 +10,13 @@
             android:summary="@string/settings_endless_list_summary"
             />
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_startup_key"
+            android:title="@string/settings_startup_title"
+            android:summary="@string/settings_startup_summary"
+            />
+
         <Preference
             android:key="@string/settings_location_key"
             android:summary="@string/settings_location_summary"
