@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Margins -->
+    <dimen name="tiny_margin">4dp</dimen>
+    <dimen name="small_margin">8dp</dimen>
+    <dimen name="normal_margin">16dp</dimen>
+    <dimen name="big_margin">24dp</dimen>
+    <dimen name="large_margin">32dp</dimen>
+    <!-- ~Margins -->
+
+
+    <!-- Specific heights -->
+    <dimen name="item_pic_height">250dp</dimen>
+
+    <dimen name="nav_header_height">180dp</dimen>
+    <dimen name="nav_image_height">100dp</dimen>
+    <!-- ~Specific heights -->
+
+
+    <!-- Other -->
+    <dimen name="card_corner_radius">4dp</dimen>
+    <!-- ~Other -->
+
+</resources>

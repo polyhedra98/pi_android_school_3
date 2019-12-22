@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="center">
+
+
+        <TextView
+            android:id="@+id/primary_main_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.MainText"
+            android:text="@string/fragment_single_primary_temp" />
+
+
+        <Button
+            android:id="@+id/primary_add_primary_b"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_primary_add_primary"
+            />
+
+
+        <Button
+            android:id="@+id/primary_add_primary_single_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_primary_add_primary_single"
+            />
+
+
+    </LinearLayout>
+
+
+
+</FrameLayout>
