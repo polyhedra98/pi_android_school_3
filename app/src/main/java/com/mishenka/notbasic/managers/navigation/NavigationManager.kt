@@ -13,6 +13,7 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.fragments.MapFragment
 import com.mishenka.notbasic.general.ExtendedActivity
+import com.mishenka.notbasic.interfaces.IFragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import org.koin.dsl.module
 
@@ -58,20 +59,27 @@ class NavigationManager {
         Log.i("NYA_$TAG", "Addition of fragment ${request.fragmentTag} " +
                 "requested. Current stack size: $totalStackSize.")
 
+        val requestItem = RequestItem(
+            System.currentTimeMillis(),
+            request
+        )
+
         var shouldForceRemove = false
         if (request.isSecondary) {
-            addChildElement(request)
+            addChildElement(requestItem)
         } else {
             shouldForceRemove =
                 detectRedundantChildren(requestsStack.peek()?.children.isNullOrEmpty())
-            requestsStack.add(RequestsStackItem(request))
+            requestsStack.add(RequestsStackItem(requestItem))
         }
 
         setupViews(shouldRepopulate = false, forceRemoval = shouldForceRemove)
 
         val frameId = getFrameIdForRequest(request)
         host!!.supportFragmentManager.beginTransaction().run {
-            replace(frameId, request.instantiateFragment(null))
+            replace(frameId, request.instantiateFragment(host, object : IFragmentExtras {
+                override val fragmentId = requestItem.id
+            }))
             commit()
         }
         conditionallyChangeTitle(request)
@@ -136,8 +144,8 @@ class NavigationManager {
         requestsStack.clear()
 
         when (itemId) {
-            R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest)
-            R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest)
+            R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeFragmentRequest)
+            R.id.map_nav_menu_item -> requestAddition(MapFragment.MapFragmentRequest)
             else -> {
                 Log.i("NYA_$TAG", "Error processing navigation action. No such id.")
                 throw Exception("Error processing navigation action. No such id.")
@@ -186,7 +194,7 @@ class NavigationManager {
             mainFrame!!.removeAllViews()
         }
 
-        val replaced = if (lastItem.primaryRequest.shouldBeDisplayedAlone) {
+        val replaced = if (lastItem.primaryRequest.request.shouldBeDisplayedAlone) {
             conditionallyReplaceFrame(singleChildFrame, singleChildRoot)
         } else {
             conditionallyReplaceFrame(twoChildrenFrame, primaryChildRoot)
@@ -249,8 +257,10 @@ class NavigationManager {
         with(host!!.supportFragmentManager) {
 
             beginTransaction().run {
-                replace(getFrameIdForRequest(lastPrimaryRequest),
-                    lastPrimaryRequest.instantiateFragment(null))
+                replace(getFrameIdForRequest(lastPrimaryRequest.request),
+                    lastPrimaryRequest.request.instantiateFragment(host, object : IFragmentExtras {
+                        override val fragmentId = lastPrimaryRequest.id
+                    }))
                 commit()
             }
 
@@ -259,14 +269,16 @@ class NavigationManager {
             }
             else {
                 beginTransaction().run {
-                    replace(getFrameIdForRequest(lastChildRequest),
-                        lastChildRequest.instantiateFragment(null))
+                    replace(getFrameIdForRequest(lastChildRequest.request),
+                        lastChildRequest.request.instantiateFragment(host, object : IFragmentExtras {
+                            override val fragmentId = lastChildRequest.id
+                        }))
                     commit()
                 }
             }
 
         }
-        conditionallyChangeTitle(lastPrimaryRequest, lastChildRequest)
+        conditionallyChangeTitle(lastPrimaryRequest.request, lastChildRequest?.request)
     }
 
 
@@ -328,7 +340,7 @@ class NavigationManager {
     }
 
 
-    private fun addChildElement(request: IFragmentRequest) {
+    private fun addChildElement(request: RequestItem) {
         if (requestsStack.lastElement().children == null) {
             requestsStack.lastElement().children = ChildrenStack()
         }

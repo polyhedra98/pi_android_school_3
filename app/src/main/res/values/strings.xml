@@ -17,9 +17,7 @@
 
 
     <!-- Keys -->
-    <string name="bundle_total_stack_size_key">total_count</string>
-    <string name="bundle_primary_stack_size_key">primary_count</string>
-    <string name="bundle_children_stack_size_key">children_count</string>
+    <string name="bundle_fragment_id_key">fragment_id</string>
 
 
 
@@ -32,6 +30,12 @@
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
 
+
+
+    <!-- UI values -->
+    <string name="search_b_text">Search</string>
+    <string name="prev_page_b_text">Previous page</string>
+    <string name="next_page_b_text">Next page</string>
 
 
 </resources>

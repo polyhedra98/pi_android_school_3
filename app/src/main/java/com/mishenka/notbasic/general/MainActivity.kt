@@ -2,7 +2,6 @@ package com.mishenka.notbasic.general
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.GravityCompat
@@ -42,7 +41,7 @@ class MainActivity : ExtendedActivity() {
 
         navigationManager.run {
             conditionallyInitializeHost(this@MainActivity)
-            requestInitialPopulation(HomeFragment.HomeRequest)
+            requestInitialPopulation(HomeFragment.HomeFragmentRequest)
         }
 
 

@@ -1,17 +1,21 @@
 package com.mishenka.notbasic.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.managers.navigation.NavigationManager
+import com.mishenka.notbasic.data.DataTypes
+import com.mishenka.notbasic.data.extras.StdSearchExtras
+import com.mishenka.notbasic.interfaces.IDataExtras
+import com.mishenka.notbasic.interfaces.IDataRequest
 import com.mishenka.notbasic.interfaces.IFragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.viewmodels.EventVM
-import kotlinx.android.synthetic.main.fragment_temp_primary.*
-import org.koin.android.ext.android.get
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
@@ -19,36 +23,44 @@ class HomeFragment : Fragment() {
 
     private val eventVM by sharedViewModel<EventVM>()
 
+    private var fragmentId: Long? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_temp_primary, container, false)
+        arguments?.run {
+            fragmentId = getLong(getString(R.string.bundle_fragment_id_key))
+        }
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        primary_add_secondary_b.setOnClickListener {
-            eventVM.requestFragment(DetailFragment.DetailRequest)
-        }
+        search_b.setOnClickListener {
+            if (fragmentId != null) {
+                eventVM.requestData(object : IDataRequest {
 
-        primary_add_primary_b.setOnClickListener {
-            eventVM.requestFragment(HomeRequest)
-        }
+                    override val extras = StdSearchExtras(search_et.text?.toString())
 
-        primary_add_primary_single_b.setOnClickListener {
-            eventVM.requestFragment(MapFragment.MapRequest)
-        }
+                    override val ofType = DataTypes.STD_SEARCH
 
-        primary_main_tv.text = getString(R.string.fragment_primary_temp)
+                    override val fragmentId = this@HomeFragment.fragmentId
+
+                })
+            } else {
+                Log.i("NYA_${HomeFragmentRequest.fragmentTag}", "Fragment ID is " +
+                        "null. Can't request search data.")
+            }
+        }
     }
 
 
-    object HomeRequest : IFragmentRequest {
+    object HomeFragmentRequest : IFragmentRequest {
 
         override val fragmentTag: String
             get() = "HOME_FRAG"
@@ -65,7 +77,11 @@ class HomeFragment : Fragment() {
         override val shouldHideToolbar: Boolean
             get() = false
 
-        override fun instantiateFragment(extras: IFragmentExtras?) = HomeFragment()
+        override fun instantiateFragment(context: Context?, extras: IFragmentExtras) = HomeFragment().apply {
+            arguments = Bundle().apply {
+                putLong(context?.getString(R.string.bundle_fragment_id_key), extras.fragmentId)
+            }
+        }
 
     }
 

@@ -1,3 +1,5 @@
 package com.mishenka.notbasic.interfaces
 
-interface IFragmentExtras
+interface IFragmentExtras {
+    val fragmentId: Long
+}
