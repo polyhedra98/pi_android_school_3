@@ -16,6 +16,9 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MapFragment : Fragment() {
 
+    private val TAG = "MapFragment"
+
+
     private val eventVM by sharedViewModel<EventVM>()
 
     private var fragmentId: Long? = null

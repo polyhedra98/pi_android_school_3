@@ -9,17 +9,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.DataTypes
-import com.mishenka.notbasic.data.extras.StdSearchExtras
-import com.mishenka.notbasic.interfaces.IDataExtras
-import com.mishenka.notbasic.interfaces.IDataRequest
-import com.mishenka.notbasic.interfaces.IFragmentExtras
-import com.mishenka.notbasic.interfaces.IFragmentRequest
+import com.mishenka.notbasic.data.models.StdSearchExtras
+import com.mishenka.notbasic.data.models.StdSearchResponse
+import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class HomeFragment : Fragment() {
+
+    private val TAG = "HomeFragment"
+
 
     private val eventVM by sharedViewModel<EventVM>()
 
@@ -41,15 +42,41 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupSearchButton()
+
+        setupRecyclerView()
+    }
+
+
+    private fun setupSearchButton() {
         search_b.setOnClickListener {
             if (fragmentId != null) {
-                eventVM.requestData(object : IDataRequest {
+                eventVM.requestData(object : IRequestData {
 
-                    override val extras = StdSearchExtras(search_et.text?.toString())
+                    override val extras = StdSearchExtras(
+                        page = 1,
+                        searchQuery = search_et.text?.toString()
+                    )
 
                     override val ofType = DataTypes.STD_SEARCH
 
-                    override val fragmentId = this@HomeFragment.fragmentId
+                    override val fragmentId = this@HomeFragment.fragmentId!!
+
+                    override val callback = object : IResponseCallback {
+
+                        override fun onSuccess(data: IResponseData) {
+                            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                            Log.i("NYA_$TAG", "Successfully fetched data.")
+                            val searchData = (data as StdSearchResponse)
+                            Log.i("NYA_$TAG", "List: ${searchData.data?.photos?.photo}")
+                        }
+
+                        override fun onDataNotAvailable(msg: String) {
+                            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                            Log.i("NYA_$TAG", "Error. Failed to fetch data. $msg")
+                        }
+
+                    }
 
                 })
             } else {
@@ -57,6 +84,11 @@ class HomeFragment : Fragment() {
                         "null. Can't request search data.")
             }
         }
+    }
+
+
+    private fun setupRecyclerView() {
+
     }
 
 

@@ -25,6 +25,7 @@ android {
 }
 
 dependencies {
+
     //Generated
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -40,8 +41,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-beta02'
 
 
-    //Koin
+    //Dependency Injection
     implementation 'org.koin:koin-android:2.0.1'
     implementation 'org.koin:koin-androidx-viewmodel:2.0.1'
+
+
+    //Networking
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
 }

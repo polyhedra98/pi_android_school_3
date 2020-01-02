@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.fragments.HomeFragment
+import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,6 +23,8 @@ class MainActivity : ExtendedActivity() {
     override val mainFrameId = R.id.home_content_frame
 
     private val navigationManager = get<NavigationManager>()
+
+    private val contentManager = get<ContentManager>()
 
     private val eventVM by viewModel<EventVM>()
 
@@ -51,6 +54,13 @@ class MainActivity : ExtendedActivity() {
             fragmentRequested.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { request ->
                     navigationManager.requestAddition(request)
+                }
+            })
+
+
+            dataRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { request ->
+                    contentManager.requestData(request)
                 }
             })
 
