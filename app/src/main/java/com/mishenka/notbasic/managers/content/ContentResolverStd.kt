@@ -1,12 +1,10 @@
 package com.mishenka.notbasic.managers.content
 
+import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.models.StdSearchExtras
 import com.mishenka.notbasic.data.models.StdSearchResponse
 import com.mishenka.notbasic.data.models.photo.OuterClass
-import com.mishenka.notbasic.interfaces.IApiService
-import com.mishenka.notbasic.interfaces.IContentResolver
-import com.mishenka.notbasic.interfaces.IRequestData
-import com.mishenka.notbasic.interfaces.IResponseCallback
+import com.mishenka.notbasic.interfaces.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,7 +23,7 @@ class ContentResolverStd : IContentResolver {
     private val perPage = 5
 
 
-    override fun fetchData(dataRequest: IRequestData, callback: IResponseCallback) {
+    override fun fetchData(dataRequest: IRequestData, observableToUpdate: MutableLiveData<IResponseData?>) {
         //TODO("Validate")
         val extras = (dataRequest.extras as StdSearchExtras)
         val query = extras.searchQuery
@@ -46,14 +44,14 @@ class ContentResolverStd : IContentResolver {
         )
         call.enqueue(object : Callback<OuterClass?> {
             override fun onFailure(call: Call<OuterClass?>, t: Throwable) {
-                callback.onDataNotAvailable(t.localizedMessage ?: "Unexpected error")
+                observableToUpdate.value = null
             }
 
             override fun onResponse(
                 call: Call<OuterClass?>,
                 response: Response<OuterClass?>
             ) {
-                callback.onSuccess(StdSearchResponse(response.body()))
+                observableToUpdate.value = StdSearchResponse(response.body())
             }
         })
     }

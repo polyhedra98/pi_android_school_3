@@ -7,13 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.DataTypes
 import com.mishenka.notbasic.data.models.StdSearchExtras
 import com.mishenka.notbasic.data.models.StdSearchResponse
+import com.mishenka.notbasic.data.models.photo.Photo
+import com.mishenka.notbasic.fragments.adapters.HomeAdapter
 import com.mishenka.notbasic.interfaces.*
+import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
@@ -23,6 +31,8 @@ class HomeFragment : Fragment() {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val contentManager = get<ContentManager>()
 
     private var fragmentId: Long? = null
 
@@ -42,53 +52,68 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSearchButton()
-
-        setupRecyclerView()
-    }
-
-
-    private fun setupSearchButton() {
-        search_b.setOnClickListener {
-            if (fragmentId != null) {
-                eventVM.requestData(object : IRequestData {
-
-                    override val extras = StdSearchExtras(
-                        page = 1,
-                        searchQuery = search_et.text?.toString()
-                    )
-
-                    override val ofType = DataTypes.STD_SEARCH
-
-                    override val fragmentId = this@HomeFragment.fragmentId!!
-
-                    override val callback = object : IResponseCallback {
-
-                        override fun onSuccess(data: IResponseData) {
-                            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                            Log.i("NYA_$TAG", "Successfully fetched data.")
-                            val searchData = (data as StdSearchResponse)
-                            Log.i("NYA_$TAG", "List: ${searchData.data?.photos?.photo}")
-                        }
-
-                        override fun onDataNotAvailable(msg: String) {
-                            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                            Log.i("NYA_$TAG", "Error. Failed to fetch data. $msg")
-                        }
-
-                    }
-
-                })
-            } else {
-                Log.i("NYA_${HomeFragmentRequest.fragmentTag}", "Fragment ID is " +
-                        "null. Can't request search data.")
-            }
+        if (fragmentId != null) {
+            setupObservation(fragmentId!!)
+        } else {
+            Log.i("NYA_$TAG", "Fragment id is null, can't setup content.")
         }
     }
 
 
-    private fun setupRecyclerView() {
+    private fun setupObservation(fragmentId: Long) {
+        val observable = contentManager.getObservableForFragmentId(fragmentId)
 
+        setupSearchButton(fragmentId)
+
+        setupRecyclerView(observable)
+    }
+
+
+    private fun setupSearchButton(fragmentId: Long) {
+        search_b.setOnClickListener {
+            eventVM.requestData(object : IRequestData {
+
+                override val extras = StdSearchExtras(
+                    page = 1,
+                    searchQuery = search_et.text?.toString()
+                )
+
+                override val ofType = DataTypes.STD_SEARCH
+
+                override val fragmentId = fragmentId
+
+            })
+        }
+    }
+
+
+    private fun setupRecyclerView(observable: LiveData<IResponseData?>) {
+
+        search_results_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+        search_results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
+
+        observable.observe(this, Observer { response ->
+            val data = (response as StdSearchResponse?)
+            val photoList = constructUrlList(data?.data?.photos?.photo)
+
+            Log.i("NYA_$TAG", "Observed photo list: $photoList")
+
+            (search_results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
+            search_results_rv.scrollToPosition(0)
+        })
+
+    }
+
+
+    private fun constructUrlList(photos: List<Photo>?): List<String> {
+        val photoList = ArrayList<String>()
+        photos?.let { safePhotos ->
+            for (photo in safePhotos) {
+                photoList.add(photo.constructURL())
+            }
+        }
+        return photoList
     }
 
 

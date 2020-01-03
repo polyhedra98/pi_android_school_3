@@ -25,6 +25,11 @@ class EventVM: ViewModel() {
         get() = _dataRequested
 
 
+    private val _resultClicked = MutableLiveData<Event<String>>()
+    val resultClicked: LiveData<Event<String>>
+        get() = _resultClicked
+
+
 
     fun requestFragment(request: IFragmentRequest) {
         _fragmentRequested.value = Event(request)
@@ -33,6 +38,11 @@ class EventVM: ViewModel() {
 
     fun requestData(dataRequest: IRequestData) {
         _dataRequested.value = Event(dataRequest)
+    }
+
+
+    fun onResultClicked(url: String) {
+        _resultClicked.value = Event(url)
     }
 
 }

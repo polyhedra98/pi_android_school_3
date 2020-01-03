@@ -10,6 +10,4 @@ interface IRequestData {
 
     val fragmentId: Long
 
-    val callback: IResponseCallback
-
 }

@@ -1,10 +1,11 @@
 package com.mishenka.notbasic.managers.content
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.DataTypes
 import com.mishenka.notbasic.interfaces.IContentResolver
 import com.mishenka.notbasic.interfaces.IRequestData
-import com.mishenka.notbasic.interfaces.IResponseCallback
 import com.mishenka.notbasic.interfaces.IResponseData
 import org.koin.dsl.module
 
@@ -24,7 +25,8 @@ class ContentManager {
     )
 
 
-    private val responseStorage = mutableMapOf<Long, IResponseData?>()
+    private val responseStorage = mutableMapOf<Long, MutableLiveData<IResponseData?>>()
+
 
 
     fun requestData(dataRequest: IRequestData) {
@@ -32,18 +34,21 @@ class ContentManager {
 
         Log.i("NYA_$TAG", "Data fetching assigned to " +
                 "${contentResolvers[dataRequest.ofType]?.conventionalName}")
-        contentResolvers[dataRequest.ofType]?.fetchData(dataRequest, object : IResponseCallback {
+        if (responseStorage[dataRequest.fragmentId] == null) {
+            getObservableForFragmentId(dataRequest.fragmentId)
+        }
+        contentResolvers[dataRequest.ofType]?.fetchData(dataRequest, responseStorage[dataRequest.fragmentId]!!)
+    }
 
-            override fun onSuccess(data: IResponseData) {
-                responseStorage[dataRequest.fragmentId] = data
-                dataRequest.callback.onSuccess(data)
-            }
 
-            override fun onDataNotAvailable(msg: String) {
-                responseStorage[dataRequest.fragmentId] = null
-                dataRequest.callback.onDataNotAvailable(msg)
-            }
-        })
+    fun getObservableForFragmentId(fragmentId: Long): LiveData<IResponseData?> {
+        return if (responseStorage[fragmentId] != null) {
+            responseStorage[fragmentId]!!
+        } else {
+            val observable = MutableLiveData<IResponseData?>()
+            responseStorage[fragmentId] = observable
+            responseStorage[fragmentId]!!
+        }
     }
 
 }
