@@ -17,6 +17,7 @@ import com.mishenka.notbasic.data.models.StdSearchExtras
 import com.mishenka.notbasic.data.models.StdSearchResponse
 import com.mishenka.notbasic.data.models.photo.Photo
 import com.mishenka.notbasic.fragments.adapters.HomeAdapter
+import com.mishenka.notbasic.fragments.data.HomeFragmentData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -33,6 +34,8 @@ class HomeFragment : Fragment() {
     private val eventVM by sharedViewModel<EventVM>()
 
     private val contentManager = get<ContentManager>()
+
+    private var fragmentData: HomeFragmentData? = null
 
     private var fragmentId: Long? = null
 
@@ -53,6 +56,20 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (fragmentId != null) {
+            fragmentData = (contentManager.getFragmentData(fragmentId!!) as HomeFragmentData?)
+
+            if (fragmentData == null) {
+                val initialData = object : HomeFragmentData() {
+                    override var query: String? = null
+                    override var currentPage: Int? = null
+                }
+                contentManager.registerFragment(fragmentId!!, initialData)
+                fragmentData = initialData
+            } else {
+                Log.i("NYA_$TAG", "Restored fragment state. Query: ${fragmentData!!.query}, " +
+                        "Page: ${fragmentData!!.currentPage}")
+            }
+
             setupObservation(fragmentId!!)
         } else {
             Log.i("NYA_$TAG", "Fragment id is null, can't setup content.")
@@ -61,11 +78,25 @@ class HomeFragment : Fragment() {
 
 
     private fun setupObservation(fragmentId: Long) {
-        val observable = contentManager.getObservableForFragmentId(fragmentId)
+        val observable = contentManager.getObservableForFragment(fragmentId)
 
         setupSearchButton(fragmentId)
 
+        setupBasicViews()
+
         setupRecyclerView(observable)
+    }
+
+
+    private fun setupBasicViews() {
+        fragmentData?.let { safeData ->
+            safeData.query?.let { safeQuery ->
+                search_et.setText(safeQuery)
+            }
+            safeData.currentPage?.let { safePage ->
+                //TODO("Page setup")
+            }
+        }
     }
 
 
@@ -74,7 +105,6 @@ class HomeFragment : Fragment() {
             eventVM.requestData(object : IRequestData {
 
                 override val extras = StdSearchExtras(
-                    page = 1,
                     searchQuery = search_et.text?.toString()
                 )
 
@@ -95,14 +125,31 @@ class HomeFragment : Fragment() {
 
         observable.observe(this, Observer { response ->
             val data = (response as StdSearchResponse?)
+            updateFragmentData(data?.query, data?.data?.photos?.page)
+
             val photoList = constructUrlList(data?.data?.photos?.photo)
-
-            Log.i("NYA_$TAG", "Observed photo list: $photoList")
-
             (search_results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
             search_results_rv.scrollToPosition(0)
         })
 
+    }
+
+
+    private fun updateFragmentData(query: String?, page: Int?) {
+        if (fragmentId == null) {
+            Log.i("NYA_$TAG", "Error. Can't update data. Fragment id is null.")
+            return
+        }
+        if (fragmentData == null) {
+            fragmentData = object : HomeFragmentData() {
+                override var query: String? = query
+                override var currentPage: Int? = page
+            }
+        } else {
+            fragmentData!!.query = query
+            fragmentData!!.currentPage = page
+        }
+        contentManager.updateFragmentData(fragmentId!!, fragmentData!!)
     }
 
 

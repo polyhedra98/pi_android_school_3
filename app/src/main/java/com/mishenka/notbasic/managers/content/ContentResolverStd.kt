@@ -23,11 +23,14 @@ class ContentResolverStd : IContentResolver {
     private val perPage = 5
 
 
-    override fun fetchData(dataRequest: IRequestData, observableToUpdate: MutableLiveData<IResponseData?>) {
+    override fun fetchData(dataRequest: IRequestData,
+                           fragmentData: IFragmentData?,
+                           observableToUpdate: MutableLiveData<IResponseData?>) {
         //TODO("Validate")
         val extras = (dataRequest.extras as StdSearchExtras)
         val query = extras.searchQuery
-        val page = extras.page
+
+        val page = (fragmentData as IFragmentPagerData?)?.currentPage ?: 1
 
         val baseUrl = "https://www.flickr.com/"
         val retrofit = Retrofit.Builder()
@@ -51,7 +54,7 @@ class ContentResolverStd : IContentResolver {
                 call: Call<OuterClass?>,
                 response: Response<OuterClass?>
             ) {
-                observableToUpdate.value = StdSearchResponse(response.body())
+                observableToUpdate.value = StdSearchResponse(query, response.body())
             }
         })
     }
