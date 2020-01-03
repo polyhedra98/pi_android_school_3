@@ -55,7 +55,7 @@ class NavigationManager {
         get() = requestsStack.peek()?.children?.size
 
 
-    fun requestAddition(request: IFragmentRequest) {
+    fun requestAddition(request: IFragmentRequest, customExtras: IFragmentExtras? = null) {
         Log.i("NYA_$TAG", "Addition of fragment ${request.fragmentTag} " +
                 "requested. Current stack size: $totalStackSize.")
 
@@ -76,10 +76,17 @@ class NavigationManager {
         setupViews(shouldRepopulate = false, forceRemoval = shouldForceRemove)
 
         val frameId = getFrameIdForRequest(request)
+        val extras = if (customExtras != null) {
+            customExtras.apply {
+                fragmentId = requestItem.id
+            }
+        } else {
+            object : IFragmentExtras {
+                override var fragmentId = requestItem.id
+            }
+        }
         host!!.supportFragmentManager.beginTransaction().run {
-            replace(frameId, request.instantiateFragment(host, object : IFragmentExtras {
-                override val fragmentId = requestItem.id
-            }))
+            replace(frameId, request.instantiateFragment(host, extras))
             commit()
         }
         conditionallyChangeTitle(request)
@@ -259,7 +266,7 @@ class NavigationManager {
             beginTransaction().run {
                 replace(getFrameIdForRequest(lastPrimaryRequest.request),
                     lastPrimaryRequest.request.instantiateFragment(host, object : IFragmentExtras {
-                        override val fragmentId = lastPrimaryRequest.id
+                        override var fragmentId = lastPrimaryRequest.id
                     }))
                 commit()
             }
@@ -271,7 +278,7 @@ class NavigationManager {
                 beginTransaction().run {
                     replace(getFrameIdForRequest(lastChildRequest.request),
                         lastChildRequest.request.instantiateFragment(host, object : IFragmentExtras {
-                            override val fragmentId = lastChildRequest.id
+                            override var fragmentId = lastChildRequest.id
                         }))
                     commit()
                 }

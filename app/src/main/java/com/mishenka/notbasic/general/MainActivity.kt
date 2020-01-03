@@ -9,7 +9,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.fragments.DetailFragment
 import com.mishenka.notbasic.fragments.HomeFragment
+import com.mishenka.notbasic.fragments.extras.DetailFragmentExtras
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -64,6 +66,13 @@ class MainActivity : ExtendedActivity() {
                 }
             })
 
+
+            resultClicked.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { safeUrl ->
+                    instantiateDetailFragment(safeUrl)
+                }
+            })
+
         }
 
     }
@@ -105,6 +114,16 @@ class MainActivity : ExtendedActivity() {
     private fun setupNavigationDrawer() {
         drawerLayout = home_dl
         setupDrawerContent(home_nav_view)
+    }
+
+
+    private fun instantiateDetailFragment(url: String) {
+        navigationManager.requestAddition(
+            DetailFragment.DetailFragmentRequest,
+            object : DetailFragmentExtras() {
+                override val url: String = url
+            }
+        )
     }
 
 

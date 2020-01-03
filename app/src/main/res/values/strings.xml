@@ -18,6 +18,7 @@
 
     <!-- Keys -->
     <string name="bundle_fragment_id_key">fragment_id</string>
+    <string name="bundle_fragment_url_key">fragment_url</string>
 
 
 
