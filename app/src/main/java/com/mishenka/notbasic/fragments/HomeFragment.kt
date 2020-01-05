@@ -66,13 +66,12 @@ class HomeFragment : Fragment() {
     }
 
 
-    ////TODO("Change to smthing else (don't want to make 2 changes in 1 commit)")
-    override fun onStop() {
+    override fun onDestroyView() {
         preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
             searchFieldToPreserve ?: restoredData?.searchField
         ))
 
-        super.onStop()
+        super.onDestroyView()
     }
 
 
