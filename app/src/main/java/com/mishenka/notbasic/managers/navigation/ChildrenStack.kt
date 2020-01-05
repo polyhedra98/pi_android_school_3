@@ -1,11 +1,10 @@
 package com.mishenka.notbasic.managers.navigation
 
-import com.mishenka.notbasic.interfaces.IFragmentRequest
 import java.util.*
 
-class ChildrenStack : Stack<IFragmentRequest>() {
+class ChildrenStack : Stack<RequestItem>() {
 
-    override fun pop(): IFragmentRequest? {
+    override fun pop(): RequestItem? {
         return if (size == 0) {
             null
         } else {
@@ -13,7 +12,7 @@ class ChildrenStack : Stack<IFragmentRequest>() {
         }
     }
 
-    override fun peek(): IFragmentRequest? {
+    override fun peek(): RequestItem? {
         return if (size == 0) {
             null
         } else {

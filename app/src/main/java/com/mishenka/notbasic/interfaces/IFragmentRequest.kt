@@ -1,6 +1,8 @@
 package com.mishenka.notbasic.interfaces
 
+import android.content.Context
 import androidx.fragment.app.Fragment
+import com.mishenka.notbasic.data.model.FragmentExtras
 
 interface IFragmentRequest {
 
@@ -14,6 +16,6 @@ interface IFragmentRequest {
 
     val shouldHideToolbar: Boolean
 
-    fun instantiateFragment(extras: IFragmentExtras?): Fragment
+    fun instantiateFragment(context: Context, extras: FragmentExtras): Fragment
 
 }

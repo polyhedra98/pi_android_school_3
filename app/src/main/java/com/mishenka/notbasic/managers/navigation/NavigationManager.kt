@@ -10,9 +10,11 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.view.children
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.fragments.MapFragment
 import com.mishenka.notbasic.general.ExtendedActivity
+import com.mishenka.notbasic.interfaces.IFragmentAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import org.koin.dsl.module
 
@@ -54,24 +56,25 @@ class NavigationManager {
         get() = requestsStack.peek()?.children?.size
 
 
-    fun requestAddition(request: IFragmentRequest) {
+    fun requestAddition(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras? = null) {
         Log.i("NYA_$TAG", "Addition of fragment ${request.fragmentTag} " +
                 "requested. Current stack size: $totalStackSize.")
 
+        val extras = FragmentExtras(System.currentTimeMillis(), additionalExtras)
         var shouldForceRemove = false
         if (request.isSecondary) {
-            addChildElement(request)
+            addChildElement(RequestItem(extras, request))
         } else {
             shouldForceRemove =
                 detectRedundantChildren(requestsStack.peek()?.children.isNullOrEmpty())
-            requestsStack.add(RequestsStackItem(request))
+            requestsStack.add(RequestsStackItem(RequestItem(extras, request)))
         }
 
         setupViews(shouldRepopulate = false, forceRemoval = shouldForceRemove)
 
         val frameId = getFrameIdForRequest(request)
         host!!.supportFragmentManager.beginTransaction().run {
-            replace(frameId, request.instantiateFragment(null))
+            replace(frameId, request.instantiateFragment(host!!, extras))
             commit()
         }
         conditionallyChangeTitle(request)
@@ -186,7 +189,7 @@ class NavigationManager {
             mainFrame!!.removeAllViews()
         }
 
-        val replaced = if (lastItem.primaryRequest.shouldBeDisplayedAlone) {
+        val replaced = if (lastItem.primaryItem.request.shouldBeDisplayedAlone) {
             conditionallyReplaceFrame(singleChildFrame, singleChildRoot)
         } else {
             conditionallyReplaceFrame(twoChildrenFrame, primaryChildRoot)
@@ -239,34 +242,40 @@ class NavigationManager {
 
 
     private fun repopulate() {
-        val lastPrimaryRequest = requestsStack.peek()?.primaryRequest
-        if (lastPrimaryRequest == null) {
-            Log.i("NYA_$TAG", "Error repopulating. Last primary request is null")
+        val lastPrimaryItem = requestsStack.peek()?.primaryItem
+        if (lastPrimaryItem == null) {
+            Log.i("NYA_$TAG", "Error repopulating. Last primary item is null")
             return
         }
-        val lastChildRequest = requestsStack.peek()?.children?.peek()
+        val lastPrimaryRequest = lastPrimaryItem.request
+        val lastPrimaryExtras = lastPrimaryItem.extras
+
+        val lastChildItem = requestsStack.peek()?.children?.peek()
 
         with(host!!.supportFragmentManager) {
 
             beginTransaction().run {
                 replace(getFrameIdForRequest(lastPrimaryRequest),
-                    lastPrimaryRequest.instantiateFragment(null))
+                    lastPrimaryRequest.instantiateFragment(host!!, lastPrimaryExtras))
                 commit()
             }
 
-            if (lastChildRequest == null) {
+            if (lastChildItem == null) {
                 Log.i("NYA_$TAG", "No child to repopulate.")
-            }
-            else {
+            } else {
+
+                val lastChildRequest = lastChildItem.request
+                val lastChildExtras = lastChildItem.extras
+
                 beginTransaction().run {
                     replace(getFrameIdForRequest(lastChildRequest),
-                        lastChildRequest.instantiateFragment(null))
+                        lastChildRequest.instantiateFragment(host!!, lastChildExtras))
                     commit()
                 }
             }
 
         }
-        conditionallyChangeTitle(lastPrimaryRequest, lastChildRequest)
+        conditionallyChangeTitle(lastPrimaryRequest, lastChildItem?.request)
     }
 
 
@@ -328,11 +337,11 @@ class NavigationManager {
     }
 
 
-    private fun addChildElement(request: IFragmentRequest) {
+    private fun addChildElement(requestItem: RequestItem) {
         if (requestsStack.lastElement().children == null) {
             requestsStack.lastElement().children = ChildrenStack()
         }
-        requestsStack.lastElement().children!!.add(request)
+        requestsStack.lastElement().children!!.add(requestItem)
     }
 
 

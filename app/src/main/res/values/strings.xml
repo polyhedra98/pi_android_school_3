@@ -7,9 +7,9 @@
 
 
     <!-- Fragment transactions -->
-    <string name="fragment_primary_temp">Temp primary fragment.</string>
-    <string name="fragment_secondary_temp">Temp secondary fragment.</string>
-    <string name="fragment_single_primary_temp">Temp single primary fragment.</string>
+    <string name="fragment_primary_temp">Temp primary fragment. Id: %1$d</string>
+    <string name="fragment_secondary_temp">Temp secondary fragment. Id: %1$d</string>
+    <string name="fragment_single_primary_temp">Temp single primary fragment. Id: %1$d</string>
     <string name="fragment_primary_add_secondary">Add secondary fragment</string>
     <string name="fragment_primary_add_primary">Add primary fragment</string>
     <string name="fragment_primary_add_primary_single">Add single primary fragment</string>
@@ -20,6 +20,7 @@
     <string name="bundle_total_stack_size_key">total_count</string>
     <string name="bundle_primary_stack_size_key">primary_count</string>
     <string name="bundle_children_stack_size_key">children_count</string>
+    <string name="bundle_fragment_id_key">fragment_id</string>
 
 
 
