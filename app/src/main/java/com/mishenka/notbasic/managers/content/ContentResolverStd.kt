@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.managers.content
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.models.StdSearchExtras
 import com.mishenka.notbasic.data.models.StdSearchResponse
@@ -13,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ContentResolverStd : IContentResolver {
 
-    private val TAG = "StandardSearchResolver"
+    private val TAG = "StdSearchResolver"
 
     override val conventionalName = TAG
 
@@ -31,6 +32,7 @@ class ContentResolverStd : IContentResolver {
         val query = extras.searchQuery
 
         val page = (fragmentData as IFragmentPagerData?)?.currentPage ?: 1
+        Log.i("NYA_$TAG", "Loading content for query: $query, page: $page")
 
         val baseUrl = "https://www.flickr.com/"
         val retrofit = Retrofit.Builder()

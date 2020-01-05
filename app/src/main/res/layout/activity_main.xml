@@ -16,7 +16,7 @@
 
         <include
             android:id="@+id/home_tb"
-            layout="@layout/toolbar"/>
+            layout="@layout/partial_toolbar"/>
 
         <FrameLayout
             android:id="@+id/home_content_frame"

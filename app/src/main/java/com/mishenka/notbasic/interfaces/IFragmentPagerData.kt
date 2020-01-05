@@ -4,4 +4,6 @@ interface IFragmentPagerData : IFragmentData {
 
     var currentPage: Int?
 
+    var lastPage: Int?
+
 }

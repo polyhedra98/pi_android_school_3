@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,15 +17,17 @@ import com.mishenka.notbasic.data.models.StdSearchResponse
 import com.mishenka.notbasic.data.models.photo.Photo
 import com.mishenka.notbasic.fragments.adapters.HomeAdapter
 import com.mishenka.notbasic.fragments.data.HomeFragmentData
+import com.mishenka.notbasic.general.PagerFragment
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.partial_results.view.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : PagerFragment() {
 
     private val TAG = "HomeFragment"
 
@@ -62,6 +63,7 @@ class HomeFragment : Fragment() {
                 val initialData = object : HomeFragmentData() {
                     override var query: String? = null
                     override var currentPage: Int? = null
+                    override var lastPage: Int? = null
                 }
                 contentManager.registerFragment(fragmentId!!, initialData)
                 fragmentData = initialData
@@ -70,14 +72,59 @@ class HomeFragment : Fragment() {
                         "Page: ${fragmentData!!.currentPage}")
             }
 
-            setupObservation(fragmentId!!)
+            setupViews(fragmentId!!)
         } else {
             Log.i("NYA_$TAG", "Fragment id is null, can't setup content.")
         }
     }
 
 
-    private fun setupObservation(fragmentId: Long) {
+    override fun setupRecyclerView(observable: LiveData<IResponseData?>) {
+
+        with(home_results_l) {
+            search_results_rv.layoutManager =
+                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+            search_results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
+
+            observable.observe(this@HomeFragment, Observer { response ->
+                val data = (response as StdSearchResponse?)
+                updateFragmentData(data?.query,
+                    data?.data?.photos?.page,
+                    data?.data?.photos?.pages)
+                pageChanged(data?.data?.photos?.page, data?.data?.photos?.pages)
+
+                val photoList = constructUrlList(data?.data?.photos?.photo)
+                (search_results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
+                search_results_rv.scrollToPosition(0)
+            })
+        }
+
+    }
+
+
+    override fun initPageViews() {
+        with(home_results_l) {
+            prevPageView = prev_page_b
+            nextPageView = next_page_b
+        }
+    }
+
+
+    override fun setupPageViews() {
+        prevPageView?.setOnClickListener {
+            handlePageChange(-1)
+        }
+        nextPageView?.setOnClickListener {
+            handlePageChange(1)
+        }
+    }
+
+
+    private fun setupViews(fragmentId: Long) {
+        initPageViews()
+        hidePageButtons()
+        setupPageViews()
+
         val observable = contentManager.getObservableForFragment(fragmentId)
 
         setupSearchButton(fragmentId)
@@ -93,9 +140,29 @@ class HomeFragment : Fragment() {
             safeData.query?.let { safeQuery ->
                 search_et.setText(safeQuery)
             }
-            safeData.currentPage?.let { safePage ->
-                //TODO("Page setup")
-            }
+            pageChanged(safeData.currentPage, safeData.lastPage)
+        }
+    }
+
+
+    private fun handlePageChange(pageChange: Int) {
+        if (fragmentData != null) {
+            fragmentData!!.currentPage = fragmentData!!.currentPage!! + pageChange
+            contentManager.updateFragmentData(fragmentId!!, fragmentData!!)
+
+            eventVM.requestData(object : IRequestData {
+
+                override val extras = StdSearchExtras(
+                    fragmentData!!.query
+                )
+
+                override val ofType = DataTypes.STD_SEARCH
+
+                override val fragmentId = this@HomeFragment.fragmentId!!
+
+            })
+        } else {
+            Log.i("NYA_$TAG", "Can't handle page change. Fragment data is null.")
         }
     }
 
@@ -117,25 +184,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun setupRecyclerView(observable: LiveData<IResponseData?>) {
-
-        search_results_rv.layoutManager =
-            LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-        search_results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
-
-        observable.observe(this, Observer { response ->
-            val data = (response as StdSearchResponse?)
-            updateFragmentData(data?.query, data?.data?.photos?.page)
-
-            val photoList = constructUrlList(data?.data?.photos?.photo)
-            (search_results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
-            search_results_rv.scrollToPosition(0)
-        })
-
-    }
-
-
-    private fun updateFragmentData(query: String?, page: Int?) {
+    private fun updateFragmentData(query: String?, page: Int?, lastPage: Int?) {
         if (fragmentId == null) {
             Log.i("NYA_$TAG", "Error. Can't update data. Fragment id is null.")
             return
@@ -144,10 +193,12 @@ class HomeFragment : Fragment() {
             fragmentData = object : HomeFragmentData() {
                 override var query: String? = query
                 override var currentPage: Int? = page
+                override var lastPage: Int? = lastPage
             }
         } else {
             fragmentData!!.query = query
             fragmentData!!.currentPage = page
+            fragmentData!!.lastPage = lastPage
         }
         contentManager.updateFragmentData(fragmentId!!, fragmentData!!)
     }
