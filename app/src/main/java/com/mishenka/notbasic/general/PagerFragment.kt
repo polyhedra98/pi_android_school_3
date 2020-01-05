@@ -3,7 +3,7 @@ package com.mishenka.notbasic.general
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import com.mishenka.notbasic.interfaces.IResponseData
+import com.mishenka.notbasic.managers.content.Response
 import kotlinx.android.synthetic.main.partial_results.*
 
 //TODO("Very 'suboptimal' implementation. Might want to change later, should be relatively easy.")
@@ -14,7 +14,7 @@ abstract class PagerFragment : Fragment() {
     var nextPageView: View? = null
 
 
-    abstract fun setupRecyclerView(observable: LiveData<IResponseData?>)
+    abstract fun setupObservable(observable: LiveData<Response>)
 
     abstract fun initPageViews()
 

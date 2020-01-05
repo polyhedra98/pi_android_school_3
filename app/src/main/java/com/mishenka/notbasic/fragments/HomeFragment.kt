@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.DataTypes
+import com.mishenka.notbasic.data.ErrorTypes
 import com.mishenka.notbasic.data.models.StdSearchExtras
 import com.mishenka.notbasic.data.models.StdSearchResponse
 import com.mishenka.notbasic.data.models.photo.Photo
@@ -20,6 +21,7 @@ import com.mishenka.notbasic.fragments.data.HomeFragmentData
 import com.mishenka.notbasic.general.PagerFragment
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
+import com.mishenka.notbasic.managers.content.Response
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.partial_results.view.*
@@ -75,27 +77,18 @@ class HomeFragment : PagerFragment() {
     }
 
 
-    override fun setupRecyclerView(observable: LiveData<IResponseData?>) {
-
-        with(home_results_l) {
-            results_rv.layoutManager =
-                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-            results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
-
-            observable.observe(this@HomeFragment, Observer { response ->
-                val data = (response as StdSearchResponse?)
-                updateFragmentData(data?.query,
-                    data?.data?.photos?.page,
-                    data?.data?.photos?.pages)
-                pageChanged(data?.data?.photos?.page, data?.data?.photos?.pages)
-
-                val photoList = constructUrlList(data?.data?.photos?.photo)
-                (results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
-                downloadStatusChanged(true)
-                results_rv.scrollToPosition(0)
-            })
-        }
-
+    override fun setupObservable(observable: LiveData<Response>) {
+        observable.observe(this@HomeFragment, Observer { response ->
+            when {
+                response.error != null -> handleError(response.error)
+                response.data == null -> {
+                    invalidateFragmentData()
+                    downloadStatusChanged(false)
+                }
+                else -> setupRecyclerView(response.data)
+            }
+            downloadStatusChanged(true)
+        })
     }
 
 
@@ -117,6 +110,47 @@ class HomeFragment : PagerFragment() {
     }
 
 
+    private fun setupRecyclerView(responseData: IResponseData?) {
+        with(home_results_l) {
+            results_rv.layoutManager =
+                LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+            results_rv.adapter =
+                HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
+
+
+            val data = (responseData as StdSearchResponse?)
+            updateFragmentData(
+                data?.query,
+                data?.data?.photos?.page,
+                data?.data?.photos?.pages
+            )
+            pageChanged(data?.data?.photos?.page, data?.data?.photos?.pages)
+
+            val photoList = constructUrlList(data?.data?.photos?.photo)
+            (results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
+            results_rv.scrollToPosition(0)
+        }
+    }
+
+
+    private fun handleError(error: Pair<ErrorTypes, String>) {
+        when(error.first) {
+            ErrorTypes.VALIDATION_ERROR -> handleValidationError(error.second)
+            ErrorTypes.RESPONSE_ERROR -> handleResponseError(error.second)
+        }
+    }
+
+
+    private fun handleValidationError(msg: String) {
+        Log.i("NYA_$TAG", "Validation error. $msg")
+    }
+
+
+    private fun handleResponseError(msg: String) {
+        Log.i("NYA_$TAG", "Response error. $msg")
+    }
+
+
     private fun setupViews(fragmentId: Long) {
         initPageViews()
         hidePageButtons()
@@ -128,7 +162,7 @@ class HomeFragment : PagerFragment() {
 
         setupBasicViews()
 
-        setupRecyclerView(observable)
+        setupObservable(observable)
     }
 
 
@@ -175,7 +209,6 @@ class HomeFragment : PagerFragment() {
         search_b.setOnClickListener {
             eventVM.requestFocusClear()
 
-            fragmentData = invalidateFragmentData()
             contentManager.updateFragmentData(fragmentId, fragmentData!!)
 
             eventVM.requestData(object : IRequestData {
@@ -189,7 +222,6 @@ class HomeFragment : PagerFragment() {
                 override val fragmentId = fragmentId
 
             })
-            downloadStatusChanged(false)
         }
     }
 

@@ -62,7 +62,7 @@ class MainActivity : ExtendedActivity() {
 
             dataRequested.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { request ->
-                    contentManager.requestContent(request)
+                    contentManager.requestContent(this@MainActivity, request)
                 }
             })
 

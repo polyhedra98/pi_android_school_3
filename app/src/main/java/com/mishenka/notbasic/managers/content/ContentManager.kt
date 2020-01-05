@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.managers.content
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +27,7 @@ class ContentManager {
     )
 
 
-    private val responseStorage = mutableMapOf<Long, MutableLiveData<IResponseData?>>()
+    private val responseStorage = mutableMapOf<Long, MutableLiveData<Response>>()
 
     private val dataStorage = mutableMapOf<Long, IFragmentData>()
 
@@ -46,7 +47,7 @@ class ContentManager {
         dataStorage[fragmentId]
 
 
-    fun requestContent(dataRequest: IRequestData) {
+    fun requestContent(context: Context, dataRequest: IRequestData) {
         Log.i("NYA_$TAG", "Data requested for fragment #${dataRequest.fragmentId}")
 
         Log.i("NYA_$TAG", "Data fetching assigned to " +
@@ -54,16 +55,20 @@ class ContentManager {
         if (responseStorage[dataRequest.fragmentId] == null) {
             getObservableForFragment(dataRequest.fragmentId)
         }
-        contentResolvers[dataRequest.ofType]?.fetchData(dataRequest,
-            dataStorage[dataRequest.fragmentId], responseStorage[dataRequest.fragmentId]!!)
+        contentResolvers[dataRequest.ofType]?.fetchData(
+            context,
+            dataRequest,
+            dataStorage[dataRequest.fragmentId],
+            responseStorage[dataRequest.fragmentId]!!
+        )
     }
 
 
-    fun getObservableForFragment(fragmentId: Long): LiveData<IResponseData?> {
+    fun getObservableForFragment(fragmentId: Long): LiveData<Response> {
         return if (responseStorage[fragmentId] != null) {
             responseStorage[fragmentId]!!
         } else {
-            val observable = MutableLiveData<IResponseData?>()
+            val observable = MutableLiveData<Response>()
             responseStorage[fragmentId] = observable
             responseStorage[fragmentId]!!
         }
