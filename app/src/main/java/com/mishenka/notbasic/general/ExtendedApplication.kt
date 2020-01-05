@@ -1,6 +1,7 @@
 package com.mishenka.notbasic.general
 
 import android.app.Application
+import com.mishenka.notbasic.managers.content.contentModule
 import com.mishenka.notbasic.managers.navigation.navigationModule
 import com.mishenka.notbasic.managers.preservation.preservationModule
 import com.mishenka.notbasic.viewmodels.eventsModule
@@ -12,7 +13,7 @@ class ExtendedApplication : Application() {
         super.onCreate()
 
         startKoin {
-            modules(listOf(navigationModule, preservationModule, eventsModule))
+            modules(listOf(navigationModule, preservationModule, contentModule, eventsModule))
         }
     }
 

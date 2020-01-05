@@ -7,10 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.content.ContentType
+import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.data.HomeFragmentData
+import com.mishenka.notbasic.interfaces.IContentExtras
+import com.mishenka.notbasic.interfaces.IContentResponse
 import com.mishenka.notbasic.interfaces.IFragmentRequest
+import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -27,8 +33,10 @@ class HomeFragment : Fragment() {
 
     private val preservationManager = get<PreservationManager>()
 
-    private var fragmentId: Long? = null
+    private val contentManager = get<ContentManager>()
 
+
+    private var fragmentId: Long? = null
 
     private var restoredData: HomeFragmentData? = null
 
@@ -58,6 +66,16 @@ class HomeFragment : Fragment() {
     }
 
 
+    ////TODO("Change to smthing else (don't want to make 2 changes in 1 commit)")
+    override fun onStop() {
+        preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
+            searchFieldToPreserve ?: restoredData?.searchField
+        ))
+
+        super.onStop()
+    }
+
+
     private fun setupViews() {
         home_preserved_data_tv.text = if (restoredData?.searchField == null) {
             getString(R.string.no_data_to_restore)
@@ -66,18 +84,29 @@ class HomeFragment : Fragment() {
         }
 
         home_search_b.setOnClickListener {
-            searchFieldToPreserve = home_search_et.text.toString()
-            home_data_to_preserve_tv.text = getString(R.string.data_to_preserve, searchFieldToPreserve)
+            tempPreservation()
+
+            handleSearch()
         }
     }
 
 
-    override fun onStop() {
-        preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
-            searchFieldToPreserve ?: restoredData?.searchField
-        ))
+    private fun handleSearch() {
+        val observable = contentManager.requestContent(
+            ContentType.STD_TYPE,
+            object : IContentExtras{})
 
-        super.onStop()
+        observable.observe(this, Observer {
+            (it as? StdContentResponse?)?.let { response ->
+                Log.i("NYA_$TAG", "Observed the following data: ${response.responseList}")
+            }
+        })
+    }
+
+
+    private fun tempPreservation() {
+        searchFieldToPreserve = home_search_et.text.toString()
+        home_data_to_preserve_tv.text = getString(R.string.data_to_preserve, searchFieldToPreserve)
     }
 
 
