@@ -30,7 +30,7 @@ class MainActivity : ExtendedActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(null)
         setContentView(R.layout.activity_main)
 
         setupActionBar(R.id.home_tb) {
