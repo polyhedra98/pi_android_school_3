@@ -74,7 +74,7 @@ class DetailFragment : Fragment() {
     private fun setupViews() {
         Glide.with(detail_photo_iv)
             .load(fragmentData!!.url)
-            .centerCrop()
+            .fitCenter()
             .into(detail_photo_iv)
 
         detail_url_tv.text = fragmentData!!.url
