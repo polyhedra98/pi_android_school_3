@@ -30,6 +30,16 @@ class EventVM: ViewModel() {
         get() = _resultClicked
 
 
+    private val _focusClearRequested = MutableLiveData<Event<Unit>>()
+    val focusClearRequested: LiveData<Event<Unit>>
+        get() = _focusClearRequested
+
+
+
+    fun requestFocusClear() {
+        _focusClearRequested.value = Event(Unit)
+    }
+
 
     fun requestFragment(request: IFragmentRequest) {
         _fragmentRequested.value = Event(request)

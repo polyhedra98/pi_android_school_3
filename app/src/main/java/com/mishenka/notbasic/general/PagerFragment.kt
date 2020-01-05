@@ -4,6 +4,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import com.mishenka.notbasic.interfaces.IResponseData
+import kotlinx.android.synthetic.main.partial_results.*
 
 //TODO("Very 'suboptimal' implementation. Might want to change later, should be relatively easy.")
 abstract class PagerFragment : Fragment() {
@@ -40,6 +41,16 @@ abstract class PagerFragment : Fragment() {
             } else {
                 nextPageView?.visibility = View.INVISIBLE
             }
+        }
+    }
+
+    fun downloadStatusChanged(finished: Boolean) {
+        if (finished) {
+            results_pb.visibility = View.INVISIBLE
+            results_rv.visibility = View.VISIBLE
+        } else {
+            results_pb.visibility = View.VISIBLE
+            results_rv.visibility = View.INVISIBLE
         }
     }
 

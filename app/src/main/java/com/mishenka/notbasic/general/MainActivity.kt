@@ -68,8 +68,15 @@ class MainActivity : ExtendedActivity() {
 
 
             resultClicked.observe(this@MainActivity, Observer {
-                it.getContentIfNotHandled()?.let { safeUrl ->
-                    instantiateDetailFragment(safeUrl)
+                it.getContentIfNotHandled()?.let { url ->
+                    instantiateDetailFragment(url)
+                }
+            })
+
+
+            focusClearRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { _ ->
+                    clearFocus()
                 }
             })
 
@@ -108,6 +115,15 @@ class MainActivity : ExtendedActivity() {
         navigationManager.removeHost()
 
         super.onPause()
+    }
+
+
+    private fun clearFocus() {
+        currentFocus?.let { safeCurrentFocus ->
+            val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(safeCurrentFocus.windowToken, InputMethodManager.SHOW_FORCED)
+        }
+        currentFocus?.clearFocus()
     }
 
 

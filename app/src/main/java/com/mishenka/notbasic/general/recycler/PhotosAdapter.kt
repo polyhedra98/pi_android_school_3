@@ -17,7 +17,6 @@ abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
 
 
     fun replaceItems(newItems: List<String>) {
-        Log.i("NYA_$TAG", "Replacing items with $newItems")
         val oldSize = items.size
         val header = items.first()
         items = mutableListOf(header).apply {
@@ -32,7 +31,6 @@ abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
 
 
     fun pseudoAddItems(newItems: List<String>) {
-        Log.i("NYA_$TAG", "Adding items $newItems")
         val oldSize = items.size
         val header = items.first()
         items = mutableListOf(header).apply {
@@ -43,14 +41,12 @@ abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
 
 
     fun removeItem(position: Int) {
-        Log.i("NYA_$TAG", "Removing item at position $position")
         items.removeAt(position)
         notifyItemRemoved(position)
     }
 
 
     fun addItem(value: String) {
-        Log.i("NYA_$TAG", "Adding item $value")
         items.add(value)
         notifyItemInserted(items.size)
     }

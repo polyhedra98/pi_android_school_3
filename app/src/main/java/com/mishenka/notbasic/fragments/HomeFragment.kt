@@ -60,11 +60,7 @@ class HomeFragment : PagerFragment() {
             fragmentData = (contentManager.getFragmentData(fragmentId!!) as HomeFragmentData?)
 
             if (fragmentData == null) {
-                val initialData = object : HomeFragmentData() {
-                    override var query: String? = null
-                    override var currentPage: Int? = null
-                    override var lastPage: Int? = null
-                }
+                val initialData = invalidateFragmentData()
                 contentManager.registerFragment(fragmentId!!, initialData)
                 fragmentData = initialData
             } else {
@@ -82,9 +78,9 @@ class HomeFragment : PagerFragment() {
     override fun setupRecyclerView(observable: LiveData<IResponseData?>) {
 
         with(home_results_l) {
-            search_results_rv.layoutManager =
+            results_rv.layoutManager =
                 LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-            search_results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
+            results_rv.adapter = HomeAdapter(listOf("HEADER (not yet implemented)."), eventVM)
 
             observable.observe(this@HomeFragment, Observer { response ->
                 val data = (response as StdSearchResponse?)
@@ -94,8 +90,9 @@ class HomeFragment : PagerFragment() {
                 pageChanged(data?.data?.photos?.page, data?.data?.photos?.pages)
 
                 val photoList = constructUrlList(data?.data?.photos?.photo)
-                (search_results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
-                search_results_rv.scrollToPosition(0)
+                (results_rv.adapter as HomeAdapter?)?.replaceItems(photoList)
+                downloadStatusChanged(true)
+                results_rv.scrollToPosition(0)
             })
         }
 
@@ -145,6 +142,13 @@ class HomeFragment : PagerFragment() {
     }
 
 
+    private fun invalidateFragmentData() = object : HomeFragmentData() {
+        override var query: String? = null
+        override var currentPage: Int? = null
+        override var lastPage: Int? = null
+    }
+
+
     private fun handlePageChange(pageChange: Int) {
         if (fragmentData != null) {
             fragmentData!!.currentPage = fragmentData!!.currentPage!! + pageChange
@@ -169,6 +173,11 @@ class HomeFragment : PagerFragment() {
 
     private fun setupSearchButton(fragmentId: Long) {
         search_b.setOnClickListener {
+            eventVM.requestFocusClear()
+
+            fragmentData = invalidateFragmentData()
+            contentManager.updateFragmentData(fragmentId, fragmentData!!)
+
             eventVM.requestData(object : IRequestData {
 
                 override val extras = StdSearchExtras(
@@ -180,6 +189,7 @@ class HomeFragment : PagerFragment() {
                 override val fragmentId = fragmentId
 
             })
+            downloadStatusChanged(false)
         }
     }
 
