@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
+    <!-- TODO("Extract styles for pager buttons") -->
     <Button
         android:id="@+id/results_previous_page_b"
-        android:layout_gravity="center"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:textColor="@color/colorAccent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/previous_page_button_text" />
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:text="@string/previous_page_button_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
         android:id="@+id/results_next_page_b"
-        android:layout_gravity="center"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:textColor="@color/colorAccent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/next_page_button_text" />
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/normal_margin"
+        android:text="@string/next_page_button_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
         android:id="@+id/results_current_page"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/default_current_page" />
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/small_margin"
+        android:text="@string/default_current_page"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_previous_page_b" />
 
 
     <TextView
         android:id="@+id/results_last_page"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/default_last_page" />
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/small_margin"
+        android:text="@string/default_last_page"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_current_page" />
 
 
     <TextView
         android:id="@+id/results_data_list"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/default_data_list" />
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/small_margin"
+        android:text="@string/default_data_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_last_page" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
