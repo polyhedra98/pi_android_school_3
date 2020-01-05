@@ -9,9 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
+import com.mishenka.notbasic.fragments.data.HomeFragmentData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
+import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
-import kotlinx.android.synthetic.main.fragment_temp_primary.*
+import kotlinx.android.synthetic.main.fragment_home.*
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
@@ -22,7 +25,14 @@ class HomeFragment : Fragment() {
 
     private val eventVM by sharedViewModel<EventVM>()
 
+    private val preservationManager = get<PreservationManager>()
+
     private var fragmentId: Long? = null
+
+
+    private var restoredData: HomeFragmentData? = null
+
+    private var searchFieldToPreserve: String? = null
 
 
     override fun onCreateView(
@@ -35,26 +45,39 @@ class HomeFragment : Fragment() {
             Log.i("NYA_$TAG", "Error. Fragment id is null.")
             throw Exception("Fragment id is null.")
         }
-        return inflater.inflate(R.layout.fragment_temp_primary, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        primary_add_secondary_b.setOnClickListener {
-            eventVM.requestFragment(DetailFragment.DetailRequest)
+        restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? HomeFragmentData?)
+
+        setupViews()
+    }
+
+
+    private fun setupViews() {
+        home_preserved_data_tv.text = if (restoredData?.searchField == null) {
+            getString(R.string.no_data_to_restore)
+        } else {
+            getString(R.string.restored_data, restoredData!!.searchField)
         }
 
-        primary_add_primary_b.setOnClickListener {
-            eventVM.requestFragment(HomeRequest)
+        home_search_b.setOnClickListener {
+            searchFieldToPreserve = home_search_et.text.toString()
+            home_data_to_preserve_tv.text = getString(R.string.data_to_preserve, searchFieldToPreserve)
         }
+    }
 
-        primary_add_primary_single_b.setOnClickListener {
-            eventVM.requestFragment(MapFragment.MapRequest)
-        }
 
-        primary_main_tv.text = getString(R.string.fragment_primary_temp, fragmentId)
+    override fun onStop() {
+        preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
+            searchFieldToPreserve ?: restoredData?.searchField
+        ))
+
+        super.onStop()
     }
 
 

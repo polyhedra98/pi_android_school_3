@@ -1,5 +1,9 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY default_data_to_preserve "Data to preserve:">
+]>
 
+<resources>
 
     <!-- General -->
     <string name="app_name">Rework</string>
@@ -33,6 +37,14 @@
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
 
+
+
+    <!-- UI values -->
+    <string name="no_data_to_restore">No preserved data to restore.</string>
+    <string name="restored_data">Restored data: %1$s</string>
+    <string name="default_data_to_preserve">&default_data_to_preserve;</string>
+    <string name="data_to_preserve">&default_data_to_preserve; %1$s</string>
+    <string name="search_button_text">Search</string>
 
 
 </resources>
