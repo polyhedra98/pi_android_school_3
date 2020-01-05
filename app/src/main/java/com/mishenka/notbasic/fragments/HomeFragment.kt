@@ -13,9 +13,7 @@ import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.data.HomeFragmentData
-import com.mishenka.notbasic.interfaces.IContentExtras
-import com.mishenka.notbasic.interfaces.IContentResponse
-import com.mishenka.notbasic.interfaces.IFragmentRequest
+import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -24,7 +22,7 @@ import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), IPagerHost {
 
     private val TAG = "HomeFragment"
 
@@ -75,7 +73,34 @@ class HomeFragment : Fragment() {
     }
 
 
+    override fun pagerDataChanged(newData: IPagerData) {
+        //TODO("Implement.")
+        Log.i("NYA_$TAG", "Pager data changed.")
+    }
+
+
+    override fun pageChangeRequested(newPage: Int) {
+        //TODO("Implement.")
+        Log.i("NYA_$TAG", "Page #$newPage requested.")
+    }
+
+
+    override fun requestSetup() {
+        //TODO("Implement.")
+        Log.i("NYA_$TAG", "Pager setup requested.")
+    }
+
+
+    private fun initResultsFragment() {
+        childFragmentManager.beginTransaction().run {
+            replace(R.id.home_results_content_frame, ResultsFragment())
+            commit()
+        }
+    }
+
+
     private fun setupViews() {
+
         home_preserved_data_tv.text = if (restoredData?.searchField == null) {
             getString(R.string.no_data_to_restore)
         } else {
@@ -87,6 +112,9 @@ class HomeFragment : Fragment() {
 
             handleSearch()
         }
+
+        initResultsFragment()
+
     }
 
 
@@ -97,7 +125,8 @@ class HomeFragment : Fragment() {
 
         observable.observe(this, Observer {
             (it as? StdContentResponse?)?.let { response ->
-                Log.i("NYA_$TAG", "Observed the following data: ${response.responseList}")
+                (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
+                    .updateData(response)
             }
         })
     }

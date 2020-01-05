@@ -64,4 +64,14 @@
         app:layout_constraintTop_toBottomOf="@+id/home_data_to_preserve_tv" />
 
 
+    <FrameLayout
+        android:id="@+id/home_results_content_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_preserved_data_tv" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

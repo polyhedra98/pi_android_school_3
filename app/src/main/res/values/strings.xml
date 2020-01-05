@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [
     <!ENTITY default_data_to_preserve "Data to preserve:">
+    <!ENTITY default_current_page "First page:">
+    <!ENTITY default_last_page "Last page:">
+    <!ENTITY default_data_list "Data list:">
 ]>
 
 <resources>
@@ -40,11 +43,25 @@
 
 
     <!-- UI values -->
+    <string name="search_button_text">Search</string>
+    <string name="previous_page_button_text">&lt; previous page</string>
+    <string name="next_page_button_text">next page &gt;</string>
+
+
+
+
+    <!-- Test UI values -->
     <string name="no_data_to_restore">No preserved data to restore.</string>
     <string name="restored_data">Restored data: %1$s</string>
     <string name="default_data_to_preserve">&default_data_to_preserve;</string>
     <string name="data_to_preserve">&default_data_to_preserve; %1$s</string>
-    <string name="search_button_text">Search</string>
+    <string name="default_current_page">&default_current_page;</string>
+    <string name="current_page">&default_current_page; %1$d</string>
+    <string name="default_last_page">&default_last_page;</string>
+    <string name="last_page">&default_last_page; %1$d</string>
+    <string name="default_data_list">&default_data_list;</string>
+    <string name="data_list">&default_data_list; %1$s</string>
+
 
 
 </resources>
