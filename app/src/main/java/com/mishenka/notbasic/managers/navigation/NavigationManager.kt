@@ -28,6 +28,7 @@ class NavigationManager {
 
     private val TAG = "NavigationManager"
 
+
     private val singleChildFrame = R.layout.fragment_single_child
 
     private val twoChildrenFrame = R.layout.fragment_two_children
