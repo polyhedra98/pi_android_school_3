@@ -13,6 +13,7 @@ import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.data.HomeFragmentData
+import com.mishenka.notbasic.fragments.data.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
@@ -40,7 +41,7 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private var searchFieldToPreserve: String? = null
 
-    private var pagerDataToPreserve: IPagerData? = null
+    private var pagerDataToPreserve: StdPagerData? = null
 
 
     override fun onCreateView(
@@ -77,8 +78,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     override fun pagerDataChanged(newData: IPagerData) {
-        pagerDataToPreserve = newData
         Log.i("NYA_$TAG", "Pager data has changed.")
+        pagerDataToPreserve = (newData as? StdPagerData)
     }
 
 
@@ -89,8 +90,14 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     override fun requestSetup() {
-        //TODO("Implement.")
         Log.i("NYA_$TAG", "Pager setup requested.")
+        val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
+        if (pagerData != null) {
+            (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
+                .updateData(pagerData)
+        } else {
+            Log.i("NYA_$TAG", "No pager data to restore.")
+        }
     }
 
 
@@ -128,10 +135,44 @@ class HomeFragment : Fragment(), IPagerHost {
 
         observable.observe(this, Observer {
             (it as? StdContentResponse?)?.let { response ->
-                (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
-                    .updateData(response)
+                conditionallyUpdatePager(response)
             }
         })
+    }
+
+
+    private fun conditionallyUpdatePager(response: StdContentResponse) {
+
+        val photos = response.response.photos
+        if (photos != null) {
+
+            val currentPage = photos.page
+            val lastPage = photos.pages
+            val photo = photos.photo?.map { photo -> photo.constructURL() }
+
+            if (currentPage != null && lastPage != null && photo != null) {
+
+                val newData = object : StdPagerData() {
+                    override val query: String = response.query
+                    override val currentPage: Int = currentPage
+                    override val lastPage: Int = lastPage
+                    override val pagerList: List<String> = photo
+                }
+
+                pagerDataChanged(newData)
+
+                (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
+                    .updateData(newData)
+
+            } else {
+                Log.i("NYA_$TAG", "One of the important StdContentResponse elements is null. " +
+                        "No data change notification.")
+            }
+
+        } else {
+            Log.i("NYA_$TAG", "StdContentResponse Photos class is null")
+        }
+
     }
 
 
