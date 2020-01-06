@@ -129,12 +129,18 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     private fun handleSearch(argPage: Int? = null) {
-        //TODO("Validate query.")
         val query = if (argPage != null) {
             (pagerDataToPreserve?.query ?: restoredData?.pagerData?.query)!!
         } else {
             home_search_et.text.toString()
         }
+        val validationErrorMsg = validateQuery(query)
+        if (validationErrorMsg != null) {
+            Log.i("NYA_$TAG", "Query $query validation failed. $validationErrorMsg")
+            handleValidationError(validationErrorMsg)
+            return
+        }
+
         val page = argPage ?: 1
 
         val observable = contentManager.requestContent(
@@ -147,6 +153,24 @@ class HomeFragment : Fragment(), IPagerHost {
                 conditionallyUpdateData(response)
             }
         })
+    }
+
+
+    private fun validateQuery(query: String): String? {
+        return if (!query.matches(Regex("^[A-Za-z0-9_ ]*$"))) {
+            getString(R.string.query_english_only)
+        }
+        else if (query.isBlank()) {
+            getString(R.string.query_not_blank)
+        }
+        else {
+            return null
+        }
+    }
+
+
+    private fun handleValidationError(msg: String) {
+        home_search_et.error = msg
     }
 
 

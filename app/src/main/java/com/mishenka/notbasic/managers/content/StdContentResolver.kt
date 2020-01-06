@@ -32,11 +32,14 @@ class StdContentResolver : IContentResolver {
         val service = retrofit.create(ApiService::class.java)
 
         val ext = (extras as StdContentExtras)
+        val replacedQuery = ext.query.replace(' ', '_')
+        Log.i("NYA_$TAG", "Original query: ${ext.query}. Replaced: $replacedQuery")
+
 
         val call = service.getSearchList(
             method = "flickr.photos.search",
             apiKey = apiKey,
-            text = ext.query,
+            text = replacedQuery,
             page = ext.page
         )
         call.enqueue(object : Callback<OuterClass?> {

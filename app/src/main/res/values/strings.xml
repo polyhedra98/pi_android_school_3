@@ -55,6 +55,8 @@
     <string name="current_location_ui">Current location</string>
     <string name="default_location_ui">&default_location_ui;</string>
     <string name="location_ui">&default_location_ui;\n%1$f, %2$f</string>
+    <string name="query_english_only">English letters / digits only.</string>
+    <string name="query_not_blank">Search query can\'t be blank.</string>
 
 
 
