@@ -3,6 +3,7 @@ package com.mishenka.notbasic.managers.content
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.ApiService
+import com.mishenka.notbasic.data.content.StdContentExtras
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.photo.OuterClass
 import com.mishenka.notbasic.interfaces.IContentExtras
@@ -20,9 +21,6 @@ class StdContentResolver : IContentResolver {
 
     private val apiKey: String = "d64c48cfef077371e18078e6e3657da5"
 
-    private val tempQuery: String = "cactus"
-    private val tempPage: Int = 1
-
 
     override fun fetchData(observable: MutableLiveData<IContentResponse>, extras: IContentExtras) {
 
@@ -33,12 +31,13 @@ class StdContentResolver : IContentResolver {
             .build()
         val service = retrofit.create(ApiService::class.java)
 
-        //TODO("Extras are not implemented. Change temp query and temp page.")
+        val ext = (extras as StdContentExtras)
+
         val call = service.getSearchList(
             method = "flickr.photos.search",
             apiKey = apiKey,
-            text = tempQuery,
-            page = tempPage
+            text = ext.query,
+            page = ext.page
         )
         call.enqueue(object : Callback<OuterClass?> {
             override fun onFailure(call: Call<OuterClass?>, t: Throwable) {
@@ -53,7 +52,7 @@ class StdContentResolver : IContentResolver {
             ) {
                 val body = response.body()
                 if (body != null) {
-                    observable.value = StdContentResponse(tempQuery, body)
+                    observable.value = StdContentResponse(ext.query, body)
                 } else {
                     Log.i("NYA_$TAG", "Error fetching data. Response body is null.")
                     //TODO("Change to 'proper' error return")

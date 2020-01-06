@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.content.ContentType
+import com.mishenka.notbasic.data.content.StdContentExtras
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.data.HomeFragmentData
@@ -128,11 +129,16 @@ class HomeFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun handleSearch() {
+    private fun handleSearch(argPage: Int? = null) {
+        //TODO("Validate query.")
+        val query = home_search_et.text.toString()
+        val page = argPage ?: 1
+
         val observable = contentManager.requestContent(
             ContentType.STD_TYPE,
-            object : IContentExtras{})
+            StdContentExtras(query, page))
 
+        //TODO("Ok, I've just realized that I have to remove observer, once data is fetched. Memory leak!")
         observable.observe(this, Observer {
             (it as? StdContentResponse?)?.let { response ->
                 conditionallyUpdatePager(response)
