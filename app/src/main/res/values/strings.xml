@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [
     <!ENTITY default_data_to_preserve "Data to preserve:">
-    <!ENTITY default_current_page "First page:">
+    <!ENTITY default_current_page "Current page:">
     <!ENTITY default_last_page "Last page:">
     <!ENTITY default_data_list "Data list:">
     <!ENTITY default_query_ui "Query:">

@@ -15,6 +15,7 @@
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/normal_margin"
         android:text="@string/previous_page_button_text"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,6 +29,7 @@
         android:layout_gravity="center"
         android:layout_marginEnd="@dimen/normal_margin"
         android:text="@string/next_page_button_text"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

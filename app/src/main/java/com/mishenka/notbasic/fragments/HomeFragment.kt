@@ -87,8 +87,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     override fun pageChangeRequested(newPage: Int) {
-        //TODO("Implement.")
         Log.i("NYA_$TAG", "Page #$newPage requested.")
+        handleSearch(newPage)
     }
 
 
@@ -130,7 +130,11 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun handleSearch(argPage: Int? = null) {
         //TODO("Validate query.")
-        val query = home_search_et.text.toString()
+        val query = if (argPage != null) {
+            (pagerDataToPreserve?.query ?: restoredData?.pagerData?.query)!!
+        } else {
+            home_search_et.text.toString()
+        }
         val page = argPage ?: 1
 
         val observable = contentManager.requestContent(
