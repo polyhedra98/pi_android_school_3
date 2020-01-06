@@ -30,6 +30,8 @@
     <string name="bundle_primary_stack_size_key">primary_count</string>
     <string name="bundle_children_stack_size_key">children_count</string>
     <string name="bundle_fragment_id_key">fragment_id</string>
+    <string name="bundle_lat_key">lat_key</string>
+    <string name="bundle_lng_key">lng_key</string>
 
 
 
@@ -39,6 +41,7 @@
     <string name="nav_history_title">History</string>
     <string name="nav_gallery_title">Gallery</string>
     <string name="nav_map_title">Map</string>
+    <string name="nav_map_res_title">Location search</string>
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
 

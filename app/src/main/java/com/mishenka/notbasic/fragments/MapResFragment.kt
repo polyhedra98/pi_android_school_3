@@ -9,19 +9,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
+import com.mishenka.notbasic.fragments.data.MapResAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
-import com.mishenka.notbasic.viewmodels.EventVM
-import kotlinx.android.synthetic.main.fragment_temp_secondary.*
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class DetailFragment : Fragment() {
+class MapResFragment : Fragment() {
 
-    private val TAG = "DetailFragment"
+    private val TAG = "MapResFragment"
 
-
-    private val eventVM by sharedViewModel<EventVM>()
 
     private var fragmentId: Long? = null
+
+    private var lat: Double? = null
+
+    private var lng: Double? = null
 
 
     override fun onCreateView(
@@ -30,49 +30,51 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         fragmentId = arguments?.getLong(getString(R.string.bundle_fragment_id_key))
+        lat = arguments?.getDouble(getString(R.string.bundle_lat_key))
+        lng = arguments?.getDouble(getString(R.string.bundle_lng_key))
+
         if (fragmentId == null) {
             Log.i("NYA_$TAG", "Error. Fragment id is null.")
             throw Exception("Fragment id is null.")
         }
-        return inflater.inflate(R.layout.fragment_temp_secondary, container, false)
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        secondary_add_secondary_b.setOnClickListener {
-            eventVM.requestFragment(DetailRequest, null)
+        if (lat == null || lng == null) {
+            Log.i("NYA_$TAG", "Error. Lat / Lng is null.")
+            throw Exception("Lat / Lng is null.")
+        } else {
+            Log.i("NYA_$TAG", "Instantiated with lat: $lat, lng: $lng")
         }
-
-        secondary_main_tv.text = getString(R.string.fragment_secondary_temp, fragmentId)
+        return inflater.inflate(R.layout.fragment_map_res, container, false)
     }
 
 
-    object DetailRequest : IFragmentRequest {
+
+    object MapResRequest : IFragmentRequest {
 
         override val fragmentTag: String
-            get() = "DETAIL_FRAG"
+            get() = "MAP_RES_FRAG"
 
         override val navigationTitleId: Int
-            get() = R.string.nav_detail_title
+            get() = R.string.nav_map_res_title
 
         override val shouldBeDisplayedAlone: Boolean
             get() = false
 
         override val isSecondary: Boolean
-            get() = true
+            get() = false
 
         override val shouldHideToolbar: Boolean
-            get() = true
+            get() = false
 
-        override fun instantiateFragment(context: Context, extras: FragmentExtras) = DetailFragment()
+        override fun instantiateFragment(context: Context, extras: FragmentExtras) = MapResFragment()
             .apply {
                 arguments = Bundle().apply {
                     putLong(context.getString(R.string.bundle_fragment_id_key), extras.fragmentId)
+                    putDouble(context.getString(R.string.bundle_lat_key),
+                        (extras.additionalExtras as MapResAdditionalExtras).lat)
+                    putDouble(context.getString(R.string.bundle_lng_key),
+                        (extras.additionalExtras as MapResAdditionalExtras).lng)
                 }
             }
 
     }
-
 }

@@ -57,7 +57,7 @@ class NavigationManager {
         get() = requestsStack.peek()?.children?.size
 
 
-    fun requestAddition(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras? = null) {
+    fun requestAddition(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         Log.i("NYA_$TAG", "Addition of fragment ${request.fragmentTag} " +
                 "requested. Current stack size: $totalStackSize.")
 
@@ -140,8 +140,8 @@ class NavigationManager {
         requestsStack.clear()
 
         when (itemId) {
-            R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest)
-            R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest)
+            R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest, null)
+            R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest, null)
             else -> {
                 Log.i("NYA_$TAG", "Error processing navigation action. No such id.")
                 throw Exception("Error processing navigation action. No such id.")
@@ -150,9 +150,9 @@ class NavigationManager {
     }
 
 
-    fun requestInitialPopulation(request: IFragmentRequest) {
+    fun requestInitialPopulation(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         if (!isPopulated) {
-            requestAddition(request)
+            requestAddition(request, additionalExtras)
                 .also { isPopulated = true }
         }
     }

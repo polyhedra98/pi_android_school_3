@@ -20,7 +20,8 @@ class ContentManager {
 
 
     private val resolversPool = mutableMapOf<ContentType, IContentResolver>(
-        Pair(ContentType.STD_TYPE, StdContentResolver())
+        Pair(ContentType.STD_TYPE, StdContentResolver()),
+        Pair(ContentType.LAT_LNG_TYPE, LatLngContentResolver())
     )
 
 

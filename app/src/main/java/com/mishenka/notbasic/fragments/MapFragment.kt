@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.data.MapFragmentData
+import com.mishenka.notbasic.fragments.data.MapResAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -89,7 +90,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        Log.i("NYA_$TAG", "Map is ready. Is null? ${googleMap == null}}")
+        Log.i("NYA_$TAG", "Map is ready. Is null? ${googleMap == null}")
         map = googleMap
 
         if (lat != null && lng != null) {
@@ -135,7 +136,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             centerCamera(lat!!, lng!!)
         }
         map_search_b.setOnClickListener {
-            //TODO("Request map results.")
+            eventVM.requestFragment(
+                MapResFragment.MapResRequest,
+                MapResAdditionalExtras(
+                    lat!!,
+                    lng!!
+                )
+            )
         }
     }
 
@@ -150,15 +157,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         this.lat = lat
         this.lng = lng
 
-        activateCenterButton()
+        activateLocationRelatedViews()
 
         map_location_tv.text = getString(R.string.location_ui, lat, lng)
     }
 
 
-    private fun activateCenterButton() {
+    private fun activateLocationRelatedViews() {
         if (!map_center_b.isEnabled) {
             map_center_b.isEnabled = true
+        }
+        if (!map_search_b.isEnabled) {
+            map_search_b.isEnabled = true
         }
     }
 

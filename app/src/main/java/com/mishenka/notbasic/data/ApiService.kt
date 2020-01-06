@@ -18,4 +18,16 @@ interface ApiService {
                       @Query("nojsoncallback") nojson: Int = 1
     ): Call<OuterClass?>
 
+
+    @GET("services/rest/?")
+    fun getMapSearchList(@Query("method") method: String,
+                         @Query("api_key") apiKey: String,
+                         @Query("lat") lat: String,
+                         @Query("lon") lon: String,
+                         @Query("page") page: Int = 1,
+                         @Query("per_page") per_page: Int = 5,
+                         @Query("format") format: String = "json",
+                         @Query("nojsoncallback") nojson: Int = 1
+    ): Call<OuterClass?>
+
 }

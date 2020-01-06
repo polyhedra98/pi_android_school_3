@@ -42,7 +42,7 @@ class MainActivity : ExtendedActivity() {
 
         navigationManager.run {
             conditionallyInitializeHost(this@MainActivity)
-            requestInitialPopulation(HomeFragment.HomeRequest)
+            requestInitialPopulation(HomeFragment.HomeRequest, null)
         }
 
 
@@ -51,7 +51,7 @@ class MainActivity : ExtendedActivity() {
 
             fragmentRequested.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { request ->
-                    navigationManager.requestAddition(request)
+                    navigationManager.requestAddition(request.first, request.second)
                 }
             })
 
