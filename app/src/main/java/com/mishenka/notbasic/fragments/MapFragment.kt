@@ -11,7 +11,6 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.viewmodels.EventVM
-import kotlinx.android.synthetic.main.fragment_temp_single_primary.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
@@ -35,22 +34,12 @@ class MapFragment : Fragment() {
             Log.i("NYA_$TAG", "Error. Fragment id is null.")
             throw Exception("Fragment id is null.")
         }
-        return inflater.inflate(R.layout.fragment_temp_single_primary, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        primary_add_primary_b.setOnClickListener {
-            eventVM.requestFragment(HomeFragment.HomeRequest)
-        }
-
-        primary_add_primary_single_b.setOnClickListener {
-            eventVM.requestFragment(MapRequest)
-        }
-
-        primary_main_tv.text = getString(R.string.fragment_single_primary_temp, fragmentId)
 
     }
 
