@@ -42,6 +42,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private var searchFieldToPreserve: String? = null
 
+    private var validationErrorToPreserve: String? = null
+
     private var pagerDataToPreserve: StdPagerData? = null
 
 
@@ -71,8 +73,11 @@ class HomeFragment : Fragment(), IPagerHost {
     override fun onDestroyView() {
         preserveSearchField()
 
+        preserveValidationError()
+
         preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
             searchField = searchFieldToPreserve ?: restoredData?.searchField,
+            validationError = validationErrorToPreserve,
             pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         ))
 
@@ -117,6 +122,10 @@ class HomeFragment : Fragment(), IPagerHost {
         restoredData?.searchField?.let { safeSearchField ->
             home_search_et.setText(safeSearchField)
 
+        }
+
+        restoredData?.validationError?.let { safeError ->
+            handleValidationError(safeError)
         }
 
         home_search_b.setOnClickListener {
@@ -211,6 +220,11 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun preserveSearchField() {
         searchFieldToPreserve = home_search_et.text.toString()
+    }
+
+
+    private fun preserveValidationError() {
+        validationErrorToPreserve = home_search_et.error?.toString()
     }
 
 
