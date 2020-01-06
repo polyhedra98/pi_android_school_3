@@ -6,6 +6,7 @@ interface IPagerData {
 
     val lastPage: Int
 
-    val pagerList: List<IPagerElement>
+    //TODO("Change back to IPagerElement")
+    val pagerList: List<String>
 
 }

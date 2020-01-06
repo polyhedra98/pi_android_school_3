@@ -33,6 +33,17 @@
 
 
     <TextView
+        android:id="@+id/results_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/small_margin"
+        android:text="@string/default_query_ui"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_previous_page_b" />
+
+    <TextView
         android:id="@+id/results_current_page"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +52,7 @@
         android:text="@string/default_current_page"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/results_previous_page_b" />
+        app:layout_constraintTop_toBottomOf="@+id/results_query" />
 
 
     <TextView

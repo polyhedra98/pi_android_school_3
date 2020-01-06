@@ -40,6 +40,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private var searchFieldToPreserve: String? = null
 
+    private var pagerDataToPreserve: IPagerData? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +68,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
     override fun onDestroyView() {
         preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
-            searchFieldToPreserve ?: restoredData?.searchField
+            searchField = searchFieldToPreserve ?: restoredData?.searchField,
+            pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         ))
 
         super.onDestroyView()
@@ -74,8 +77,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     override fun pagerDataChanged(newData: IPagerData) {
-        //TODO("Implement.")
-        Log.i("NYA_$TAG", "Pager data changed.")
+        pagerDataToPreserve = newData
+        Log.i("NYA_$TAG", "Pager data has changed.")
     }
 
 
