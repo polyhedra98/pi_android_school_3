@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.fragments.data.LatLngPagerData
 import com.mishenka.notbasic.fragments.data.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import kotlinx.android.synthetic.main.fragment_results.*
@@ -17,7 +18,7 @@ class ResultsFragment : Fragment(), IPager {
     val TAG = "ResultsFragment"
 
 
-    var data: StdPagerData? = null
+    var data: IPagerData? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +42,9 @@ class ResultsFragment : Fragment(), IPager {
         if ((data as? StdPagerData?) != null) {
             tempSetupStdContent(data)
         }
+        else if ((data as? LatLngPagerData?) != null) {
+            tempSetupLatLngContent(data)
+        }
     }
 
 
@@ -48,10 +52,23 @@ class ResultsFragment : Fragment(), IPager {
         Log.i("NYA_$TAG", "Updating std data.")
         data = argData
 
-        results_query.text = getString(R.string.query_ui, data!!.query)
-        results_current_page.text = getString(R.string.current_page, data!!.currentPage)
-        results_last_page.text = getString(R.string.last_page, data!!.lastPage)
-        results_data_list.text = getString(R.string.data_list, data!!.pagerList)
+        results_query.text = getString(R.string.query_ui, argData.query)
+        results_current_page.text = getString(R.string.current_page, argData.currentPage)
+        results_last_page.text = getString(R.string.last_page, argData.lastPage)
+        results_data_list.text = getString(R.string.data_list, argData.pagerList)
+
+        updatePagerButtons()
+    }
+
+
+    private fun tempSetupLatLngContent(argData: LatLngPagerData) {
+        Log.i("NYA_$TAG", "Updating lat / lng data.")
+        data = argData
+
+        results_query.text = getString(R.string.location_ui, argData.lat, argData.lng)
+        results_current_page.text = getString(R.string.current_page, argData.currentPage)
+        results_last_page.text = getString(R.string.last_page, argData.lastPage)
+        results_data_list.text = getString(R.string.data_list, argData.pagerList)
 
         updatePagerButtons()
     }
