@@ -24,6 +24,9 @@ val navigationModule = module {
 }
 
 
+//TODO("By switching to a different root, the previous root's data is cleared.
+// I am not yet sure if I want to keep it that way, might have to keep separate stacks for
+// each root to preserve the entire hierarchy. Potentially implement in the future?")
 class NavigationManager {
 
     private val TAG = "NavigationManager"
