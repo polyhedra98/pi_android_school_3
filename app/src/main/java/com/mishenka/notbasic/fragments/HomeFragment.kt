@@ -69,6 +69,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     override fun onDestroyView() {
+        preserveSearchField()
+
         preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
             searchField = searchFieldToPreserve ?: restoredData?.searchField,
             pagerData = pagerDataToPreserve ?: restoredData?.pagerData
@@ -112,15 +114,12 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun setupViews() {
 
-        home_preserved_data_tv.text = if (restoredData?.searchField == null) {
-            getString(R.string.no_data_to_restore)
-        } else {
-            getString(R.string.restored_data, restoredData!!.searchField)
+        restoredData?.searchField?.let { safeSearchField ->
+            home_search_et.setText(safeSearchField)
+
         }
 
         home_search_b.setOnClickListener {
-            tempPreservation()
-
             handleSearch()
         }
 
@@ -141,13 +140,13 @@ class HomeFragment : Fragment(), IPagerHost {
         //TODO("Ok, I've just realized that I have to remove observer, once data is fetched. Memory leak!")
         observable.observe(this, Observer {
             (it as? StdContentResponse?)?.let { response ->
-                conditionallyUpdatePager(response)
+                conditionallyUpdateData(response)
             }
         })
     }
 
 
-    private fun conditionallyUpdatePager(response: StdContentResponse) {
+    private fun conditionallyUpdateData(response: StdContentResponse) {
 
         val photos = response.response.photos
         if (photos != null) {
@@ -182,9 +181,8 @@ class HomeFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun tempPreservation() {
+    private fun preserveSearchField() {
         searchFieldToPreserve = home_search_et.text.toString()
-        home_data_to_preserve_tv.text = getString(R.string.data_to_preserve, searchFieldToPreserve)
     }
 
 
