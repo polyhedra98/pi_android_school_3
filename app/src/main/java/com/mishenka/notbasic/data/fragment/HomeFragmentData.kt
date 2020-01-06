@@ -1,5 +1,6 @@
-package com.mishenka.notbasic.fragments.data
+package com.mishenka.notbasic.data.fragment
 
+import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.IFragmentData
 
 

@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.fragments.data
+package com.mishenka.notbasic.data.pager
 
 import com.mishenka.notbasic.interfaces.IPagerData
 

@@ -13,9 +13,9 @@ import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.LatLngContentExtras
 import com.mishenka.notbasic.data.content.LatLngContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.fragments.data.LatLngPagerData
-import com.mishenka.notbasic.fragments.data.MapResAdditionalExtras
-import com.mishenka.notbasic.fragments.data.MapResFragmentData
+import com.mishenka.notbasic.data.pager.LatLngPagerData
+import com.mishenka.notbasic.data.fragment.additional.MapResAdditionalExtras
+import com.mishenka.notbasic.data.fragment.MapResFragmentData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
 import com.mishenka.notbasic.interfaces.IPagerData
@@ -86,9 +86,11 @@ class MapResFragment : Fragment(), IPagerHost {
 
 
     override fun onDestroyView() {
-        preservationManager.preserveFragmentData(fragmentId!!, MapResFragmentData(
-            pagerData = pagerDataToPreserve ?: restoredData?.pagerData
-        ))
+        preservationManager.preserveFragmentData(fragmentId!!,
+            MapResFragmentData(
+                pagerData = pagerDataToPreserve ?: restoredData?.pagerData
+            )
+        )
 
         super.onDestroyView()
     }

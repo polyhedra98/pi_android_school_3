@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.fragments.data.LatLngPagerData
-import com.mishenka.notbasic.fragments.data.StdPagerData
+import com.mishenka.notbasic.data.pager.LatLngPagerData
+import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import kotlinx.android.synthetic.main.fragment_results.*
 

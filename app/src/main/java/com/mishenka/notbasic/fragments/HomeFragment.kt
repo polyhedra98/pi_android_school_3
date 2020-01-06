@@ -13,8 +13,8 @@ import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.StdContentExtras
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.fragments.data.HomeFragmentData
-import com.mishenka.notbasic.fragments.data.StdPagerData
+import com.mishenka.notbasic.data.fragment.HomeFragmentData
+import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
@@ -75,11 +75,13 @@ class HomeFragment : Fragment(), IPagerHost {
 
         preserveValidationError()
 
-        preservationManager.preserveFragmentData(fragmentId!!, HomeFragmentData(
-            searchField = searchFieldToPreserve ?: restoredData?.searchField,
-            validationError = validationErrorToPreserve,
-            pagerData = pagerDataToPreserve ?: restoredData?.pagerData
-        ))
+        preservationManager.preserveFragmentData(fragmentId!!,
+            HomeFragmentData(
+                searchField = searchFieldToPreserve ?: restoredData?.searchField,
+                validationError = validationErrorToPreserve,
+                pagerData = pagerDataToPreserve ?: restoredData?.pagerData
+            )
+        )
 
         super.onDestroyView()
     }

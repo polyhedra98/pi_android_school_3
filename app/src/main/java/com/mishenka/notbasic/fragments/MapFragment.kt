@@ -17,8 +17,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.fragments.data.MapFragmentData
-import com.mishenka.notbasic.fragments.data.MapResAdditionalExtras
+import com.mishenka.notbasic.data.fragment.MapFragmentData
+import com.mishenka.notbasic.data.fragment.additional.MapResAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -80,10 +80,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onDestroyView() {
 
-        preservationManager.preserveFragmentData(fragmentId!!, MapFragmentData(
-            lat = lat,
-            lng = lng
-        ))
+        preservationManager.preserveFragmentData(fragmentId!!,
+            MapFragmentData(
+                lat = lat,
+                lng = lng
+            )
+        )
 
         super.onDestroyView()
     }
