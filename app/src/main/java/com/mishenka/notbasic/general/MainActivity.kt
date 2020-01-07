@@ -55,6 +55,12 @@ class MainActivity : ExtendedActivity() {
                 }
             })
 
+            keyboardHideRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let {
+                    hideKeyboard()
+                }
+            })
+
         }
 
     }

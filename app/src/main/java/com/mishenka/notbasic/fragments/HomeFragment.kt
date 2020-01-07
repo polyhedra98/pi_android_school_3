@@ -170,6 +170,7 @@ class HomeFragment : Fragment(), IPagerHost {
             return
         }
 
+        eventVM.requestKeyboardHide()
         val page = argPage ?: 1
 
         val observable = contentManager.requestContent(

@@ -42,6 +42,7 @@ class ResultsFragment : Fragment(), IPager {
     override fun updateData(data: IPagerData) {
         this.data = data
 
+        results_rv.scrollToPosition(0)
         (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
             .replaceItems(data.pagerList)
         updatePagerButtons()
