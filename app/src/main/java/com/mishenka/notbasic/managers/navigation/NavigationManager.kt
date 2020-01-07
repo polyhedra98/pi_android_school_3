@@ -89,6 +89,40 @@ class NavigationManager {
     }
 
 
+    fun requestSecondaryFragmentsRemoval(tag: String) {
+        val lastStackItem = requestsStack.peek()
+
+        if (lastStackItem == null) {
+            Log.i("NYA_$TAG", "Impossible error. Requests stack is empty.")
+            return
+        }
+
+        val children = lastStackItem.children
+
+        if (children == null) {
+            Log.i("NYA_$TAG", "No children to remove.")
+            return
+        }
+
+        for (child in children) {
+            if (child.request.fragmentTag == tag) {
+                children.remove(child)
+            }
+        }
+
+        val lastChildElement = children.peek()
+
+        if (lastChildElement != null) {
+            Log.i("NYA_$TAG", "Have another child to repopulate with.")
+            requestAddition(lastChildElement.request, lastChildElement.extras.additionalExtras)
+        } else {
+            Log.i("NYA_$TAG", "No children to repopulate with. Cleaning.")
+            setupViews(forceRemoval = true)
+        }
+
+    }
+
+
     fun backPressed(isFromSecondary: Boolean) {
         val logDesc: String
         var forceRepopulation = false
@@ -199,6 +233,7 @@ class NavigationManager {
         }
 
         if (forceRemoval) {
+            Log.i("NYA_$TAG", "Force removal. Removing all views.")
             mainFrame!!.removeAllViews()
         }
 

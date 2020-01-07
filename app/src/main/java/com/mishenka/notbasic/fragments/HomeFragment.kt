@@ -144,11 +144,11 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun setupViews() {
 
-        restoredData?.searchField?.let { safeSearchField ->
+        (restoredData?.searchField ?: searchFieldToPreserve)?.let { safeSearchField ->
             home_search_et.setText(safeSearchField)
         }
 
-        restoredData?.validationError?.let { safeError ->
+        restoredData?.validationError ?: validationErrorToPreserve?.let { safeError ->
             handleValidationError(safeError)
         }
 
@@ -192,10 +192,10 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun validateQuery(query: String): String? {
         return if (!query.matches(Regex("^[A-Za-z0-9_ ]*$"))) {
-            getString(R.string.query_english_only)
+            getString(R.string.query_english_only_err)
         }
         else if (query.isBlank()) {
-            getString(R.string.query_not_blank)
+            getString(R.string.query_not_blank_err)
         }
         else {
             return null

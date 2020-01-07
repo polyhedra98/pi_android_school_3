@@ -21,6 +21,12 @@ class EventVM: ViewModel() {
         get() = _fragmentRequested
 
 
+    private val _secondaryFragmentsRemovalRequested =
+        MutableLiveData<Event<String>>()
+    val secondaryFragmentsRemovalRequested: LiveData<Event<String>>
+        get() = _secondaryFragmentsRemovalRequested
+
+
     private val _keyboardHideRequested = MutableLiveData<Event<Unit>>()
     val keyboardHideRequested: LiveData<Event<Unit>>
         get() = _keyboardHideRequested
@@ -31,9 +37,19 @@ class EventVM: ViewModel() {
         get() = _detailsRequested
 
 
+    private val _loginCredentialsApproved = MutableLiveData<Event<String>>()
+    val loginCredentialsApproved: LiveData<Event<String>>
+        get() = _loginCredentialsApproved
+
+
 
     fun requestFragment(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         _fragmentRequested.value = Event(Pair(request, additionalExtras))
+    }
+
+
+    fun requestSecondaryFragmentsRemoval(fragmentTag: String) {
+        _secondaryFragmentsRemovalRequested.value = Event(fragmentTag)
     }
 
 
@@ -44,6 +60,11 @@ class EventVM: ViewModel() {
 
     fun requestDetails(additionalExtras: IFragmentAdditionalExtras) {
         _detailsRequested.value = Event(additionalExtras)
+    }
+
+
+    fun logInCredentialsApproved(username: String) {
+        _loginCredentialsApproved.value = Event(username)
     }
 
 

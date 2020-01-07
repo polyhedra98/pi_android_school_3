@@ -9,14 +9,17 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.fragments.AuthFragment
 import com.mishenka.notbasic.fragments.DetailFragment
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.fragments.SplashFragment
 import com.mishenka.notbasic.interfaces.ISplashHost
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -24,9 +27,12 @@ class MainActivity : ExtendedActivity(), ISplashHost {
 
     override val mainFrameId = R.id.home_content_frame
 
+
     private val navigationManager = get<NavigationManager>()
 
     private val eventVM by viewModel<EventVM>()
+
+    private val prefVM by viewModel<PrefVM>()
 
     private lateinit var drawerLayout: DrawerLayout
 
@@ -121,6 +127,20 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             detailsRequested.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { extras ->
                     navigationManager.requestAddition(DetailFragment.DetailRequest, extras)
+                }
+            })
+
+            secondaryFragmentsRemovalRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { tag ->
+                    navigationManager.requestSecondaryFragmentsRemoval(tag)
+                }
+            })
+
+            eventVM.loginCredentialsApproved.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { username ->
+                    hideKeyboard()
+                    eventVM.requestSecondaryFragmentsRemoval(AuthFragment.AuthRequest.fragmentTag)
+                    prefVM.logIn(this@MainActivity, username)
                 }
             })
 

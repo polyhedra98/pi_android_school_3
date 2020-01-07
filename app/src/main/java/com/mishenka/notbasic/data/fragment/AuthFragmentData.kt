@@ -4,5 +4,6 @@ import com.mishenka.notbasic.interfaces.IFragmentData
 
 
 data class AuthFragmentData(
-    val username: String?
+    val username: String?,
+    val validationError: String?
 ) : IFragmentData

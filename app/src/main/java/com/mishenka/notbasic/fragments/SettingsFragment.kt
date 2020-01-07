@@ -51,7 +51,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     authPref.run {
                         title = getString(R.string.log_in_ui)
                         setOnPreferenceClickListener {
-                            handleLogIn()
+                            handleLogInClick()
                             true
                         }
                     }
@@ -62,7 +62,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     authPref.run {
                         title = getString(R.string.log_out_ui)
                         setOnPreferenceClickListener {
-                            handleLogOut()
+                            handleLogOutClick()
                             true
                         }
                     }
@@ -77,14 +77,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
 
-    private fun handleLogIn() {
+    private fun handleLogInClick() {
         eventVM.requestFragment(AuthFragment.AuthRequest, null)
     }
 
 
     //TODO("Implement.")
-    private fun handleLogOut() {
-        prefVM.logOut()
+    private fun handleLogOutClick() {
+        prefVM.logOut(context!!)
     }
 
 

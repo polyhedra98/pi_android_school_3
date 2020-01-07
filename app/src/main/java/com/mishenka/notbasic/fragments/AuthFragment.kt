@@ -34,6 +34,8 @@ class AuthFragment : Fragment() {
 
     private var usernameToPreserve: String? = null
 
+    private var validationErrorToPreserve: String? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,9 +64,12 @@ class AuthFragment : Fragment() {
     override fun onDestroyView() {
         preserveUsername()
 
+        preserveValidationError()
+
         preservationManager.preserveFragmentData(fragmentId!!,
             AuthFragmentData(
-                username = usernameToPreserve
+                username = usernameToPreserve ?: restoredData?.username,
+                validationError = validationErrorToPreserve
             )
         )
 
@@ -78,6 +83,55 @@ class AuthFragment : Fragment() {
             auth_username_et.setText(username)
         }
 
+        (restoredData?.validationError ?: validationErrorToPreserve)?.let { safeError ->
+            handleValidationError(safeError)
+        }
+
+        auth_login_b.setOnClickListener {
+            handleLogIn()
+        }
+
+        auth_create_b.setOnClickListener {
+            handleCreation()
+        }
+
+    }
+
+
+    private fun handleLogIn() {
+        val username = auth_username_et.text.toString()
+
+        val validationErrorMsg = validateCredentials(username)
+        if (validationErrorMsg != null) {
+            Log.i("NYA_$TAG", "Username $username validation failed. $validationErrorMsg")
+            handleValidationError(validationErrorMsg)
+            return
+        }
+
+        eventVM.logInCredentialsApproved(username)
+    }
+
+
+    private fun handleCreation() {
+        //TODO("Implement.")
+    }
+
+
+    private fun handleValidationError(msg: String) {
+        auth_username_et.error = msg
+    }
+
+
+    private fun validateCredentials(username: String): String? {
+        return if (!username.matches(Regex("^[A-Za-z0-9_]*$"))) {
+            getString(R.string.username_english_only_err)
+        }
+        else if (username.isBlank()) {
+            getString(R.string.username_not_blank_err)
+        }
+        else {
+            return null
+        }
     }
 
 
@@ -85,6 +139,10 @@ class AuthFragment : Fragment() {
         usernameToPreserve = auth_username_et.text?.toString()
     }
 
+
+    private fun preserveValidationError() {
+        validationErrorToPreserve = auth_username_et.error?.toString()
+    }
 
 
     object AuthRequest : IFragmentRequest {

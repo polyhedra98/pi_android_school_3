@@ -12,6 +12,7 @@
 
     <!-- General -->
     <string name="app_name">Rework</string>
+    <string name="pref_filename">pref_filename</string>
     <!-- ~General -->
 
 
@@ -39,6 +40,8 @@
 
     <string name="settings_username_key">username_key</string>
     <string name="settings_auth_key">auth_key</string>
+
+    <string name="pref_username_key">pref_username_key</string>
     <!-- ~Keys -->
 
 
@@ -70,8 +73,10 @@
     <string name="default_location_ui">&default_location_ui;</string>
     <string name="location_ui">&default_location_ui;\n%1$f, %2$f</string>
 
-    <string name="query_english_only">English letters / digits only.</string>
-    <string name="query_not_blank">Search query can\'t be blank.</string>
+    <string name="query_english_only_err">English letters / digits / spaces / underscores only.</string>
+    <string name="query_not_blank_err">Search query can\'t be blank.</string>
+    <string name="username_english_only_err">English letters / digits / underscores only.</string>
+    <string name="username_not_blank_err">Username can\'t be blank.</string>
 
     <string name="default_home_header">A free text search. Photos who\'s title, description or tags contain the text will be returned. You can exclude results that match a term by prepending it with a - character.</string>
     <string name="home_header">Query: %1$s\nCurrent page: %2$d\nTotal pages: %3$d</string>
