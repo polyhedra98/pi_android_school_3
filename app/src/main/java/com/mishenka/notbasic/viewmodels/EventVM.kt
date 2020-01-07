@@ -26,6 +26,11 @@ class EventVM: ViewModel() {
         get() = _keyboardHideRequested
 
 
+    private val _detailsRequested = MutableLiveData<Event<IFragmentAdditionalExtras>>()
+    val detailsRequested: LiveData<Event<IFragmentAdditionalExtras>>
+        get() = _detailsRequested
+
+
 
     fun requestFragment(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         _fragmentRequested.value = Event(Pair(request, additionalExtras))
@@ -34,6 +39,10 @@ class EventVM: ViewModel() {
 
     fun requestKeyboardHide() {
         _keyboardHideRequested.value = Event(Unit)
+    }
+
+    fun requestDetails(additionalExtras: IFragmentAdditionalExtras) {
+        _detailsRequested.value = Event(additionalExtras)
     }
 
 

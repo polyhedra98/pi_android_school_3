@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.fragments.DetailFragment
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -45,23 +46,7 @@ class MainActivity : ExtendedActivity() {
             requestInitialPopulation(HomeFragment.HomeRequest, null)
         }
 
-
-
-        eventVM.apply {
-
-            fragmentRequested.observe(this@MainActivity, Observer {
-                it.getContentIfNotHandled()?.let { request ->
-                    navigationManager.requestAddition(request.first, request.second)
-                }
-            })
-
-            keyboardHideRequested.observe(this@MainActivity, Observer {
-                it.getContentIfNotHandled()?.let {
-                    hideKeyboard()
-                }
-            })
-
-        }
+        setupEventVM()
 
     }
 
@@ -96,6 +81,31 @@ class MainActivity : ExtendedActivity() {
         navigationManager.removeHost()
 
         super.onPause()
+    }
+
+
+    private fun setupEventVM() {
+        eventVM.apply {
+
+            fragmentRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { request ->
+                    navigationManager.requestAddition(request.first, request.second)
+                }
+            })
+
+            keyboardHideRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let {
+                    hideKeyboard()
+                }
+            })
+
+            detailsRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { extras ->
+                    navigationManager.requestAddition(DetailFragment.DetailRequest, extras)
+                }
+            })
+
+        }
     }
 
 

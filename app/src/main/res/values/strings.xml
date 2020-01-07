@@ -32,6 +32,8 @@
     <string name="bundle_fragment_id_key">fragment_id</string>
     <string name="bundle_lat_key">lat_key</string>
     <string name="bundle_lng_key">lng_key</string>
+    <string name="bundle_category_key">category_key</string>
+    <string name="bundle_url_key">url_key</string>
 
 
 
@@ -65,6 +67,11 @@
     <string name="home_header">Query: %1$s\nCurrent page: %2$d\nTotal pages: %3$d</string>
     <string name="default_map_res_header"> </string>
     <string name="map_res_header">Lat: %1$f\nLng: %2$f\nCurrent page: %3$d\nTotal pages: %4$d</string>
+
+    <string name="lat_lng_string_representation">Lat:%1$f/Lng:%2$f</string>
+
+    <string name="category_ui">Category: %1$s</string>
+    <string name="url_ui">Url: %1$s</string>
 
 
 

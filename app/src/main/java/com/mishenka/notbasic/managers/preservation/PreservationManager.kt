@@ -9,6 +9,7 @@ val preservationModule = module {
 }
 
 
+//TODO("Clean storage from removed fragments data.")
 class PreservationManager {
 
     private val TAG = "PreservationManager"

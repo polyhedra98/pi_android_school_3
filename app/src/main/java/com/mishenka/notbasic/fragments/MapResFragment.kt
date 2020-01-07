@@ -16,6 +16,7 @@ import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.data.pager.LatLngPagerData
 import com.mishenka.notbasic.data.fragment.additional.MapResAdditionalExtras
 import com.mishenka.notbasic.data.fragment.MapResFragmentData
+import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
@@ -136,6 +137,13 @@ class MapResFragment : Fragment(), IPagerHost {
 
     private fun mapResResultClicked(url: String) {
         Log.i("NYA_$TAG", "MapRes result $url clicked")
+        val pagerData = (pagerDataToPreserve ?: restoredData?.pagerData)!!
+        eventVM.requestDetails(
+            DetailAdditionalExtras(
+                category = getString(R.string.lat_lng_string_representation, pagerData.lat, pagerData.lng),
+                url = url
+            )
+        )
     }
 
 
@@ -240,10 +248,11 @@ class MapResFragment : Fragment(), IPagerHost {
             .apply {
                 arguments = Bundle().apply {
                     putLong(context.getString(R.string.bundle_fragment_id_key), extras.fragmentId)
-                    putDouble(context.getString(R.string.bundle_lat_key),
-                        (extras.additionalExtras as MapResAdditionalExtras).lat)
-                    putDouble(context.getString(R.string.bundle_lng_key),
-                        (extras.additionalExtras as MapResAdditionalExtras).lng)
+
+                    (extras.additionalExtras as MapResAdditionalExtras).run {
+                        putDouble(context.getString(R.string.bundle_lat_key), lat)
+                        putDouble(context.getString(R.string.bundle_lng_key), lng)
+                    }
                 }
             }
 

@@ -14,6 +14,7 @@ import com.mishenka.notbasic.data.content.StdContentExtras
 import com.mishenka.notbasic.data.content.StdContentResponse
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.data.fragment.HomeFragmentData
+import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
@@ -126,6 +127,10 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun homeResultClicked(url: String) {
         Log.i("NYA_$TAG", "Home result $url clicked")
+        eventVM.requestDetails(DetailAdditionalExtras(
+            category = (pagerDataToPreserve ?: restoredData?.pagerData)!!.query,
+            url = url
+        ))
     }
 
 
@@ -141,7 +146,6 @@ class HomeFragment : Fragment(), IPagerHost {
 
         restoredData?.searchField?.let { safeSearchField ->
             home_search_et.setText(safeSearchField)
-
         }
 
         restoredData?.validationError?.let { safeError ->
