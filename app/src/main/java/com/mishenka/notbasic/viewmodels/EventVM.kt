@@ -41,6 +41,7 @@ class EventVM: ViewModel() {
         _keyboardHideRequested.value = Event(Unit)
     }
 
+
     fun requestDetails(additionalExtras: IFragmentAdditionalExtras) {
         _detailsRequested.value = Event(additionalExtras)
     }

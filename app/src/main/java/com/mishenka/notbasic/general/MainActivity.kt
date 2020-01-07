@@ -58,7 +58,9 @@ class MainActivity : ExtendedActivity(), ISplashHost {
         setupNavigationDrawer()
 
         navigationManager.run {
-            clear()
+            if (fromSplash) {
+                clear()
+            }
             conditionallyInitializeHost(this@MainActivity)
             requestInitialPopulation(HomeFragment.HomeRequest, null)
         }
