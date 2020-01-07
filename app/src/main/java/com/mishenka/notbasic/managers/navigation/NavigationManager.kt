@@ -63,6 +63,7 @@ class NavigationManager {
     fun requestAddition(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         Log.i("NYA_$TAG", "Addition of fragment ${request.fragmentTag} " +
                 "requested. Current stack size: $totalStackSize.")
+        conditionallyHideToolbar(request)
 
         val extras = FragmentExtras(System.currentTimeMillis(), additionalExtras)
         var shouldForceRemove = false
@@ -171,6 +172,12 @@ class NavigationManager {
     }
 
 
+    fun clear() {
+        requestsStack.clear()
+        isPopulated = false
+    }
+
+
     fun removeHost() {
         host = null
         mainFrame = null
@@ -209,6 +216,15 @@ class NavigationManager {
         if (isChildrenStackEmpty) return false
 
         return host!!.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    }
+
+
+    private fun conditionallyHideToolbar(request: IFragmentRequest) {
+        if (request.shouldBeDisplayedAlone && request.shouldHideToolbar) {
+            host?.supportActionBar?.hide()
+        } else {
+            host?.supportActionBar?.show()
+        }
     }
 
 

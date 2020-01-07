@@ -8,10 +8,10 @@ abstract class ExtendedActivity : AppCompatActivity() {
 
     abstract val mainFrameId: Int
 
-    protected fun setupActionBar(@IdRes toolbarId: Int, action: ActionBar.() -> Unit) {
+    protected fun setupActionBar(@IdRes toolbarId: Int, action: (ActionBar.() -> Unit)? = null) {
         setSupportActionBar(findViewById(toolbarId))
         supportActionBar?.run {
-            action()
+            action?.invoke(this)
         }
     }
 

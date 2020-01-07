@@ -7,6 +7,7 @@
     <dimen name="normal_margin">16dp</dimen>
     <dimen name="big_margin">24dp</dimen>
     <dimen name="large_margin">32dp</dimen>
+    <dimen name="huge_margin">128dp</dimen>
     <!-- ~Margins -->
 
 

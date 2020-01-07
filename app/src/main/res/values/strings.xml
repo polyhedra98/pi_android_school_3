@@ -46,6 +46,7 @@
     <string name="nav_map_res_title">Location search</string>
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
+    <string name="nav_splash_title">Welcome</string>
 
 
 

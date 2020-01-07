@@ -12,6 +12,8 @@ import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.fragments.DetailFragment
 import com.mishenka.notbasic.fragments.HomeFragment
+import com.mishenka.notbasic.fragments.SplashFragment
+import com.mishenka.notbasic.interfaces.ISplashHost
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,7 +21,7 @@ import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainActivity : ExtendedActivity() {
+class MainActivity : ExtendedActivity(), ISplashHost {
 
     override val mainFrameId = R.id.home_content_frame
 
@@ -34,6 +36,22 @@ class MainActivity : ExtendedActivity() {
         super.onCreate(null)
         setContentView(R.layout.activity_main)
 
+        if (savedInstanceState == null) {
+            setupActionBar(R.id.home_tb)
+            navigationManager.run {
+                conditionallyInitializeHost(this@MainActivity)
+                requestInitialPopulation(SplashFragment.SplashRequest, null)
+            }
+        }
+        else {
+            mainContentRequested(false)
+        }
+
+    }
+
+
+    override fun mainContentRequested(fromSplash: Boolean) {
+
         setupActionBar(R.id.home_tb) {
             setHomeAsUpIndicator(R.drawable.ic_menu_24px)
             setDisplayHomeAsUpEnabled(true)
@@ -42,12 +60,12 @@ class MainActivity : ExtendedActivity() {
         setupNavigationDrawer()
 
         navigationManager.run {
+            clear()
             conditionallyInitializeHost(this@MainActivity)
             requestInitialPopulation(HomeFragment.HomeRequest, null)
         }
 
         setupEventVM()
-
     }
 
 
