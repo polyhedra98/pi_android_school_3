@@ -82,7 +82,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
 
-    //TODO("Implement.")
     private fun handleLogOutClick() {
         prefVM.logOut(context!!)
     }

@@ -22,6 +22,11 @@ class PrefVM: ViewModel() {
 
 
 
+    fun start(context: Context) {
+        _username.value = prefGetUser(context)
+    }
+
+
     //TODO("Implement.")
     fun logIn(context: Context, username: String) {
         _username.value = username
@@ -57,6 +62,21 @@ class PrefVM: ViewModel() {
                 commit()
             }
         }
+    }
+
+
+    private fun prefGetUser(context: Context): String? {
+        var username: String? = null
+
+        with(context) {
+            getSharedPreferences(
+                getString(R.string.pref_filename), Context.MODE_PRIVATE
+            )?.let {
+                username = it.getString(getString(R.string.pref_username_key), null)
+            }
+        }
+
+        return username
     }
 
 }

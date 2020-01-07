@@ -12,12 +12,17 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.ISplashHost
+import com.mishenka.notbasic.viewmodels.PrefVM
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
-//TODO("Figure out what data to pre-fetch")
+//TODO("Lock orientation in manifest, change minSdkVersion back to 17.")
 class SplashFragment : Fragment() {
 
     private val TAG = "SplashFragment"
+
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
 
     override fun onCreateView(
@@ -25,6 +30,8 @@ class SplashFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity!!.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+
         return inflater.inflate(R.layout.fragment_splash, container, false)
     }
 
@@ -32,9 +39,9 @@ class SplashFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity!!.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
         invokeHandler()
+
+        prefVM.start(activity!!)
     }
 
 
