@@ -22,6 +22,9 @@ import com.mishenka.notbasic.interfaces.IPagerData
 import com.mishenka.notbasic.interfaces.IPagerHost
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.recycler.StdAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.viewmodels.EventVM
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -110,13 +113,28 @@ class MapResFragment : Fragment(), IPagerHost {
 
     override fun requestSetup() {
         Log.i("NYA_$TAG", "Pager setup requested.")
+        val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
+
+        //TODO("It's really annoying that I have to do explicit cast, even though I inherit
+        // PhotosAdapter in StdAdapter")
+        pager.setupRecycler(
+            StdAdapter(
+                listOf("HEADER (not yet implemented)."),
+                this::mapResResultClicked
+            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+        )
+
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         if (pagerData != null) {
-            (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
-                .updateData(pagerData)
+            pager.updateData(pagerData)
         } else {
             Log.i("NYA_$TAG", "No pager data to restore.")
         }
+    }
+
+
+    private fun mapResResultClicked(url: String) {
+        Log.i("NYA_$TAG", "MapRes result $url clicked")
     }
 
 

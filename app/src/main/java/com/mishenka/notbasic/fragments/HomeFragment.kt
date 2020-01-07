@@ -18,7 +18,7 @@ import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
-import com.mishenka.notbasic.utils.recycler.HomeAdapter
+import com.mishenka.notbasic.utils.recycler.StdAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -107,9 +107,9 @@ class HomeFragment : Fragment(), IPagerHost {
         val pager = (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
 
         //TODO("It's really annoying that I have to do explicit cast, even though I inherit
-        // PhotosAdapter in HomeAdapter")
+        // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
-            HomeAdapter(
+            StdAdapter(
                 listOf("HEADER (not yet implemented)."),
                 this::homeResultClicked
             ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>

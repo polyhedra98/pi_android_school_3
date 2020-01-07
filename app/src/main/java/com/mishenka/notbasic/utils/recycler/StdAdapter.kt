@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import com.mishenka.notbasic.R
 
 
-class HomeAdapter(items: List<String>,
-                  private val onClickListener: (String) -> Unit)
+class StdAdapter(items: List<String>,
+                 private val onClickListener: (String) -> Unit)
     : PhotosAdapter<PhotoVH, HeaderVH>(items.toMutableList()) {
 
-    override val TAG: String = "HomeAdapter"
+    override val TAG: String = "StdAdapter"
 
 
     override fun pFactory(parent: ViewGroup) =

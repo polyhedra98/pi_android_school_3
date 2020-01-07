@@ -88,7 +88,6 @@ abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
 
 
     override fun onBindViewHolder(holder: PhotosViewHolder, position: Int) {
-        Log.i("NYA", "(from PhotosAdapter) Binding ViewHolder")
         holder.executeBindings(items[position], position)
     }
 

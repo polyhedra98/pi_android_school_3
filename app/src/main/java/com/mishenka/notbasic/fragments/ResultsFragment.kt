@@ -9,10 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.data.pager.LatLngPagerData
-import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
-import com.mishenka.notbasic.utils.recycler.HomeAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import kotlinx.android.synthetic.main.fragment_results.*
