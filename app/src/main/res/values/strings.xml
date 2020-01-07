@@ -12,6 +12,7 @@
 
     <!-- General -->
     <string name="app_name">Rework</string>
+    <!-- ~General -->
 
 
 
@@ -22,6 +23,7 @@
     <string name="fragment_primary_add_secondary">Add secondary fragment</string>
     <string name="fragment_primary_add_primary">Add primary fragment</string>
     <string name="fragment_primary_add_primary_single">Add single primary fragment</string>
+    <!-- ~Fragment transactions -->
 
 
 
@@ -35,6 +37,10 @@
     <string name="bundle_category_key">category_key</string>
     <string name="bundle_url_key">url_key</string>
 
+    <string name="settings_username_key">username_key</string>
+    <string name="settings_auth_key">auth_key</string>
+    <!-- ~Keys -->
+
 
 
     <!-- Navigation titles -->
@@ -47,20 +53,15 @@
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
     <string name="nav_splash_title">Welcome</string>
-
-
-
-    <!-- Settings -->
-    <string name="settings_general_category_title">General</string>
-    <string name="settings_account_category_title">Account</string>
-    <string name="settings_username_key">username_key</string>
-    <string name="setting_auth_key">auth_key</string>
+    <string name="nav_auth_title">Authorization</string>
+    <!-- ~Navigation titles -->
 
 
 
     <!-- UI values -->
     <string name="search_button_text">Search</string>
     <string name="center_button_text">Center</string>
+    <string name="create_button_text">Create</string>
 
     <string name="previous_page_button_text">&lt; previous page</string>
     <string name="next_page_button_text">next page &gt;</string>
@@ -82,6 +83,15 @@
     <string name="category_ui">Category: %1$s</string>
     <string name="url_ui">Url: %1$s</string>
 
+    <string name="settings_general_category_title">General</string>
+    <string name="settings_account_category_title">Account</string>
+
+    <string name="log_in_ui">Log in</string>
+    <string name="log_out_ui">Log out</string>
+
+    <string name="username_hint">Username</string>
+    <string name="username_anonymous_ui">Anonymous</string>
+    <!-- ~UI values -->
 
 
 
@@ -99,6 +109,7 @@
     <string name="data_list">&default_data_list; %1$s</string>
     <string name="default_query_ui">&default_query_ui;</string>
     <string name="query_ui">&default_query_ui; %1$s</string>
+    <!-- ~Test UI values -->
 
 
 
