@@ -103,9 +103,9 @@ class MainActivity : ExtendedActivity() {
         navigationView.menu.findItem(R.id.home_nav_menu_item).isChecked = true
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
+            drawerLayout.closeDrawers()
             navigationManager.navigationItemSelected(menuItem.itemId)
 
-            drawerLayout.closeDrawers()
             true
         }
     }
