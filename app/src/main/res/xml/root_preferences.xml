@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_general_category_title">
+
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_account_category_title">
+
+        <Preference
+            android:key="@string/settings_username_key"
+            android:selectable="false"
+            />
+
+        <Preference
+            android:key="@string/setting_auth_key"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

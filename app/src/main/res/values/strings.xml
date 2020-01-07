@@ -50,6 +50,14 @@
 
 
 
+    <!-- Settings -->
+    <string name="settings_general_category_title">General</string>
+    <string name="settings_account_category_title">Account</string>
+    <string name="settings_username_key">username_key</string>
+    <string name="setting_auth_key">auth_key</string>
+
+
+
     <!-- UI values -->
     <string name="search_button_text">Search</string>
     <string name="center_button_text">Center</string>

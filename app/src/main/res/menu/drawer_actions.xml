@@ -17,4 +17,15 @@
 
     </group>
 
+    <group
+        android:id="@+id/secondary_fragment_navigation"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/settings_nav_menu_item"
+            android:title="@string/nav_settings_title"
+            />
+
+    </group>
+
 </menu>

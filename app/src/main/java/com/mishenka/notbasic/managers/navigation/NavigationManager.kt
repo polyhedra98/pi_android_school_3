@@ -13,6 +13,7 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.fragments.MapFragment
+import com.mishenka.notbasic.fragments.SettingsFragment
 import com.mishenka.notbasic.general.ExtendedActivity
 import com.mishenka.notbasic.interfaces.IFragmentAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
@@ -141,11 +142,16 @@ class NavigationManager {
 
 
     fun navigationItemSelected(@IdRes itemId: Int) {
-        requestsStack.clear()
-
         when (itemId) {
-            R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest, null)
-            R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest, null)
+            R.id.home_nav_menu_item -> {
+                requestsStack.clear()
+                requestAddition(HomeFragment.HomeRequest, null)
+            }
+            R.id.map_nav_menu_item -> {
+                requestsStack.clear()
+                requestAddition(MapFragment.MapRequest, null)
+            }
+            R.id.settings_nav_menu_item -> requestAddition(SettingsFragment.SettingsRequest, null)
             else -> {
                 Log.i("NYA_$TAG", "Error processing navigation action. No such id.")
                 throw Exception("Error processing navigation action. No such id.")
