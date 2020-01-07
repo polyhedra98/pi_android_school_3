@@ -40,7 +40,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             get() = R.string.nav_settings_title
 
         override val shouldBeDisplayedAlone: Boolean
-            get() = true
+            get() = false
 
         override val isSecondary: Boolean
             get() = false

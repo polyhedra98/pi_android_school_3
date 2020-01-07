@@ -52,7 +52,8 @@ class MainActivity : ExtendedActivity(), ISplashHost {
     override fun mainContentRequested(fromSplash: Boolean) {
 
         setupActionBar(R.id.home_tb) {
-            setToolbarIcon(false)
+            setHomeAsUpIndicator(R.drawable.ic_menu_24px)
+            setDisplayHomeAsUpEnabled(true)
         }
 
         setupNavigationDrawer()
@@ -123,19 +124,6 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 }
             })
 
-        }
-    }
-
-
-    private fun setToolbarIcon(shouldBeBack: Boolean) {
-        supportActionBar?.run {
-            if (shouldBeBack) {
-                setHomeAsUpIndicator(R.drawable.ic_arrow_back_24px)
-            }
-            else {
-                setHomeAsUpIndicator(R.drawable.ic_menu_24px)
-            }
-            setDisplayHomeAsUpEnabled(true)
         }
     }
 
