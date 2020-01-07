@@ -16,6 +16,7 @@ import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.data.pager.LatLngPagerData
 import com.mishenka.notbasic.data.fragment.additional.MapResAdditionalExtras
 import com.mishenka.notbasic.data.fragment.MapResFragmentData
+import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
 import com.mishenka.notbasic.interfaces.IPagerData
@@ -111,7 +112,7 @@ class MapResFragment : Fragment(), IPagerHost {
     }
 
 
-    override fun requestSetup() {
+    override fun pagerSetupRequested() {
         Log.i("NYA_$TAG", "Pager setup requested.")
         val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
 
@@ -119,14 +120,14 @@ class MapResFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             StdAdapter(
-                listOf("HEADER (not yet implemented)."),
+                listOf(getString(R.string.default_map_res_header)),
                 this::mapResResultClicked
             ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
         )
 
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         if (pagerData != null) {
-            pager.updateData(pagerData)
+            updatePagerData(pagerData, pager)
         } else {
             Log.i("NYA_$TAG", "No pager data to restore.")
         }
@@ -194,8 +195,8 @@ class MapResFragment : Fragment(), IPagerHost {
 
                 pagerDataChanged(newData)
 
-                (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
-                    .updateData(newData)
+                val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
+                updatePagerData(newData, pager)
 
             } else {
                 Log.i("NYA_$TAG", "One of the important LatLngContentResponse " +
@@ -206,6 +207,14 @@ class MapResFragment : Fragment(), IPagerHost {
             Log.i("NYA_$TAG", "LatLngContentResponse Photos class is null")
         }
 
+    }
+
+
+    private fun updatePagerData(data: LatLngPagerData, pager: IPager) {
+        with(data) {
+            pager.updateHeader(getString(R.string.map_res_header, lat, lng, currentPage, lastPage))
+        }
+        pager.updateData(data)
     }
 
 

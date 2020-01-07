@@ -9,4 +9,6 @@ interface IPager {
 
     fun updateData(data: IPagerData)
 
+    fun updateHeader(newHeader: String)
+
 }

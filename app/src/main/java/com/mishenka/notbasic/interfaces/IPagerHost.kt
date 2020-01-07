@@ -6,6 +6,6 @@ interface IPagerHost {
 
     fun pageChangeRequested(newPage: Int)
 
-    fun requestSetup()
+    fun pagerSetupRequested()
 
 }

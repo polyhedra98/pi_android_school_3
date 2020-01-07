@@ -50,13 +50,21 @@
     <!-- UI values -->
     <string name="search_button_text">Search</string>
     <string name="center_button_text">Center</string>
+
     <string name="previous_page_button_text">&lt; previous page</string>
     <string name="next_page_button_text">next page &gt;</string>
+
     <string name="current_location_ui">Current location</string>
     <string name="default_location_ui">&default_location_ui;</string>
     <string name="location_ui">&default_location_ui;\n%1$f, %2$f</string>
+
     <string name="query_english_only">English letters / digits only.</string>
     <string name="query_not_blank">Search query can\'t be blank.</string>
+
+    <string name="default_home_header">A free text search. Photos who\'s title, description or tags contain the text will be returned. You can exclude results that match a term by prepending it with a - character.</string>
+    <string name="home_header">Query: %1$s\nCurrent page: %2$d\nTotal pages: %3$d</string>
+    <string name="default_map_res_header"> </string>
+    <string name="map_res_header">Lat: %1$f\nLng: %2$f\nCurrent page: %3$d\nTotal pages: %4$d</string>
 
 
 
@@ -66,6 +74,7 @@
     <string name="restored_data">Restored data: %1$s</string>
     <string name="default_data_to_preserve">&default_data_to_preserve;</string>
     <string name="data_to_preserve">&default_data_to_preserve; %1$s</string>
+
     <string name="default_current_page">&default_current_page;</string>
     <string name="current_page">&default_current_page; %1$d</string>
     <string name="default_last_page">&default_last_page;</string>

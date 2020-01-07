@@ -31,7 +31,7 @@ class ResultsFragment : Fragment(), IPager {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (parentFragment as IPagerHost).requestSetup()
+        (parentFragment as IPagerHost).pagerSetupRequested()
 
         setupPagerButtons()
 
@@ -45,6 +45,12 @@ class ResultsFragment : Fragment(), IPager {
         (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
             .replaceItems(data.pagerList)
         updatePagerButtons()
+    }
+
+
+    override fun updateHeader(newHeader: String) {
+        (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
+            .replaceHeader(newHeader)
     }
 
 

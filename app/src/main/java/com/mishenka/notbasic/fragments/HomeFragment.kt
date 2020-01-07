@@ -102,7 +102,7 @@ class HomeFragment : Fragment(), IPagerHost {
     }
 
 
-    override fun requestSetup() {
+    override fun pagerSetupRequested() {
         Log.i("NYA_$TAG", "Pager setup requested.")
         val pager = (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
 
@@ -110,14 +110,14 @@ class HomeFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             StdAdapter(
-                listOf("HEADER (not yet implemented)."),
+                listOf(getString(R.string.default_home_header)),
                 this::homeResultClicked
             ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
         )
 
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         if (pagerData != null) {
-            pager.updateData(pagerData)
+            updatePagerData(pagerData, pager)
         } else {
             Log.i("NYA_$TAG", "No pager data to restore.")
         }
@@ -223,8 +223,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
                 pagerDataChanged(newData)
 
-                (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
-                    .updateData(newData)
+                val pager = (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
+                updatePagerData(newData, pager)
 
             } else {
                 Log.i("NYA_$TAG", "One of the important StdContentResponse elements is null. " +
@@ -235,6 +235,14 @@ class HomeFragment : Fragment(), IPagerHost {
             Log.i("NYA_$TAG", "StdContentResponse Photos class is null")
         }
 
+    }
+
+
+    private fun updatePagerData(data: StdPagerData, pager: IPager) {
+        with(data) {
+            pager.updateHeader(getString(R.string.home_header, query, currentPage, lastPage))
+        }
+        pager.updateData(data)
     }
 
 
