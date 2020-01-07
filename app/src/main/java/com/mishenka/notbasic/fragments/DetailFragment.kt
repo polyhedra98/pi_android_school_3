@@ -2,6 +2,7 @@ package com.mishenka.notbasic.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.text.util.Linkify
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -96,6 +97,7 @@ class DetailFragment : Fragment() {
 
     private fun setupUrlRelatedViews(url: String) {
         detail_url_tv.text = getString(R.string.url_ui, url)
+        Linkify.addLinks(detail_url_tv, Linkify.WEB_URLS)
 
         Glide.with(detail_photo_iv)
             .load(url)
