@@ -18,6 +18,9 @@ import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.recycler.HomeAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.viewmodels.EventVM
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.android.ext.android.get
@@ -101,13 +104,28 @@ class HomeFragment : Fragment(), IPagerHost {
 
     override fun requestSetup() {
         Log.i("NYA_$TAG", "Pager setup requested.")
+        val pager = (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
+
+        //TODO("It's really annoying that I have to do explicit cast, even though I inherit
+        // PhotosAdapter in HomeAdapter")
+        pager.setupRecycler(
+            HomeAdapter(
+                listOf("HEADER (not yet implemented)."),
+                this::homeResultClicked
+            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+        )
+
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         if (pagerData != null) {
-            (childFragmentManager.findFragmentById(R.id.home_results_content_frame) as IPager)
-                .updateData(pagerData)
+            pager.updateData(pagerData)
         } else {
             Log.i("NYA_$TAG", "No pager data to restore.")
         }
+    }
+
+
+    private fun homeResultClicked(url: String) {
+        Log.i("NYA_$TAG", "Home result $url clicked")
     }
 
 

@@ -6,10 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.pager.LatLngPagerData
 import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
+import com.mishenka.notbasic.utils.recycler.HomeAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import kotlinx.android.synthetic.main.fragment_results.*
 
 
@@ -37,40 +42,19 @@ class ResultsFragment : Fragment(), IPager {
     }
 
 
-    //TODO("Temp implementation.")
     override fun updateData(data: IPagerData) {
-        if ((data as? StdPagerData?) != null) {
-            tempSetupStdContent(data)
-        }
-        else if ((data as? LatLngPagerData?) != null) {
-            tempSetupLatLngContent(data)
-        }
-    }
+        this.data = data
 
-
-    private fun tempSetupStdContent(argData: StdPagerData) {
-        Log.i("NYA_$TAG", "Updating std data.")
-        data = argData
-
-        results_query.text = getString(R.string.query_ui, argData.query)
-        results_current_page.text = getString(R.string.current_page, argData.currentPage)
-        results_last_page.text = getString(R.string.last_page, argData.lastPage)
-        results_data_list.text = getString(R.string.data_list, argData.pagerList)
-
+        (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
+            .replaceItems(data.pagerList)
         updatePagerButtons()
     }
 
 
-    private fun tempSetupLatLngContent(argData: LatLngPagerData) {
-        Log.i("NYA_$TAG", "Updating lat / lng data.")
-        data = argData
-
-        results_query.text = getString(R.string.location_ui, argData.lat, argData.lng)
-        results_current_page.text = getString(R.string.current_page, argData.currentPage)
-        results_last_page.text = getString(R.string.last_page, argData.lastPage)
-        results_data_list.text = getString(R.string.data_list, argData.pagerList)
-
-        updatePagerButtons()
+    override fun setupRecycler(adapter: PhotosAdapter<PhotosViewHolder, PhotosViewHolder>) {
+        Log.i("NYA_$TAG", "Setting up recycler.")
+        results_rv.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        results_rv.adapter = adapter
     }
 
 
