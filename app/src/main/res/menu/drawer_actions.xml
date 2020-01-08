@@ -16,6 +16,11 @@
             />
 
         <item
+            android:id="@+id/history_nav_menu_item"
+            android:title="@string/nav_history_title"
+            />
+
+        <item
             android:id="@+id/settings_nav_menu_item"
             android:title="@string/nav_settings_title"
             />

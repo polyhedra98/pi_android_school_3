@@ -98,6 +98,9 @@
 
     <string name="username_hint">Username</string>
     <string name="username_anonymous_ui">Anonymous</string>
+
+    <string name="history_anonymous_ui">Log in to save history.</string>
+    <string name="history_ui">%1$s\'s history</string>
     <!-- ~UI values -->
 
 
