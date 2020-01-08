@@ -42,6 +42,11 @@ class EventVM: ViewModel() {
         get() = _loginCredentialsApproved
 
 
+    private val _signUpCredentialsApproved = MutableLiveData<Event<String>>()
+    val signUpCredentialsApproved: LiveData<Event<String>>
+        get() = _signUpCredentialsApproved
+
+
 
     fun requestFragment(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         _fragmentRequested.value = Event(Pair(request, additionalExtras))
@@ -65,6 +70,11 @@ class EventVM: ViewModel() {
 
     fun logInCredentialsApproved(username: String) {
         _loginCredentialsApproved.value = Event(username)
+    }
+
+
+    fun signUpCredentialsApproved(username: String) {
+        _signUpCredentialsApproved.value = Event(username)
     }
 
 

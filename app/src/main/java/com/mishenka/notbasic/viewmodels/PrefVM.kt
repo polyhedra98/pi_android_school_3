@@ -5,16 +5,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.model.user.User
+import com.mishenka.notbasic.data.source.AppDatabase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
 val prefsModule = module {
-    viewModel { PrefVM() }
+    viewModel { PrefVM(get()) }
 }
 
 
-class PrefVM: ViewModel() {
+class PrefVM(
+    private val appDatabase: AppDatabase
+): ViewModel() {
 
     private val _username = MutableLiveData<String?>().apply { value = null }
     val username: LiveData<String?>
@@ -27,18 +34,41 @@ class PrefVM: ViewModel() {
     }
 
 
-    //TODO("Implement.")
     fun logIn(context: Context, username: String) {
         _username.value = username
         prefSaveUser(context, username)
     }
 
 
-    //TODO("Implement.")
     fun logOut(context: Context) {
         _username.value = null
         prefDeleteUser(context)
     }
+
+
+    fun signUp(context: Context, username: String) {
+        //TODO("Change scope")
+        GlobalScope.launch {
+            appDatabase.userDao().insertUser(User(0, username))
+            MainScope().launch {
+                logIn(context, username)
+            }
+        }
+    }
+
+
+    fun userExists(username: String): LiveData<Boolean> {
+        val observable = MutableLiveData<Boolean>()
+        //TODO("Change scope")
+        GlobalScope.launch {
+            val id = appDatabase.userDao().getUserIdByUsername(username)
+            MainScope().launch {
+                observable.value = (id != null)
+            }
+        }
+        return observable
+    }
+
 
 
     private fun prefDeleteUser(context: Context) {

@@ -144,6 +144,14 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 }
             })
 
+            eventVM.signUpCredentialsApproved.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { username ->
+                    hideKeyboard()
+                    eventVM.requestSecondaryFragmentsRemoval(AuthFragment.AuthRequest.fragmentTag)
+                    prefVM.signUp(this@MainActivity, username)
+                }
+            })
+
         }
     }
 

@@ -77,6 +77,8 @@
     <string name="query_not_blank_err">Search query can\'t be blank.</string>
     <string name="username_english_only_err">English letters / digits / underscores only.</string>
     <string name="username_not_blank_err">Username can\'t be blank.</string>
+    <string name="username_non_existence_err">User doesn\'t exist.</string>
+    <string name="username_existence_err">User already exists.</string>
 
     <string name="default_home_header">A free text search. Photos who\'s title, description or tags contain the text will be returned. You can exclude results that match a term by prepending it with a - character.</string>
     <string name="home_header">Query: %1$s\nCurrent page: %2$d\nTotal pages: %3$d</string>

@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.fragment.AuthFragmentData
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_auth.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -24,6 +26,8 @@ class AuthFragment : Fragment() {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -108,12 +112,35 @@ class AuthFragment : Fragment() {
             return
         }
 
-        eventVM.logInCredentialsApproved(username)
+        //TODO("Ok, I've just realized that I have to remove observer, once data is fetched. Memory leak!")
+        prefVM.userExists(username).observe(this, Observer { exists ->
+            if (!exists) {
+                handleValidationError(getString(R.string.username_non_existence_err))
+            } else {
+                eventVM.logInCredentialsApproved(username)
+            }
+        })
     }
 
 
     private fun handleCreation() {
-        //TODO("Implement.")
+        val username = auth_username_et.text.toString()
+
+        val validationErrorMsg = validateCredentials(username)
+        if (validationErrorMsg != null) {
+            Log.i("NYA_$TAG", "Username $username validation failed. $validationErrorMsg")
+            handleValidationError(validationErrorMsg)
+            return
+        }
+
+        //TODO("Ok, I've just realized that I have to remove observer, once data is fetched. Memory leak!")
+        prefVM.userExists(username).observe(this, Observer { exists ->
+            if (!exists) {
+                eventVM.signUpCredentialsApproved(username)
+            } else {
+                handleValidationError(getString(R.string.username_existence_err))
+            }
+        })
     }
 
 
