@@ -15,9 +15,8 @@ interface UserDao {
         SELECT search, page, time_stamp
         FROM history
         WHERE user_id = :userId
-        LIMIT :limit OFFSET :offset
     """)
-    suspend fun getUserHistory(userId: Long, limit: Int, offset: Int): List<HistorySelectItem>?
+    suspend fun getUserHistory(userId: Long): List<HistorySelectItem>?
 
 
     @Insert

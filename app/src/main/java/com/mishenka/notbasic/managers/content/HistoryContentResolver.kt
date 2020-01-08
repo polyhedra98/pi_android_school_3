@@ -29,7 +29,7 @@ class HistoryContentResolver : IContentResolver {
         //TODO("Change scope")
         GlobalScope.launch {
             val historyData = appDatabase.userDao().
-                getUserHistory(ext.userId, ext.limit, ext.offset)
+                getUserHistory(ext.userId)
 
             MainScope().launch {
 

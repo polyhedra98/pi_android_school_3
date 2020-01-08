@@ -6,7 +6,5 @@ import com.mishenka.notbasic.interfaces.IContentExtras
 
 data class HistoryContentExtras(
     val appDatabase: AppDatabase,
-    val userId: Long,
-    val limit: Int,
-    val offset: Int
+    val userId: Long
 ) : IContentExtras
