@@ -23,6 +23,7 @@ import com.mishenka.notbasic.utils.recycler.StdAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -34,6 +35,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -176,6 +179,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
         eventVM.requestKeyboardHide()
         val page = argPage ?: 1
+
+        prefVM.conditionallySaveSearch(query, page)
 
         val observable = contentManager.requestContent(
             ContentType.STD_TYPE,

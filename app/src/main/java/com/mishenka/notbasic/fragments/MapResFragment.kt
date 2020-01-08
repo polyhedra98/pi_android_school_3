@@ -28,6 +28,7 @@ import com.mishenka.notbasic.utils.recycler.StdAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -37,6 +38,8 @@ class MapResFragment : Fragment(), IPagerHost {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -167,6 +170,11 @@ class MapResFragment : Fragment(), IPagerHost {
         val localLat = (pagerDataToPreserve?.lat ?: restoredData?.pagerData?.lat ?: lat)!!
         val localLng = (pagerDataToPreserve?.lng ?: restoredData?.pagerData?.lng ?: lng)!!
         val page = argPage ?: 1
+
+        prefVM.conditionallySaveSearch(
+            getString(R.string.lat_lng_string_representation, localLat, localLng),
+            page
+        )
 
         val observable = contentManager.requestContent(
             ContentType.LAT_LNG_TYPE,
