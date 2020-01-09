@@ -88,34 +88,39 @@ class NavigationManager {
 
 
     fun requestSecondaryFragmentsRemoval(tag: String) {
-        val lastStackItem = requestsStack.peek()
 
-        if (lastStackItem == null) {
-            Log.i("NYA_$TAG", "Impossible error. Requests stack is empty.")
-            return
-        }
+        synchronized(NavigationManager::class.java) {
+            val lastStackItem = requestsStack.peek()
 
-        val children = lastStackItem.children
-
-        if (children == null) {
-            Log.i("NYA_$TAG", "No children to remove.")
-            return
-        }
-
-        for (child in children) {
-            if (child.request.fragmentTag == tag) {
-                children.remove(child)
+            if (lastStackItem == null) {
+                Log.i("NYA_$TAG", "Impossible error. Requests stack is empty.")
+                return
             }
-        }
 
-        val lastChildElement = children.peek()
+            val children = lastStackItem.children
 
-        if (lastChildElement != null) {
-            Log.i("NYA_$TAG", "Have another child to repopulate with.")
-            requestAddition(lastChildElement.request, lastChildElement.extras.additionalExtras)
-        } else {
-            Log.i("NYA_$TAG", "No children to repopulate with. Cleaning.")
-            setupViews(forceRemoval = true)
+            if (children == null) {
+                Log.i("NYA_$TAG", "No children to remove.")
+                return
+            }
+
+            val childrenToRemove = ArrayList<RequestItem>()
+            for (child in children) {
+                if (child.request.fragmentTag == tag) {
+                    childrenToRemove.add(child)
+                }
+            }
+            children.removeAll(childrenToRemove)
+
+            val lastChildElement = children.peek()
+
+            if (lastChildElement != null) {
+                Log.i("NYA_$TAG", "Have another child to repopulate with.")
+                requestAddition(lastChildElement.request, lastChildElement.extras.additionalExtras)
+            } else {
+                Log.i("NYA_$TAG", "No children to repopulate with. Cleaning.")
+                setupViews(forceRemoval = true)
+            }
         }
 
     }
