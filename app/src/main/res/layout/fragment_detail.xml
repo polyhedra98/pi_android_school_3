@@ -24,35 +24,79 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/materialCardView"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="@dimen/normal_margin"
-            android:layout_marginTop="@dimen/normal_margin"
             android:layout_marginEnd="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/detail_download_b"
+            app:layout_constraintEnd_toStartOf="@+id/detail_download_b"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv">
+            app:layout_constraintTop_toTopOf="@+id/detail_star_b">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
+                    android:layout_margin="@dimen/small_margin"
                     android:id="@+id/detail_category_tv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <TextView
+                    android:layout_margin="@dimen/small_margin"
                     android:id="@+id/detail_url_tv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
 
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
+
+
+        <Button
+            android:id="@+id/detail_star_b"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            app:layout_constraintEnd_toEndOf="@+id/detail_download_b"
+            app:layout_constraintStart_toStartOf="@+id/detail_download_b"
+            app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv"
+            android:text="@string/star_button_text"
+            />
+
+        <Button
+            android:id="@+id/detail_download_b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detail_star_b"
+            android:text="@string/download_button_text"/>
+
+        <TextView
+            android:id="@+id/detail_star_error_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@+id/detail_star_b"
+            app:layout_constraintEnd_toEndOf="@+id/detail_star_b"
+            app:layout_constraintStart_toStartOf="@+id/detail_star_b"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/detail_download_error_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@+id/detail_download_b"
+            app:layout_constraintEnd_toEndOf="@+id/detail_download_b"
+            app:layout_constraintStart_toStartOf="@+id/detail_download_b"
+            android:visibility="invisible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

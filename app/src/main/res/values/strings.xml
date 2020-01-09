@@ -66,6 +66,9 @@
     <string name="search_button_text">Search</string>
     <string name="center_button_text">Center</string>
     <string name="create_button_text">Create</string>
+    <string name="remove_button_text">Remove</string>
+    <string name="star_button_text">Star</string>
+    <string name="download_button_text">Download</string>
 
     <string name="previous_page_button_text">&lt; previous page</string>
     <string name="next_page_button_text">next page &gt;</string>
