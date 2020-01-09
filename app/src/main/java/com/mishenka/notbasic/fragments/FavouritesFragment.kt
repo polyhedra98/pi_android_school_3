@@ -32,6 +32,8 @@ import kotlinx.android.synthetic.main.fragment_favourites.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
+
+//TODO("Observe star / unstar events to dynamically change master / detail if needed.")
 class FavouritesFragment : Fragment(), IPagerHost {
 
     private val TAG = "FavouritesFragment"
