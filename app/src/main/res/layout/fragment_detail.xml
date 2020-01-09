@@ -65,7 +65,6 @@
             app:layout_constraintEnd_toEndOf="@+id/detail_download_b"
             app:layout_constraintStart_toStartOf="@+id/detail_download_b"
             app:layout_constraintTop_toBottomOf="@+id/detail_photo_iv"
-            android:text="@string/star_button_text"
             />
 
         <Button
@@ -87,6 +86,7 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/detail_star_b"
             app:layout_constraintEnd_toEndOf="@+id/detail_star_b"
             app:layout_constraintStart_toStartOf="@+id/detail_star_b"
+            android:text="@string/star_log_in_err"
             android:visibility="invisible" />
 
         <TextView

@@ -64,4 +64,16 @@ interface UserDao {
     @Insert
     suspend fun insertFavSearch(favouriteSearch: FavouriteSearch): Long?
 
+
+    @Insert
+    suspend fun insertFavToSearchToUser(favouriteToSearchToUser: FavouriteToSearchToUser): Long?
+
+    
+
+    @Query("""
+        DELETE FROM favourite_to_search_to_user
+        WHERE user_id = :userId AND favourite_id = :favId AND favourite_search_id = :categoryId
+    """)
+    suspend fun deleteFavToSearchToUserByIds(userId: Long, favId: Long, categoryId: Long)
+
 }

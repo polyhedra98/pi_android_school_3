@@ -2,12 +2,12 @@ package com.mishenka.notbasic.viewmodels
 
 import android.content.Context
 import android.util.Log
+import android.widget.Button
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.data.model.user.History
-import com.mishenka.notbasic.data.model.user.User
+import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -111,7 +111,7 @@ class PrefVM(
             val timeStamp = Date()
 
             Log.i("NYA_$TAG", "Saving search $search for " +
-                    "userId $userId. Time: $timeStamp")
+                    "userId ${userId.value}. Time: $timeStamp")
             //TODO("Change scope")
             GlobalScope.launch {
                 appDatabase.userDao().insertHistory(
@@ -126,6 +126,125 @@ class PrefVM(
             }
         }
     }
+
+
+    //TODO("Why would I put this here? Might have to refactor later.")
+    fun isAlreadyStarred(userId: Long, category: String, url: String): LiveData<Boolean> {
+        val observable = MutableLiveData<Boolean>()
+
+        //TODO("Change scope")
+        GlobalScope.launch {
+            val categoryId = appDatabase.userDao().getFavSearchIdByCategory(category)
+
+            if (categoryId == null) {
+                Log.i("NYA_$TAG", "Not yet starred. Category id is null.")
+                MainScope().launch {
+                    observable.value = false
+                }
+            }
+            else {
+                val urlId = appDatabase.userDao().getFavIdByUrl(url)
+
+                if (urlId == null) {
+                    Log.i("NYA_$TAG", "Not yet starred. Url id is null.")
+                    MainScope().launch {
+                        observable.value = false
+                    }
+                }
+                else {
+                    val fsuId = appDatabase.userDao().getFavToSearchToUserId(
+                        userId, urlId, categoryId
+                    )
+
+                    if (fsuId == null) {
+                        Log.i("NYA_$TAG", "Not yet starred. FSU id is null.")
+                        MainScope().launch {
+                            observable.value = false
+                        }
+                    }
+                    else {
+                        Log.i("NYA_$TAG", "Already starred.")
+                        MainScope().launch {
+                            observable.value = true
+                        }
+                    }
+                }
+            }
+        }
+
+        return observable
+    }
+
+
+    fun toggleStar(isAlreadyStarred: Boolean, userId: Long, category: String,
+                   url: String, before: (() -> Unit)?, after: (() -> Unit)?) {
+
+        before?.invoke()
+
+        //TODO("Change scope")
+        GlobalScope.launch {
+            if (isAlreadyStarred) {
+                val categoryId = appDatabase.userDao().getFavSearchIdByCategory(category)
+
+                if (categoryId == null) {
+                    Log.i("NYA_$TAG", "Error unstarring. Category id is null.")
+                }
+                else {
+                    val urlId = appDatabase.userDao().getFavIdByUrl(url)
+
+                    if (urlId == null) {
+                        Log.i("NYA_$TAG", "Error unstarring. Url id is null.")
+                    }
+                    else {
+                        val fsuId = appDatabase.userDao().getFavToSearchToUserId(
+                            userId, urlId, categoryId
+                        )
+
+                        if (fsuId == null) {
+                            Log.i("NYA_$TAG", "Error unstarring. FSU id is null.")
+                        }
+                        else {
+                            Log.i("NYA_$TAG", "No issues. Unstarring.")
+                            appDatabase.userDao().deleteFavToSearchToUserByIds(
+                                userId, urlId, categoryId
+                            )
+                        }
+                    }
+                }
+
+                MainScope().launch {
+                    after?.invoke()
+                }
+            }
+            else {
+                var categoryId = appDatabase.userDao().getFavSearchIdByCategory(category)
+
+                if (categoryId == null) {
+                    Log.i("NYA_$TAG", "Category id is null. Inserting.")
+                    categoryId = appDatabase.userDao().insertFavSearch(FavouriteSearch(0, category))
+                }
+
+                var urlId = appDatabase.userDao().getFavIdByUrl(url)
+
+                if (urlId == null) {
+                    Log.i("NYA_$TAG", "Url id is null. Inserting.")
+                    urlId = appDatabase.userDao().insertFav(Favourite(0, url))
+                }
+
+                appDatabase.userDao().insertFavToSearchToUser(FavouriteToSearchToUser(
+                    0, userId, urlId!!, categoryId!!
+                ))?.also {
+                    Log.i("NYA_$TAG", "Successfully starred.")
+                }
+
+                MainScope().launch {
+                    after?.invoke()
+                }
+            }
+        }
+
+    }
+
 
 
     private fun prefDeleteUser(context: Context) {

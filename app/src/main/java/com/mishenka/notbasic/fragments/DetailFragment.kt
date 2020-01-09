@@ -7,7 +7,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.fragment.DetailFragmentData
@@ -16,6 +18,7 @@ import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -26,6 +29,8 @@ class DetailFragment : Fragment() {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -79,12 +84,21 @@ class DetailFragment : Fragment() {
 
     private fun setupViews() {
 
+        var localCategory: String? = null
+        var localUrl: String? = null
+
         (restoredData?.category ?: categoryToPreserve)?.let { category ->
+            localCategory = category
             setupCategoryRelatedViews(category)
         }
 
         (restoredData?.url ?: urlToPreserve)?.let { url ->
+            localUrl = url
             setupUrlRelatedViews(url)
+        }
+
+        if (localCategory != null && localUrl != null) {
+            setupCategoryAndUrlRelatedViews(localCategory!!, localUrl!!)
         }
 
     }
@@ -104,6 +118,64 @@ class DetailFragment : Fragment() {
             .fitCenter()
             .into(detail_photo_iv)
     }
+
+
+    private fun setupCategoryAndUrlRelatedViews(category: String, url: String) {
+
+        prefVM.userId.observe(this, Observer {
+            if (it == null) {
+                detail_star_b.visibility = View.INVISIBLE
+                detail_star_error_tv.visibility = View.VISIBLE
+            } else {
+                detail_star_b.visibility = View.VISIBLE
+                detail_star_error_tv.visibility = View.INVISIBLE
+                setupStarButton(it, category, url)
+            }
+        })
+
+    }
+
+
+    private fun setupStarButton(userId: Long, category: String, url: String) {
+
+        prefVM.isAlreadyStarred(userId, category, url).observe(this, Observer {
+            if (it == false) {
+                detail_star_b.text = getString(R.string.star_button_text)
+                detail_star_b.setOnClickListener { view ->
+                    prefVM.toggleStar(it, userId, category, url, {
+                        (view as Button).run {
+                            isEnabled = false
+                            isClickable = false
+                        }
+                    }, {
+                        (view as Button).run {
+                            isEnabled = true
+                            isClickable = true
+                            setupStarButton(userId, category, url)
+                        }
+                    })
+                }
+            } else if (it == true) {
+                detail_star_b.text = getString(R.string.unstar_button_text)
+                detail_star_b.setOnClickListener { view ->
+                    prefVM.toggleStar(it, userId, category, url, {
+                        (view as Button).run {
+                            isEnabled = false
+                            isClickable = false
+                        }
+                    }, {
+                        (view as Button).run {
+                            isEnabled = true
+                            isClickable = true
+                            setupStarButton(userId, category, url)
+                        }
+                    })
+                }
+            }
+        })
+
+    }
+
 
 
     object DetailRequest : IFragmentRequest {
