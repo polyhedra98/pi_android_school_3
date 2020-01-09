@@ -19,11 +19,49 @@ interface UserDao {
     suspend fun getUserHistory(userId: Long): List<HistorySelectItem>?
 
 
+    @Query("""
+        SELECT category, url
+        FROM favourite_to_search_to_user
+        INNER JOIN favourite_search
+        ON favourite_to_search_to_user.favourite_search_id = favourite_search.id
+        INNER JOIN favourite
+        ON favourite_to_search_to_user.favourite_id = favourite.id
+        WHERE user_id = :userId
+        ORDER BY category
+    """)
+    suspend fun getCategoriesAndFavsForUser(userId: Long): List<CategoryFavSelectItem>?
+
+
+    @Query("SELECT id FROM favourite_search WHERE category = :category LIMIT 1")
+    suspend fun getFavSearchIdByCategory(category: String): Long?
+
+
+    @Query("SELECT id FROM favourite WHERE url = :url LIMIT 1")
+    suspend fun getFavIdByUrl(url: String): Long?
+
+
+    @Query("""
+        SELECT id FROM favourite_to_search_to_user
+        WHERE user_id = :userId AND favourite_id = :favouriteId AND favourite_search_id = :categoryId
+        LIMIT 1
+    """)
+    suspend fun getFavToSearchToUserId(userId: Long, favouriteId: Long, categoryId: Long): Long?
+
+
+
     @Insert
     suspend fun insertUser(user: User): Long?
 
 
     @Insert
     suspend fun insertHistory(history: History): Long?
+
+
+    @Insert
+    suspend fun insertFav(favourite: Favourite): Long?
+
+
+    @Insert
+    suspend fun insertFavSearch(favouriteSearch: FavouriteSearch): Long?
 
 }
