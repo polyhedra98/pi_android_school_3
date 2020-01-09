@@ -11,10 +11,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.children
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.fragments.HistoryFragment
-import com.mishenka.notbasic.fragments.HomeFragment
-import com.mishenka.notbasic.fragments.MapFragment
-import com.mishenka.notbasic.fragments.SettingsFragment
+import com.mishenka.notbasic.fragments.*
 import com.mishenka.notbasic.general.ExtendedActivity
 import com.mishenka.notbasic.interfaces.IFragmentAdditionalExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
@@ -181,6 +178,7 @@ class NavigationManager {
 
         when (itemId) {
             R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest, null)
+            R.id.fav_nav_menu_item -> requestAddition(FavouritesFragment.FavouritesRequest, null)
             R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest, null)
             R.id.history_nav_menu_item -> requestAddition(HistoryFragment.HistoryRequest, null)
             R.id.settings_nav_menu_item -> requestAddition(SettingsFragment.SettingsRequest, null)

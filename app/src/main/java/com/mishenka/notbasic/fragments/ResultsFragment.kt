@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.pager.FavPagerData
 import com.mishenka.notbasic.interfaces.*
+import com.mishenka.notbasic.utils.recycler.FavAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import kotlinx.android.synthetic.main.fragment_results.*
@@ -43,8 +45,15 @@ class ResultsFragment : Fragment(), IPager {
         this.data = data
 
         results_rv.scrollToPosition(0)
-        (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
-            .replaceItems(data.pagerList)
+        //TODO("Junk. Using this for now, changing later.")
+        val favAdapter = (results_rv.adapter as? FavAdapter?)
+        if (favAdapter != null) {
+            val favData = data as FavPagerData
+            favAdapter.replaceFavItems(favData.pagerList, favData.infoList)
+        } else {
+            (results_rv.adapter as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>)
+                .replaceItems(data.pagerList)
+        }
         updatePagerButtons()
     }
 

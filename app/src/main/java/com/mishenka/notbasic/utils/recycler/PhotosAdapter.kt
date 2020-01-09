@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 abstract class PhotosAdapter <P: PhotosViewHolder, H: PhotosViewHolder> (
-    private var items: MutableList<String>
+    var items: MutableList<String>
 ): RecyclerView.Adapter<PhotosViewHolder>() {
 
     abstract val TAG: String

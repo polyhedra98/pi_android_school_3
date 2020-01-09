@@ -11,6 +11,11 @@
             />
 
         <item
+            android:id="@+id/fav_nav_menu_item"
+            android:title="@string/nav_fav_title"
+            />
+
+        <item
             android:id="@+id/map_nav_menu_item"
             android:title="@string/nav_map_title"
             />

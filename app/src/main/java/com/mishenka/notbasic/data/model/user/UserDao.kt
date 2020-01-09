@@ -27,9 +27,20 @@ interface UserDao {
         INNER JOIN favourite
         ON favourite_to_search_to_user.favourite_id = favourite.id
         WHERE user_id = :userId
-        ORDER BY category
+        ORDER BY category 
+        LIMIT :per_page OFFSET :offset
     """)
-    suspend fun getCategoriesAndFavsForUser(userId: Long): List<CategoryFavSelectItem>?
+    suspend fun getCategoriesAndFavsForUser(userId: Long,
+                                            per_page: Int, offset: Int): List<CategoryFavSelectItem>?
+
+
+    @Query("""
+        SELECT COUNT(user_id)
+        FROM favourite_to_search_to_user
+        WHERE user_id = :userId
+    """)
+    suspend fun getCategoriesAndFavsCountForUser(userId: Long): Int?
+
 
 
     @Query("SELECT id FROM favourite_search WHERE category = :category LIMIT 1")
@@ -68,7 +79,7 @@ interface UserDao {
     @Insert
     suspend fun insertFavToSearchToUser(favouriteToSearchToUser: FavouriteToSearchToUser): Long?
 
-    
+
 
     @Query("""
         DELETE FROM favourite_to_search_to_user

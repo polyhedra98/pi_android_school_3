@@ -136,6 +136,7 @@ class DetailFragment : Fragment() {
     }
 
 
+    //TODO("I feel like these results should be cashed, but I haven't experienced any performance issues.")
     private fun setupStarButton(userId: Long, category: String, url: String) {
 
         prefVM.isAlreadyStarred(userId, category, url).observe(this, Observer {

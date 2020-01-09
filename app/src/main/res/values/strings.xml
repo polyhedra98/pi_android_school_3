@@ -109,6 +109,10 @@
     <string name="history_anonymous_ui">Log in to save history.</string>
     <string name="history_ui">%1$s\'s history</string>
     <string name="history_page_ui">Page: %1$d</string>
+
+    <string name="favourites_anonymous_ui">Log in to access favourites.</string>
+    <string name="favourites_ui">%1$s\'s favourites</string>
+    <string name="favourites_page_ui">Page: %1$d</string>
     <!-- ~UI values -->
 
 
