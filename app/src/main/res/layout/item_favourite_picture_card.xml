@@ -26,14 +26,14 @@
                 android:layout_alignParentEnd="true"
                 app:srcCompat="@android:color/darker_gray" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/item_favourite_remove_b"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/item_favourite_picture_iv"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
-                android:text="@string/remove_button_text" />
+                android:text="@string/unstar_button_text" />
 
         </RelativeLayout>
 

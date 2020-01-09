@@ -14,6 +14,7 @@ import com.mishenka.notbasic.data.content.FavContentExtras
 import com.mishenka.notbasic.data.content.FavContentResponse
 import com.mishenka.notbasic.data.content.FavItemType
 import com.mishenka.notbasic.data.fragment.FavouritesFragmentData
+import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.data.pager.FavPagerData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
@@ -176,13 +177,17 @@ class FavouritesFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun handleResultClick(position: Int) {
-        TODO("Implement.")
+    private fun handleResultClick(url: String, category: String) {
+        Log.i("NYA_$TAG", "Favourite $url from $category clicked.")
+        eventVM.requestDetails(DetailAdditionalExtras(category, url))
     }
 
 
-    private fun handleRemoval(position: Int) {
-        TODO("Implement.")
+    private fun handleRemoval(url: String, category: String) {
+        Log.i("NYA_$TAG", "Favourite $url from $category removal requested.")
+        prefVM.userId.value?.let {
+            prefVM.toggleStar(true, it, category, url, null, null)
+        }
     }
 
 

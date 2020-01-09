@@ -7,8 +7,8 @@ import com.mishenka.notbasic.data.content.FavItemType
 
 class FavAdapter(items: MutableList<String>,
                  private var additionalInfo: MutableList<FavItemType>,
-                 private val onClickListener: (Int) -> Unit,
-                 private val onRemoveListener: (Int) -> Unit)
+                 private val onClickListener: (String, String) -> Unit,
+                 private val onRemoveListener: (String, String) -> Unit)
     : PhotosAdapter<FavouritesVH, CategoryHeaderVH>(items) {
 
     override val TAG = "FavAdapter"
@@ -18,7 +18,7 @@ class FavAdapter(items: MutableList<String>,
         FavouritesVH(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_favourite_picture_card, parent, false),
-            onClickListener,
+            this::favClickListener,
             this::removeFavItem
         )
 
@@ -45,9 +45,23 @@ class FavAdapter(items: MutableList<String>,
     }
 
 
-    fun removeFavItem(position: Int) {
-        onRemoveListener(position)
+    private fun removeFavItem(position: Int) {
+        onRemoveListener(items[position], getCategoryForPosition(position))
         removeItem(position)
+    }
+
+
+    private fun favClickListener(position: Int) {
+        onClickListener(items[position], getCategoryForPosition(position))
+    }
+
+
+    private fun getCategoryForPosition(position: Int): String {
+        var pos = position
+        while (additionalInfo[pos] != FavItemType.CATEGORY_TYPE) {
+            pos--
+        }
+        return items[pos]
     }
 
 
