@@ -1,6 +1,9 @@
 package com.mishenka.notbasic.viewmodels
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.LiveData
@@ -14,6 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import java.net.URL
 import java.util.*
 
 
@@ -244,7 +248,41 @@ class PrefVM(
         }
 
     }
+    //TODO("~Why would I put this here? Might have to refactor later.")
 
+
+    //TODO("Why would I put this here (Part 2)? Might have to refactor later.")
+    fun downloadPhoto(context: Context, urlString: String,
+                      before: (() -> Unit)?, after: (() -> Unit)?) {
+        before?.invoke()
+        //TODO("Change scope")
+        GlobalScope.launch {
+            val url = URL(urlString)
+            val connection = url.openConnection()
+            connection.doInput = true
+            connection.connect()
+            val inputStream = connection.getInputStream()
+            val downloadedBitmap = BitmapFactory.decodeStream(inputStream)
+            MainScope().launch {
+                savePhoto(context, downloadedBitmap, after)
+            }
+        }
+    }
+
+
+    private fun savePhoto(context: Context, bitmap: Bitmap, after: (() -> Unit)?) {
+        val uri = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap,
+            "not_basic_${Date().time}", "")
+        after?.invoke()
+        Log.i("NYA_$TAG", "Saved bitmap. Uri: $uri")
+        //TODO("Update gallery")
+    }
+
+
+    fun deletePhoto(uri: String) {
+        TODO("Implement.")
+    }
+    //TODO("~Why would I put this here (Part 2)? Might have to refactor later.")
 
 
     private fun prefDeleteUser(context: Context) {

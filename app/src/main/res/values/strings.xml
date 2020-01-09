@@ -86,6 +86,7 @@
     <string name="username_existence_err">User already exists.</string>
 
     <string name="star_log_in_err">You need to be logged in to star.</string>
+    <string name="download_permission_err">Insufficient permissions.</string>
 
     <string name="default_home_header">A free text search. Photos who\'s title, description or tags contain the text will be returned. You can exclude results that match a term by prepending it with a - character.</string>
     <string name="home_header">Query: %1$s\nCurrent page: %2$d\nTotal pages: %3$d</string>

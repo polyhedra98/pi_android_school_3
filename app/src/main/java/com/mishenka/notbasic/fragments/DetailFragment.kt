@@ -1,6 +1,8 @@
 package com.mishenka.notbasic.fragments
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.util.Linkify
 import android.util.Log
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
@@ -26,6 +29,9 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class DetailFragment : Fragment() {
 
     private val TAG = "DetailFragment"
+
+
+    private val EXT_STORAGE_PERM_RC = 1
 
 
     private val eventVM by sharedViewModel<EventVM>()
@@ -82,6 +88,33 @@ class DetailFragment : Fragment() {
     }
 
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode) {
+            EXT_STORAGE_PERM_RC -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("NYA", "Permission has been denied")
+                } else {
+                    Log.i("NYA", "Permission has been accepted")
+                }
+
+                val url = arguments?.getString(getString(R.string.bundle_url_key))
+                if (url == null) {
+                    Log.i("NYA_$TAG", "Url is null. Can't set up button.")
+                } else {
+                    setupDownloadButton(url, true)
+                }
+            }
+
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+
+
     private fun setupViews() {
 
         var localCategory: String? = null
@@ -133,6 +166,8 @@ class DetailFragment : Fragment() {
             }
         })
 
+        setupDownloadButton(url)
+
     }
 
 
@@ -144,12 +179,12 @@ class DetailFragment : Fragment() {
                 detail_star_b.text = getString(R.string.star_button_text)
                 detail_star_b.setOnClickListener { view ->
                     prefVM.toggleStar(it, userId, category, url, {
-                        (view as Button).run {
+                        (view as Button?)?.run {
                             isEnabled = false
                             isClickable = false
                         }
                     }, {
-                        (view as Button).run {
+                        (view as Button?)?.run {
                             isEnabled = true
                             isClickable = true
                             setupStarButton(userId, category, url)
@@ -160,12 +195,12 @@ class DetailFragment : Fragment() {
                 detail_star_b.text = getString(R.string.unstar_button_text)
                 detail_star_b.setOnClickListener { view ->
                     prefVM.toggleStar(it, userId, category, url, {
-                        (view as Button).run {
+                        (view as Button?)?.run {
                             isEnabled = false
                             isClickable = false
                         }
                     }, {
-                        (view as Button).run {
+                        (view as Button?)?.run {
                             isEnabled = true
                             isClickable = true
                             setupStarButton(userId, category, url)
@@ -175,6 +210,67 @@ class DetailFragment : Fragment() {
             }
         })
 
+    }
+
+
+    private fun setupDownloadButton(url: String, afterRequest: Boolean? = false) {
+
+        if (!getExternalStoragePermissionState() && afterRequest == true) {
+            detail_download_b.visibility = View.INVISIBLE
+            detail_download_error_tv.visibility = View.VISIBLE
+        }
+        else if (getExternalStoragePermissionState() && afterRequest == true) {
+            prefVM.downloadPhoto(context!!, url, {
+                (detail_download_b)?.run {
+                    isEnabled = false
+                    isClickable = false
+                }
+            }, {
+                (detail_download_b)?.run {
+                    isEnabled = true
+                    isClickable = true
+                }
+            })
+        }
+
+        detail_download_b.setOnClickListener { view ->
+
+            if (!getExternalStoragePermissionState()) {
+                requestExternalStoragePemission()
+            }
+            else {
+                detail_download_error_tv.visibility = View.INVISIBLE
+                detail_download_b.visibility = View.VISIBLE
+
+                prefVM.downloadPhoto(context!!, url, {
+                    (view as Button?)?.run {
+                        isEnabled = false
+                        isClickable = false
+                    }
+                }, {
+                    (view as Button?)?.run {
+                        isEnabled = true
+                        isClickable = true
+                    }
+                })
+            }
+
+        }
+
+    }
+
+
+    private fun getExternalStoragePermissionState() =
+        ContextCompat.checkSelfPermission(
+            context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+
+    private fun requestExternalStoragePemission() {
+        requestPermissions(
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            EXT_STORAGE_PERM_RC
+        )
     }
 
 
