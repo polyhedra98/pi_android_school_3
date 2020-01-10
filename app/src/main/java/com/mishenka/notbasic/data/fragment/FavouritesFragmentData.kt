@@ -5,5 +5,6 @@ import com.mishenka.notbasic.interfaces.IFragmentData
 
 
 data class FavouritesFragmentData(
+    val userId: Long?,
     val pagerData: FavPagerData?
 ) : IFragmentData

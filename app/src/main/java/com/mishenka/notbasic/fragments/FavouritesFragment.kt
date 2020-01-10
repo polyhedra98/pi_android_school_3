@@ -14,6 +14,7 @@ import com.mishenka.notbasic.data.content.FavContentExtras
 import com.mishenka.notbasic.data.content.FavContentResponse
 import com.mishenka.notbasic.data.content.FavItemType
 import com.mishenka.notbasic.data.fragment.FavouritesFragmentData
+import com.mishenka.notbasic.data.fragment.GalleryFragmentData
 import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.data.pager.FavPagerData
@@ -52,6 +53,8 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
     private var restoredData: FavouritesFragmentData? = null
 
+    private var userIdToPreserve: Long? = null
+
     private var pagerDataToPreserve: FavPagerData? = null
 
 
@@ -74,6 +77,13 @@ class FavouritesFragment : Fragment(), IPagerHost {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? FavouritesFragmentData?)
+
+        if (prefVM.userId.value != restoredData?.userId) {
+            restoredData = null
+            preservationManager.clearDataForFragment(fragmentId!!)
+        }
+
         setupViews()
     }
 
@@ -82,6 +92,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
         preservationManager.preserveFragmentData(fragmentId!!,
             FavouritesFragmentData(
+                userId = userIdToPreserve ?: restoredData?.userId,
                 pagerData = pagerDataToPreserve ?: restoredData?.pagerData
             ))
 
@@ -157,12 +168,17 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
         restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? FavouritesFragmentData?)
 
+        Log.i("NYA_$TAG", "Restored data userId: ${restoredData?.userId}. " +
+                "Restored data info list: ${restoredData?.pagerData?.infoList}")
+
         favourites_upper_info_tv.text = getString(R.string.favourites_ui, username)
         favourites_results_content_frame.visibility = View.VISIBLE
 
         initResultsFragment()
 
-        fetchFavourites(userId)
+        if (restoredData == null) {
+            fetchFavourites(userId)
+        }
     }
 
 
@@ -171,6 +187,11 @@ class FavouritesFragment : Fragment(), IPagerHost {
             replace(R.id.favourites_results_content_frame, ResultsFragment())
             commit()
         }
+    }
+
+
+    private fun preserveUserId(userId: Long) {
+        userIdToPreserve = userId
     }
 
 
@@ -194,6 +215,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
 
     private fun fetchFavourites(userId: Long, argPage: Int? = null) {
+        preserveUserId(userId)
         val page = argPage ?: 1
 
         val observable = contentManager.requestContent(

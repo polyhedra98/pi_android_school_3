@@ -28,4 +28,10 @@ class PreservationManager {
         return dataStorage[fragmentId]
     }
 
+
+    fun clearDataForFragment(fragmentId: Long) {
+        Log.i("NYA_$TAG", "Clearing data for fragment #$fragmentId")
+        dataStorage.remove(fragmentId)
+    }
+
 }
