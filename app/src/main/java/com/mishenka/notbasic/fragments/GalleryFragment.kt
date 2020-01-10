@@ -29,6 +29,7 @@ import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.utils.recycler.ResponsiveAdapter
 import com.mishenka.notbasic.utils.recycler.StdAdapter
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -44,6 +45,8 @@ class GalleryFragment : Fragment(), IPagerHost {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -192,13 +195,14 @@ class GalleryFragment : Fragment(), IPagerHost {
 
 
     private fun galleryResultClicked(pagerElement: PagerElement) {
-        Log.i("NYA_$TAG", "Gallery value ${pagerElement.value} clicked.")
         eventVM.requestDetails(DetailAdditionalExtras(null, pagerElement.value))
     }
 
 
     private fun galleryResultRemoved(pagerElement: PagerElement) {
-        TODO("Implement.")
+        prefVM.deletePhoto(context!!, pagerElement.value) {
+            fetchGallery(pagerDataToPreserve?.currentPage ?: restoredData?.pagerData?.currentPage)
+        }
     }
 
 

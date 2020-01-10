@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.viewmodels
 
+import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -275,12 +276,35 @@ class PrefVM(
             "not_basic_${Date().time}", "")
         after?.invoke()
         Log.i("NYA_$TAG", "Saved bitmap. Uri: $uri")
-        //TODO("Update gallery")
     }
 
 
-    fun deletePhoto(uri: String) {
-        TODO("Implement.")
+    fun deletePhoto(context: Context, uri: String, after: (() -> Unit)?) {
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val selection = MediaStore.Images.Media.DATA + " = ?"
+        val selectionArgs = arrayOf(uri)
+        val cr = context.contentResolver
+
+        val cursor = cr.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.let { safeCursor ->
+            if (safeCursor.moveToFirst()) {
+                val id = safeCursor.getLong(safeCursor.getColumnIndex(MediaStore.Images.Media._ID))
+                val deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                cr.delete(deleteUri, null, null)
+            } else {
+                Log.i("NYA_$TAG", "File $uri not found.")
+            }
+        }?.also {
+            cursor.close()
+            after?.invoke()
+        }
     }
     //TODO("~Why would I put this here (Part 2)? Might have to refactor later.")
 

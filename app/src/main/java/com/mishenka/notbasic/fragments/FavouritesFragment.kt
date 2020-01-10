@@ -200,7 +200,9 @@ class FavouritesFragment : Fragment(), IPagerHost {
     private fun handleRemoval(url: String, category: String) {
         Log.i("NYA_$TAG", "Favourite $url from $category removal requested.")
         prefVM.userId.value?.let {
-            prefVM.toggleStar(true, it, category, url, null, null)
+            prefVM.toggleStar(true, it, category, url, null, {
+                fetchFavourites(it, pagerDataToPreserve?.currentPage ?: restoredData?.pagerData?.currentPage)
+            })
         }
     }
 

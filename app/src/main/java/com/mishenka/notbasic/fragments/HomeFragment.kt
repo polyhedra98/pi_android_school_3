@@ -140,7 +140,8 @@ class HomeFragment : Fragment(), IPagerHost {
 
 
     private fun homeResultRemoved(pagerElement: PagerElement) {
-        TODO("Implement.")
+        Log.i("NYA_$TAG", "Removed ${pagerElement.value} from Home results. " +
+                "No action needed.")
     }
 
 

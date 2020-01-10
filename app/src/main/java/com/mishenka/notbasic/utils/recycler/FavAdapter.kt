@@ -40,9 +40,10 @@ class FavAdapter(argItems: List<PagerElement>,
     override fun removeItem(position: Int) {
         super.removeItem(position)
 
-        onRemoveListener(items[position].value, getCategoryForPosition(position))
+        val itemToRemove = Pair(items[position].value, getCategoryForPosition(position))
         items.removeAt(position)
         notifyItemRemoved(position)
+        onRemoveListener(itemToRemove.first, itemToRemove.second)
     }
 
 

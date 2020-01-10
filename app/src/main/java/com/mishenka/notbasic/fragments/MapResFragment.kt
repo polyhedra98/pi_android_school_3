@@ -152,7 +152,8 @@ class MapResFragment : Fragment(), IPagerHost {
 
 
     private fun mapResResultRemoved(pagerElement: PagerElement) {
-        TODO("Implement.")
+        Log.i("NYA_$TAG", "Removed ${pagerElement.value} from MapRes results. " +
+                "No action needed.")
     }
 
 

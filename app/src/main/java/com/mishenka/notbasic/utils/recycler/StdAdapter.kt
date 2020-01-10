@@ -48,9 +48,10 @@ class StdAdapter(argItems: List<PagerElement>,
     override fun removeItem(position: Int) {
         super.removeItem(position)
 
-        onRemoveListener(items[position])
+        val itemToRemove = items[position]
         items.removeAt(position)
         notifyItemRemoved(position)
+        onRemoveListener(itemToRemove)
     }
 
 
