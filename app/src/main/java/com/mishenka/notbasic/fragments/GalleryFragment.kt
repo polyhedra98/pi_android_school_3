@@ -76,8 +76,6 @@ class GalleryFragment : Fragment(), IPagerHost {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? GalleryFragmentData?)
-
         setupViews()
     }
 
@@ -118,6 +116,10 @@ class GalleryFragment : Fragment(), IPagerHost {
             ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
         )
 
+        if (restoredData == null) {
+            fetchGallery()
+        }
+
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
         if (pagerData != null) {
             updatePagerData(pagerData, pager)
@@ -127,23 +129,44 @@ class GalleryFragment : Fragment(), IPagerHost {
     }
 
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode) {
+            EXT_STORAGE_PERM_RC -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("NYA", "Permission has been denied")
+                } else {
+                    Log.i("NYA", "Permission has been accepted")
+                }
+
+                setupViews()
+            }
+
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+
 
     private fun setupViews() {
 
+        restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? GalleryFragmentData?)
+
         if (!getExternalStoragePermissionState()) {
-            //TODO("Implement 'Request permission.'")
             gallery_content_l.visibility = View.INVISIBLE
             gallery_error_l.visibility = View.VISIBLE
+            gallery_request_b.setOnClickListener {
+                requestExternalStoragePermission()
+            }
         }
         else if (getExternalStoragePermissionState()) {
-            gallery_error_tv.visibility = View.INVISIBLE
+            gallery_error_l.visibility = View.INVISIBLE
             gallery_content_l.visibility = View.VISIBLE
 
             initResultsFragment()
-
-            if (restoredData == null) {
-                fetchGallery()
-            }
         }
 
     }
