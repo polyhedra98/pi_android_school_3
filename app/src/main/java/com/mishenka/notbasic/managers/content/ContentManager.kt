@@ -23,7 +23,8 @@ class ContentManager {
         Pair(ContentType.STD_TYPE, StdContentResolver()),
         Pair(ContentType.LAT_LNG_TYPE, LatLngContentResolver()),
         Pair(ContentType.HISTORY_TYPE, HistoryContentResolver()),
-        Pair(ContentType.FAV_TYPE, FavContentResolver())
+        Pair(ContentType.FAV_TYPE, FavContentResolver()),
+        Pair(ContentType.GAL_TYPE, GalleryContentResolver())
     )
 
 

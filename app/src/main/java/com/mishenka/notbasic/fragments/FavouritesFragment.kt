@@ -205,6 +205,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
             )
         )
 
+        //TODO("Ok, I've just realized that I have to remove observer, once data is fetched. Memory leak!")
         observable.observe(this, Observer {
             (it as? FavContentResponse?)?.let { response ->
 

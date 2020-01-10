@@ -16,6 +16,11 @@
             />
 
         <item
+            android:id="@+id/gallery_nav_menu_item"
+            android:title="@string/nav_gallery_title"
+            />
+
+        <item
             android:id="@+id/map_nav_menu_item"
             android:title="@string/nav_map_title"
             />

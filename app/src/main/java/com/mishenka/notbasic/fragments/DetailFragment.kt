@@ -213,13 +213,13 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun setupDownloadButton(url: String, afterRequest: Boolean? = false) {
+    private fun setupDownloadButton(url: String, afterRequest: Boolean = false) {
 
-        if (!getExternalStoragePermissionState() && afterRequest == true) {
+        if (!getExternalStoragePermissionState() && afterRequest) {
             detail_download_b.visibility = View.INVISIBLE
             detail_download_error_tv.visibility = View.VISIBLE
         }
-        else if (getExternalStoragePermissionState() && afterRequest == true) {
+        else if (getExternalStoragePermissionState() && afterRequest) {
             prefVM.downloadPhoto(context!!, url, {
                 (detail_download_b)?.run {
                     isEnabled = false
@@ -236,7 +236,7 @@ class DetailFragment : Fragment() {
         detail_download_b.setOnClickListener { view ->
 
             if (!getExternalStoragePermissionState()) {
-                requestExternalStoragePemission()
+                requestExternalStoragePermission()
             }
             else {
                 detail_download_error_tv.visibility = View.INVISIBLE
@@ -266,7 +266,7 @@ class DetailFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
 
 
-    private fun requestExternalStoragePemission() {
+    private fun requestExternalStoragePermission() {
         requestPermissions(
             arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
             EXT_STORAGE_PERM_RC
