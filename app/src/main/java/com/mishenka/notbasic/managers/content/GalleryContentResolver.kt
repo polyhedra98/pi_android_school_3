@@ -8,6 +8,7 @@ import com.mishenka.notbasic.data.content.GalleryContentResponse
 import com.mishenka.notbasic.interfaces.IContentExtras
 import com.mishenka.notbasic.interfaces.IContentResolver
 import com.mishenka.notbasic.interfaces.IContentResponse
+import com.mishenka.notbasic.utils.recycler.PagerElement
 import kotlin.math.ceil
 
 
@@ -50,8 +51,14 @@ class GalleryContentResolver : IContentResolver {
             cursor.moveToLast()
             val lastPage = ceil((cursor.position + 1).toDouble() / perPage.toDouble()).toInt()
 
+            val photoForPager = ArrayList<PagerElement>(listToReturn.size)
+            //TODO("There has to be some obscure syntax to avoid this.")
+            for (photoItem in listToReturn.toList()) {
+                photoForPager.add(object : PagerElement(photoItem) {})
+            }
+
             observable.value = GalleryContentResponse(
-                listToReturn,
+                photoForPager,
                 ext.page,
                 lastPage
             ).also {

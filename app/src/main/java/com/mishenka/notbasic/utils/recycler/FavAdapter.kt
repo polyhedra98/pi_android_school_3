@@ -5,64 +5,92 @@ import android.view.ViewGroup
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.content.FavItemType
 
-class FavAdapter(items: MutableList<String>,
-                 private var additionalInfo: MutableList<FavItemType>,
+class FavAdapter(argItems: List<PagerElement>,
                  private val onClickListener: (String, String) -> Unit,
                  private val onRemoveListener: (String, String) -> Unit)
-    : PhotosAdapter<FavouritesVH, CategoryHeaderVH>(items) {
+    : ResponsiveHeaderlessAdapter<PhotosViewHolder>(argItems) {
 
     override val TAG = "FavAdapter"
 
 
-    override fun pFactory(parent: ViewGroup) =
+    private fun pFactory(parent: ViewGroup) =
         FavouritesVH(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_favourite_picture_card, parent, false),
-            this::favClickListener,
-            this::removeFavItem
+            this::localClickListener,
+            this::localRemoveListener
         )
 
 
-    override fun hFactory(parent: ViewGroup) =
+    private fun hFactory(parent: ViewGroup) =
         CategoryHeaderVH(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_picture_header_category, parent, false)
         )
 
 
-    override fun getItemViewType(position: Int) =
-        additionalInfo[position].value
+    override fun replaceItems(newItems: List<PagerElement>) {
+        super.replaceItems(newItems)
 
-
-    override fun getItemCount() =
-        items.size
-
-
-    fun replaceFavItems(newItems: List<String>, newAdditionalInfo: List<FavItemType>) {
         items = newItems.toMutableList()
-        additionalInfo = newAdditionalInfo.toMutableList()
         notifyDataSetChanged()
     }
 
 
-    private fun removeFavItem(position: Int) {
-        onRemoveListener(items[position], getCategoryForPosition(position))
-        removeItem(position)
+    override fun removeItem(position: Int) {
+        super.removeItem(position)
+
+        onRemoveListener(items[position].value, getCategoryForPosition(position))
+        items.removeAt(position)
+        notifyItemRemoved(position)
     }
 
 
-    private fun favClickListener(position: Int) {
-        onClickListener(items[position], getCategoryForPosition(position))
+    override fun addItem(newItem: PagerElement) {
+        super.addItem(newItem)
+
+        items.add(newItem)
+        notifyItemInserted(items.size)
+    }
+
+
+    override fun getItemCount() = items.size
+
+
+    override fun getItemViewType(position: Int) =
+        (items as MutableList<FavPagerElement>)[position].type.value
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        if (viewType == FavItemType.CATEGORY_TYPE.value) {
+            hFactory(parent)
+        } else {
+            pFactory(parent)
+        }
+
+
+    override fun onBindViewHolder(holder: PhotosViewHolder, position: Int) {
+        holder.executeBindings(items[position])
+    }
+
+
+    private fun localRemoveListener(pagerElement: PagerElement) {
+        removeItem(items.indexOf(pagerElement))
+    }
+
+
+    private fun localClickListener(pagerElement: PagerElement) {
+        onClickListener(pagerElement.value, getCategoryForPosition(items.indexOf(pagerElement)))
     }
 
 
     private fun getCategoryForPosition(position: Int): String {
         var pos = position
-        while (additionalInfo[pos] != FavItemType.CATEGORY_TYPE) {
+        val localItems = items as MutableList<FavPagerElement>
+        while (localItems[pos].type != FavItemType.CATEGORY_TYPE) {
             pos--
         }
-        return items[pos]
+        return items[pos].value
     }
-
 
 }

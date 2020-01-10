@@ -307,7 +307,7 @@ class NavigationManager {
     private fun repopulate() {
         val lastPrimaryItem = requestsStack.peek()?.primaryItem
         if (lastPrimaryItem == null) {
-            Log.i("NYA_$TAG", "Error repopulating. Last primary item is null")
+            Log.i("NYA_$TAG", "Error repopulating. Last primary value is null")
             return
         }
         val lastPrimaryRequest = lastPrimaryItem.request

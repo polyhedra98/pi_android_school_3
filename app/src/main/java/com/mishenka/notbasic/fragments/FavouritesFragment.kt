@@ -12,21 +12,16 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.FavContentExtras
 import com.mishenka.notbasic.data.content.FavContentResponse
-import com.mishenka.notbasic.data.content.FavItemType
 import com.mishenka.notbasic.data.fragment.FavouritesFragmentData
-import com.mishenka.notbasic.data.fragment.GalleryFragmentData
 import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.data.pager.FavPagerData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
 import com.mishenka.notbasic.interfaces.IPagerData
 import com.mishenka.notbasic.interfaces.IPagerHost
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
-import com.mishenka.notbasic.utils.recycler.FavAdapter
-import com.mishenka.notbasic.utils.recycler.PhotosAdapter
-import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
+import com.mishenka.notbasic.utils.recycler.*
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_favourites.*
@@ -55,7 +50,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
     private var userIdToPreserve: Long? = null
 
-    private var pagerDataToPreserve: FavPagerData? = null
+    private var pagerDataToPreserve: IPagerData? = null
 
 
     override fun onCreateView(
@@ -102,7 +97,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
     override fun pagerDataChanged(newData: IPagerData) {
         Log.i("NYA_$TAG", "Pager data has changed.")
-        pagerDataToPreserve = (newData as? FavPagerData)
+        pagerDataToPreserve = newData
     }
 
 
@@ -122,11 +117,10 @@ class FavouritesFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             FavAdapter(
-                emptyList<String>().toMutableList(),
-                emptyList<FavItemType>().toMutableList(),
+                emptyList<FavPagerElement>(),
                 this::handleResultClick,
                 this::handleRemoval
-            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+            ) as ResponsiveHeaderlessAdapter<PhotosViewHolder>
         )
 
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
@@ -168,9 +162,6 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
         restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? FavouritesFragmentData?)
 
-        Log.i("NYA_$TAG", "Restored data userId: ${restoredData?.userId}. " +
-                "Restored data info list: ${restoredData?.pagerData?.infoList}")
-
         favourites_upper_info_tv.text = getString(R.string.favourites_ui, username)
         favourites_results_content_frame.visibility = View.VISIBLE
 
@@ -195,7 +186,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun updatePagerData(data: FavPagerData, pager: IPager) {
+    private fun updatePagerData(data: IPagerData, pager: IPager) {
         pager.updateData(data)
     }
 
@@ -231,11 +222,10 @@ class FavouritesFragment : Fragment(), IPagerHost {
         observable.observe(this, Observer {
             (it as? FavContentResponse?)?.let { response ->
 
-                val newData = object : FavPagerData() {
-                    override val infoList: List<FavItemType> = response.favouriteItemsInfo
+                val newData = object : IPagerData {
                     override val currentPage: Int = page
                     override val lastPage: Int = response.totalPages
-                    override val pagerList: List<String> = response.favouriteItemsList
+                    override val pagerList: List<PagerElement> = response.favouriteItemsList
                 }
 
                 pagerDataChanged(newData)

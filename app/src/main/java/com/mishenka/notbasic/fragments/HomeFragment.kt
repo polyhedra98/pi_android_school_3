@@ -19,9 +19,10 @@ import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.*
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.recycler.PagerElement
 import com.mishenka.notbasic.utils.recycler.StdAdapter
-import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
+import com.mishenka.notbasic.utils.recycler.ResponsiveAdapter
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -114,9 +115,10 @@ class HomeFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             StdAdapter(
-                listOf(getString(R.string.default_home_header)),
-                this::homeResultClicked
-            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+                listOf(object : PagerElement(getString(R.string.default_home_header)) {}),
+                this::homeResultClicked,
+                this::homeResultRemoved
+            ) as ResponsiveAdapter<PhotosViewHolder>
         )
 
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
@@ -128,12 +130,17 @@ class HomeFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun homeResultClicked(url: String) {
-        Log.i("NYA_$TAG", "Home result $url clicked")
+    private fun homeResultClicked(pagerElement: PagerElement) {
+        Log.i("NYA_$TAG", "Home result ${pagerElement.value} clicked")
         eventVM.requestDetails(DetailAdditionalExtras(
             category = (pagerDataToPreserve ?: restoredData?.pagerData)!!.query,
-            url = url
+            url = pagerElement.value
         ))
+    }
+
+
+    private fun homeResultRemoved(pagerElement: PagerElement) {
+        TODO("Implement.")
     }
 
 
@@ -224,11 +231,17 @@ class HomeFragment : Fragment(), IPagerHost {
 
             if (currentPage != null && lastPage != null && photo != null) {
 
+                val photoForPager = ArrayList<PagerElement>(photo.size)
+                //TODO("There has to be some obscure syntax to avoid this.")
+                for (photoItem in photo.toList()) {
+                    photoForPager.add(object : PagerElement(photoItem) {})
+                }
+
                 val newData = object : StdPagerData() {
                     override val query: String = response.query
                     override val currentPage: Int = currentPage
                     override val lastPage: Int = lastPage
-                    override val pagerList: List<String> = photo
+                    override val pagerList: List<PagerElement> = photoForPager
                 }
 
                 pagerDataChanged(newData)
@@ -250,7 +263,9 @@ class HomeFragment : Fragment(), IPagerHost {
 
     private fun updatePagerData(data: StdPagerData, pager: IPager) {
         with(data) {
-            pager.updateHeader(getString(R.string.home_header, query, currentPage, lastPage))
+            pager.updateHeader(
+                object : PagerElement(getString(R.string.home_header, query, currentPage, lastPage)) {}
+            )
         }
         pager.updateData(data)
     }

@@ -24,11 +24,11 @@ import com.mishenka.notbasic.interfaces.IPagerData
 import com.mishenka.notbasic.interfaces.IPagerHost
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
-import com.mishenka.notbasic.utils.recycler.PhotosAdapter
+import com.mishenka.notbasic.utils.recycler.PagerElement
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
+import com.mishenka.notbasic.utils.recycler.ResponsiveAdapter
 import com.mishenka.notbasic.utils.recycler.StdAdapter
 import com.mishenka.notbasic.viewmodels.EventVM
-import com.mishenka.notbasic.viewmodels.prefsModule
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -111,9 +111,10 @@ class GalleryFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             StdAdapter(
-                listOf(getString(R.string.default_gallery_header)),
-                this::galleryResultClicked
-            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+                listOf(object : PagerElement(getString(R.string.default_gallery_header)) {}),
+                this::galleryResultClicked,
+                this::galleryResultRemoved
+            ) as ResponsiveAdapter<PhotosViewHolder>
         )
 
         if (restoredData == null) {
@@ -182,15 +183,22 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     private fun updatePagerData(data: IPagerData, pager: IPager) {
         with(data) {
-            pager.updateHeader(getString(R.string.gallery_header, currentPage, lastPage))
+            pager.updateHeader(
+                object : PagerElement(getString(R.string.gallery_header, currentPage, lastPage)) {}
+            )
         }
         pager.updateData(data)
     }
 
 
-    private fun galleryResultClicked(uri: String) {
-        Log.i("NYA_$TAG", "Gallery item $uri clicked.")
-        eventVM.requestDetails(DetailAdditionalExtras(null, uri))
+    private fun galleryResultClicked(pagerElement: PagerElement) {
+        Log.i("NYA_$TAG", "Gallery value ${pagerElement.value} clicked.")
+        eventVM.requestDetails(DetailAdditionalExtras(null, pagerElement.value))
+    }
+
+
+    private fun galleryResultRemoved(pagerElement: PagerElement) {
+        TODO("Implement.")
     }
 
 
@@ -212,7 +220,7 @@ class GalleryFragment : Fragment(), IPagerHost {
                 val newData = object : IPagerData {
                     override val currentPage: Int = response.currentPage
                     override val lastPage: Int = response.totalPages
-                    override val pagerList: List<String> = response.galleryItemsList
+                    override val pagerList: List<PagerElement> = response.galleryItemsList
                 }
 
                 pagerDataChanged(newData)

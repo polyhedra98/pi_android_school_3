@@ -8,6 +8,7 @@ import com.mishenka.notbasic.data.content.FavItemType
 import com.mishenka.notbasic.interfaces.IContentExtras
 import com.mishenka.notbasic.interfaces.IContentResolver
 import com.mishenka.notbasic.interfaces.IContentResponse
+import com.mishenka.notbasic.utils.recycler.FavPagerElement
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -56,11 +57,19 @@ class FavContentResolver : IContentResolver {
                     favouritesItemsInfo.add(FavItemType.PHOTO_TYPE)
                 }
 
+                val pagerData = ArrayList<FavPagerElement>(favouritesItemsList.size)
+                for (i in 0 until favouritesItemsList.size) {
+                    pagerData.add(object : FavPagerElement(
+                        favouritesItemsList[i],
+                        favouritesItemsInfo[i]
+                    ) {})
+                }
+
+
                 MainScope().launch {
 
                     observable.value = FavContentResponse(
-                        favouritesItemsList,
-                        favouritesItemsInfo,
+                        pagerData,
                         ceil(favDataCount.toDouble() / perPage.toDouble()).toInt()
                     )
 

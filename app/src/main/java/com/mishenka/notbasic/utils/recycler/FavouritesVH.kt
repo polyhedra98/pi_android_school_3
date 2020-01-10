@@ -8,25 +8,25 @@ import com.mishenka.notbasic.R
 
 class FavouritesVH(
     itemView: View,
-    private val onClickListener: (Int) -> Unit,
-    private val removeButtonListener: (Int) -> Unit
+    private val onClickListener: (PagerElement) -> Unit,
+    private val removeButtonListener: (PagerElement) -> Unit
 ): PhotosViewHolder(itemView) {
 
-    override fun executeBindings(item: String, position: Int) {
+    override fun executeBindings(item: PagerElement) {
 
         itemView.findViewById<ImageView>(R.id.item_favourite_picture_iv)?.let { pictureIV ->
             Glide.with(pictureIV)
-                .load(item)
+                .load(item.value)
                 .centerCrop()
                 .into(pictureIV)
             pictureIV.setOnClickListener {
-                onClickListener(position)
+                onClickListener(item)
             }
         }
 
         itemView.findViewById<Button>(R.id.item_favourite_remove_b)?.let { removeB ->
             removeB.setOnClickListener {
-                removeButtonListener(position)
+                removeButtonListener(item)
             }
         }
 

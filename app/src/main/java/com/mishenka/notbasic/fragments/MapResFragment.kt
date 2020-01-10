@@ -17,16 +17,16 @@ import com.mishenka.notbasic.data.pager.LatLngPagerData
 import com.mishenka.notbasic.data.fragment.additional.MapResAdditionalExtras
 import com.mishenka.notbasic.data.fragment.MapResFragmentData
 import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
-import com.mishenka.notbasic.data.pager.StdPagerData
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
 import com.mishenka.notbasic.interfaces.IPagerData
 import com.mishenka.notbasic.interfaces.IPagerHost
 import com.mishenka.notbasic.managers.content.ContentManager
 import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.recycler.PagerElement
 import com.mishenka.notbasic.utils.recycler.StdAdapter
-import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
+import com.mishenka.notbasic.utils.recycler.ResponsiveAdapter
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
 import org.koin.android.ext.android.get
@@ -124,9 +124,10 @@ class MapResFragment : Fragment(), IPagerHost {
         // PhotosAdapter in StdAdapter")
         pager.setupRecycler(
             StdAdapter(
-                listOf(getString(R.string.default_map_res_header)),
-                this::mapResResultClicked
-            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+                listOf(object : PagerElement(getString(R.string.default_map_res_header)) {}),
+                this::mapResResultClicked,
+                this::mapResResultRemoved
+            ) as ResponsiveAdapter<PhotosViewHolder>
         )
 
         val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
@@ -138,15 +139,20 @@ class MapResFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun mapResResultClicked(url: String) {
-        Log.i("NYA_$TAG", "MapRes result $url clicked")
+    private fun mapResResultClicked(pagerElement: PagerElement) {
+        Log.i("NYA_$TAG", "MapRes result ${pagerElement.value} clicked")
         val pagerData = (pagerDataToPreserve ?: restoredData?.pagerData)!!
         eventVM.requestDetails(
             DetailAdditionalExtras(
                 category = getString(R.string.lat_lng_string_representation, pagerData.lat, pagerData.lng),
-                url = url
+                url = pagerElement.value
             )
         )
+    }
+
+
+    private fun mapResResultRemoved(pagerElement: PagerElement) {
+        TODO("Implement.")
     }
 
 
@@ -201,12 +207,18 @@ class MapResFragment : Fragment(), IPagerHost {
 
             if (currentPage != null && lastPage != null && photo != null) {
 
+                val photoForPager = ArrayList<PagerElement>(photo.size)
+                //TODO("There has to be some obscure syntax to avoid this.")
+                for (photoItem in photo.toList()) {
+                    photoForPager.add(object : PagerElement(photoItem) {})
+                }
+
                 val newData = object : LatLngPagerData() {
                     override val lat: Double = response.lat
                     override val lng: Double = response.lng
                     override val currentPage: Int = currentPage
                     override val lastPage: Int = lastPage
-                    override val pagerList: List<String> = photo
+                    override val pagerList: List<PagerElement> = photoForPager
                 }
 
                 pagerDataChanged(newData)
@@ -228,7 +240,9 @@ class MapResFragment : Fragment(), IPagerHost {
 
     private fun updatePagerData(data: LatLngPagerData, pager: IPager) {
         with(data) {
-            pager.updateHeader(getString(R.string.map_res_header, lat, lng, currentPage, lastPage))
+            pager.updateHeader(
+                object : PagerElement(getString(R.string.map_res_header, lat, lng, currentPage, lastPage)) {}
+            )
         }
         pager.updateData(data)
     }

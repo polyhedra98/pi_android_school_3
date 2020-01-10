@@ -6,9 +6,9 @@ import com.mishenka.notbasic.R
 
 class CategoryHeaderVH(itemView: View) : PhotosViewHolder(itemView) {
 
-    override fun executeBindings(item: String, position: Int) {
+    override fun executeBindings(item: PagerElement) {
         itemView.findViewById<TextView>(R.id.item_picture_header_category_tv)?.let { headerTV ->
-            headerTV.text = item
+            headerTV.text = item.value
         }
     }
 }
