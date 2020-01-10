@@ -171,7 +171,6 @@ class GalleryFragment : Fragment(), IPagerHost {
     }
 
 
-    //TODO("Should be cached.")
     private fun fetchGallery(argPage: Int? = null) {
         val page = argPage ?: 1
 
