@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mishenka.notbasic.R
@@ -57,6 +58,14 @@ class ResultsFragment : Fragment(), IPager {
     override fun setupRecycler(adapter: ResponsiveHeaderlessAdapter<PhotosViewHolder>) {
         Log.i("NYA_$TAG", "Setting up recycler.")
         results_rv.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+
+        ItemTouchHelper(SwipeItemTouchHelperCallback(object : ISwipeListener {
+            override fun onItemDismiss(position: Int) {
+                (results_rv.adapter as ResponsiveHeaderlessAdapter<PhotosViewHolder>?)
+                    ?.removeItem(position)
+            }
+        })).attachToRecyclerView(results_rv)
+
         results_rv.adapter = adapter
     }
 

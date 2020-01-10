@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.content.FavContentExtras
 import com.mishenka.notbasic.data.content.FavContentResponse
-import com.mishenka.notbasic.data.content.FavItemType
+import com.mishenka.notbasic.data.content.ItemType
 import com.mishenka.notbasic.interfaces.IContentExtras
 import com.mishenka.notbasic.interfaces.IContentResolver
 import com.mishenka.notbasic.interfaces.IContentResponse
@@ -44,17 +44,17 @@ class FavContentResolver : IContentResolver {
             else {
 
                 val favouritesItemsList = emptyList<String>().toMutableList()
-                val favouritesItemsInfo = emptyList<FavItemType>().toMutableList()
+                val favouritesItemsInfo = emptyList<ItemType>().toMutableList()
                 var previousCategory: String? = null
 
                 for (favItem in favData) {
                     if (previousCategory != favItem.category) {
                         previousCategory = favItem.category
                         favouritesItemsList.add(previousCategory)
-                        favouritesItemsInfo.add(FavItemType.CATEGORY_TYPE)
+                        favouritesItemsInfo.add(ItemType.HEADER_TYPE)
                     }
                     favouritesItemsList.add(favItem.url)
-                    favouritesItemsInfo.add(FavItemType.PHOTO_TYPE)
+                    favouritesItemsInfo.add(ItemType.PHOTO_TYPE)
                 }
 
                 val pagerData = ArrayList<FavPagerElement>(favouritesItemsList.size)

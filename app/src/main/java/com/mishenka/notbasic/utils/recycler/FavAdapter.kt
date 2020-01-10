@@ -3,7 +3,7 @@ package com.mishenka.notbasic.utils.recycler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.data.content.FavItemType
+import com.mishenka.notbasic.data.content.ItemType
 
 class FavAdapter(argItems: List<PagerElement>,
                  private val onClickListener: (String, String) -> Unit,
@@ -62,7 +62,7 @@ class FavAdapter(argItems: List<PagerElement>,
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        if (viewType == FavItemType.CATEGORY_TYPE.value) {
+        if (viewType == ItemType.HEADER_TYPE.value) {
             hFactory(parent)
         } else {
             pFactory(parent)
@@ -87,7 +87,7 @@ class FavAdapter(argItems: List<PagerElement>,
     private fun getCategoryForPosition(position: Int): String {
         var pos = position
         val localItems = items as MutableList<FavPagerElement>
-        while (localItems[pos].type != FavItemType.CATEGORY_TYPE) {
+        while (localItems[pos].type != ItemType.HEADER_TYPE) {
             pos--
         }
         return items[pos].value

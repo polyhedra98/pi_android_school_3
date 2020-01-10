@@ -3,6 +3,7 @@ package com.mishenka.notbasic.utils.recycler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mishenka.notbasic.R
+import com.mishenka.notbasic.data.content.ItemType
 
 
 class StdAdapter(argItems: List<PagerElement>,
@@ -11,11 +12,6 @@ class StdAdapter(argItems: List<PagerElement>,
     : ResponsiveAdapter<PhotosViewHolder>(argItems) {
 
     override val TAG: String = "StdAdapter"
-
-
-    private val TYPE_HEADER = 1
-
-    private val TYPE_PHOTO = 2
 
 
     private fun pFactory(parent: ViewGroup) =
@@ -79,14 +75,14 @@ class StdAdapter(argItems: List<PagerElement>,
 
     override fun getItemViewType(position: Int) =
         if (position == 0) {
-            TYPE_HEADER
+            ItemType.HEADER_TYPE.value
         } else {
-            TYPE_PHOTO
+            ItemType.PHOTO_TYPE.value
         }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        if (viewType == TYPE_HEADER) {
+        if (viewType == ItemType.HEADER_TYPE.value) {
             hFactory(parent)
         } else {
             pFactory(parent)
