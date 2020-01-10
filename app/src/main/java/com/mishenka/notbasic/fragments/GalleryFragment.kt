@@ -16,6 +16,7 @@ import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.GalleryContentExtras
 import com.mishenka.notbasic.data.content.GalleryContentResponse
 import com.mishenka.notbasic.data.fragment.GalleryFragmentData
+import com.mishenka.notbasic.data.fragment.additional.DetailAdditionalExtras
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.interfaces.IPager
@@ -26,9 +27,11 @@ import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.utils.recycler.PhotosAdapter
 import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
 import com.mishenka.notbasic.utils.recycler.StdAdapter
+import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.prefsModule
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 //TODO("Observe downloads to dynamically change master / detail if needed.")
@@ -39,6 +42,8 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     private val EXT_STORAGE_PERM_RC = 1
 
+
+    private val eventVM by sharedViewModel<EventVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -70,6 +75,8 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        restoredData = (preservationManager.getDataForFragment(fragmentId!!) as? GalleryFragmentData?)
 
         setupViews()
     }
@@ -134,7 +141,9 @@ class GalleryFragment : Fragment(), IPagerHost {
 
             initResultsFragment()
 
-            fetchGallery()
+            if (restoredData == null) {
+                fetchGallery()
+            }
         }
 
     }
@@ -157,7 +166,8 @@ class GalleryFragment : Fragment(), IPagerHost {
 
 
     private fun galleryResultClicked(uri: String) {
-        TODO("Implement.")
+        Log.i("NYA_$TAG", "Gallery item $uri clicked.")
+        eventVM.requestDetails(DetailAdditionalExtras(null, uri))
     }
 
 
