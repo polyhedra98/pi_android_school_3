@@ -15,15 +15,24 @@ import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.content.ContentType
 import com.mishenka.notbasic.data.content.GalleryContentExtras
 import com.mishenka.notbasic.data.content.GalleryContentResponse
+import com.mishenka.notbasic.data.fragment.GalleryFragmentData
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
+import com.mishenka.notbasic.interfaces.IPager
+import com.mishenka.notbasic.interfaces.IPagerData
+import com.mishenka.notbasic.interfaces.IPagerHost
 import com.mishenka.notbasic.managers.content.ContentManager
+import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.recycler.PhotosAdapter
+import com.mishenka.notbasic.utils.recycler.PhotosViewHolder
+import com.mishenka.notbasic.utils.recycler.StdAdapter
+import com.mishenka.notbasic.viewmodels.prefsModule
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import org.koin.android.ext.android.get
 
 
 //TODO("Observe downloads to dynamically change master / detail if needed.")
-class GalleryFragment : Fragment() {
+class GalleryFragment : Fragment(), IPagerHost {
 
     private val TAG = "GalleryFragment"
 
@@ -31,10 +40,16 @@ class GalleryFragment : Fragment() {
     private val EXT_STORAGE_PERM_RC = 1
 
 
+    private val preservationManager = get<PreservationManager>()
+
     private val contentManager = get<ContentManager>()
 
 
     private var fragmentId: Long? = null
+
+    private var restoredData: GalleryFragmentData? = null
+
+    private var pagerDataToPreserve: IPagerData? = null
 
 
     override fun onCreateView(
@@ -60,6 +75,51 @@ class GalleryFragment : Fragment() {
     }
 
 
+    override fun onDestroyView() {
+
+        preservationManager.preserveFragmentData(fragmentId!!,
+            GalleryFragmentData(
+                pagerData = pagerDataToPreserve ?: restoredData?.pagerData
+            ))
+
+        super.onDestroyView()
+    }
+
+
+    override fun pagerDataChanged(newData: IPagerData) {
+        Log.i("NYA_$TAG", "Pager data has changed.")
+        pagerDataToPreserve = newData
+    }
+
+
+    override fun pageChangeRequested(newPage: Int) {
+        Log.i("NYA_$TAG", "Page #$newPage requested.")
+        fetchGallery(newPage)
+    }
+
+
+    override fun pagerSetupRequested() {
+        Log.i("NYA_$TAG", "Pager setup requested.")
+        val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager)
+
+        //TODO("It's really annoying that I have to do explicit cast, even though I inherit
+        // PhotosAdapter in StdAdapter")
+        pager.setupRecycler(
+            StdAdapter(
+                listOf(getString(R.string.default_gallery_header)),
+                this::galleryResultClicked
+            ) as PhotosAdapter<PhotosViewHolder, PhotosViewHolder>
+        )
+
+        val pagerData = pagerDataToPreserve ?: restoredData?.pagerData
+        if (pagerData != null) {
+            updatePagerData(pagerData, pager)
+        } else {
+            Log.i("NYA_$TAG", "No pager data to restore.")
+        }
+    }
+
+
 
     private fun setupViews() {
 
@@ -72,7 +132,7 @@ class GalleryFragment : Fragment() {
             gallery_error_tv.visibility = View.INVISIBLE
             gallery_content_l.visibility = View.VISIBLE
 
-            //initResultsFragment()
+            initResultsFragment()
 
             fetchGallery()
         }
@@ -85,6 +145,19 @@ class GalleryFragment : Fragment() {
             replace(R.id.gallery_results_content_frame, ResultsFragment())
             commit()
         }
+    }
+
+
+    private fun updatePagerData(data: IPagerData, pager: IPager) {
+        with(data) {
+            pager.updateHeader(getString(R.string.gallery_header, currentPage, lastPage))
+        }
+        pager.updateData(data)
+    }
+
+
+    private fun galleryResultClicked(uri: String) {
+        TODO("Implement.")
     }
 
 
@@ -104,8 +177,16 @@ class GalleryFragment : Fragment() {
         observable.observe(this, Observer {
             (it as? GalleryContentResponse?)?.let { response ->
 
-                Log.i("NYA_$TAG", "Gallery response. List: ${response.galleryItemsList}, " +
-                        "Total: ${response.totalPages}")
+                val newData = object : IPagerData {
+                    override val currentPage: Int = response.currentPage
+                    override val lastPage: Int = response.totalPages
+                    override val pagerList: List<String> = response.galleryItemsList
+                }
+
+                pagerDataChanged(newData)
+
+                val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager)
+                updatePagerData(newData, pager)
 
             }
         })

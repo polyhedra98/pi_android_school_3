@@ -48,10 +48,11 @@ class GalleryContentResolver : IContentResolver {
                 counter++
             }
             cursor.moveToLast()
-            val lastPage = ceil(cursor.position.toDouble() / perPage.toDouble()).toInt()
+            val lastPage = ceil((cursor.position + 1).toDouble() / perPage.toDouble()).toInt()
 
             observable.value = GalleryContentResponse(
                 listToReturn,
+                ext.page,
                 lastPage
             ).also {
                 cursor.close()
