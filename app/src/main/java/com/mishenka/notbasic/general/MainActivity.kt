@@ -189,13 +189,7 @@ class MainActivity : ExtendedActivity(), ISplashHost {
     private fun deleteTempFile(uri: Uri?) {
         Log.i("NYA_$TAG", "Attempting to delete $uri")
         uri?.toString()?.let { safeUri ->
-            val file = File(safeUri)
-            if (file.exists()) {
-                file.delete()
-                Log.i("NYA_$TAG", "File $safeUri successfully deleted.")
-            } else {
-                Log.i("NYA_$TAG", "Can't delete $safeUri, file doesn't exist.")
-            }
+            prefVM.deletePhoto(this, safeUri, null)
         }
     }
 
