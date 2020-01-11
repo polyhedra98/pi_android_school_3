@@ -43,6 +43,8 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     private val EXT_STORAGE_PERM_RC = 1
 
+    private val TAKE_PHOTO_RC = 2
+
 
     private val eventVM by sharedViewModel<EventVM>()
 
@@ -78,6 +80,14 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        eventVM.apply {
+
+            photoSuccessfullyTaken.observe(this@GalleryFragment, Observer {
+                fetchGallery(pagerDataToPreserve?.currentPage ?: restoredData?.pagerData?.currentPage)
+            })
+
+        }
 
         setupViews()
     }
@@ -171,6 +181,14 @@ class GalleryFragment : Fragment(), IPagerHost {
             gallery_content_l.visibility = View.VISIBLE
 
             initResultsFragment()
+            gallery_photo_b.setOnClickListener {
+                val uri = prefVM.obtainUriForNewGalleryItem(context!!)
+                if (uri != null) {
+                    eventVM.requestPhoto(uri)
+                } else {
+                    Log.i("NYA_$TAG", "Error. Uri for new photo is null.")
+                }
+            }
         }
 
     }

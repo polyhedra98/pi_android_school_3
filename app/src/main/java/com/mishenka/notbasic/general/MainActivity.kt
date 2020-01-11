@@ -1,7 +1,11 @@
 package com.mishenka.notbasic.general
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.GravityCompat
@@ -28,13 +32,21 @@ class MainActivity : ExtendedActivity(), ISplashHost {
     override val mainFrameId = R.id.home_content_frame
 
 
+    private val TAG = "MainActivity"
+
+
+    private val TAKE_PHOTO_RC = 1
+
+
     private val navigationManager = get<NavigationManager>()
 
     private val eventVM by viewModel<EventVM>()
 
     private val prefVM by viewModel<PrefVM>()
 
+
     private lateinit var drawerLayout: DrawerLayout
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +121,25 @@ class MainActivity : ExtendedActivity(), ISplashHost {
     }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when(requestCode) {
+            TAKE_PHOTO_RC -> {
+                when (resultCode) {
+                    //TODO("UCROP")
+                    Activity.RESULT_OK ->
+                        eventVM.photoSuccessfullyTaken()
+                    Activity.RESULT_CANCELED ->
+                        Log.i("NYA_$TAG", "Taking a photo was cancelled.")
+                    else ->
+                        Log.i("NYA_$TAG", "Taking a photo is unsuccessful.")
+                }
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+
+
     private fun setupEventVM() {
         eventVM.apply {
 
@@ -136,7 +167,7 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 }
             })
 
-            eventVM.loginCredentialsApproved.observe(this@MainActivity, Observer {
+            loginCredentialsApproved.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { username ->
                     hideKeyboard()
                     eventVM.requestSecondaryFragmentsRemoval(AuthFragment.AuthRequest.fragmentTag)
@@ -144,7 +175,7 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 }
             })
 
-            eventVM.signUpCredentialsApproved.observe(this@MainActivity, Observer {
+            signUpCredentialsApproved.observe(this@MainActivity, Observer {
                 it.getContentIfNotHandled()?.let { username ->
                     hideKeyboard()
                     eventVM.requestSecondaryFragmentsRemoval(AuthFragment.AuthRequest.fragmentTag)
@@ -152,6 +183,16 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 }
             })
 
+            photoRequested.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let { uri ->
+                    Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+                        intent.resolveActivity(packageManager)?.also {
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                            startActivityForResult(intent, TAKE_PHOTO_RC)
+                        }
+                    }
+                }
+            })
         }
     }
 

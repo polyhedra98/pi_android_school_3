@@ -1,9 +1,12 @@
 package com.mishenka.notbasic.viewmodels
 
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
@@ -307,6 +310,18 @@ class PrefVM(
         }
     }
     //TODO("~Why would I put this here (Part 2)? Might have to refactor later.")
+
+
+    //TODO("Why would I put this here (Part 3)? Might have to refactor later.")
+    fun obtainUriForNewGalleryItem(context: Context): Uri? {
+        context.contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            ContentValues()
+        ).also {
+            return it
+        }
+    }
+    //TODO("~Why would I put this here (Part 3)? Might have to refactor later.")
 
 
     private fun prefDeleteUser(context: Context) {

@@ -1,5 +1,6 @@
 package com.mishenka.notbasic.viewmodels
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,6 +38,16 @@ class EventVM: ViewModel() {
         get() = _detailsRequested
 
 
+    private val _photoRequested = MutableLiveData<Event<Uri>>()
+    val photoRequested: LiveData<Event<Uri>>
+        get() = _photoRequested
+
+
+    private val _photoSuccessfullyTaken = MutableLiveData<Event<Unit>>()
+    val photoSuccessfullyTaken: LiveData<Event<Unit>>
+        get() = _photoSuccessfullyTaken
+
+
     private val _loginCredentialsApproved = MutableLiveData<Event<String>>()
     val loginCredentialsApproved: LiveData<Event<String>>
         get() = _loginCredentialsApproved
@@ -65,6 +76,16 @@ class EventVM: ViewModel() {
 
     fun requestDetails(additionalExtras: IFragmentAdditionalExtras) {
         _detailsRequested.value = Event(additionalExtras)
+    }
+
+
+    fun requestPhoto(uri: Uri) {
+        _photoRequested.value = Event(uri)
+    }
+
+
+    fun photoSuccessfullyTaken() {
+        _photoSuccessfullyTaken.value = Event(Unit)
     }
 
 
