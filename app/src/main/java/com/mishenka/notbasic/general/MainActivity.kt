@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -27,6 +28,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
 
 
 class MainActivity : ExtendedActivity(), ISplashHost {
@@ -132,8 +134,13 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         prefVM.getLastObtainedUri()?.let { safeUri ->
-                            Log.i("NYA_$TAG", "Starting UCrop with $safeUri")
-                            UCrop.of(safeUri, safeUri).start(this)
+                            val absolutePath = prefVM.getAbsolutePathByUri(this, safeUri)?.toUri()
+                            if (absolutePath != null) {
+                                Log.i("NYA_$TAG", "Starting UCrop with $absolutePath")
+                                UCrop.of(absolutePath, absolutePath).start(this)
+                            } else {
+                                Log.i("NYA_$TAG", "Can't start UCrop. Absolute path is null.")
+                            }
                         }
                     }
                     Activity.RESULT_CANCELED -> {
@@ -172,14 +179,16 @@ class MainActivity : ExtendedActivity(), ISplashHost {
 
 
 
-    //TODO("This function was supposed to delete an empty temp file for camera to save photo into,
-    // if the process was cancelled.
-    // It doesn't work though, logs say 'Obtained uri X', but the delete function says
-    // 'File X not found' afterwards. Might have to look into it later.")
     private fun deleteTempFile(uri: Uri?) {
         Log.i("NYA_$TAG", "Attempting to delete $uri")
         uri?.toString()?.let { safeUri ->
-            prefVM.deletePhoto(this, safeUri, null)
+            val file = File(safeUri)
+            if (file.exists()) {
+                file.delete()
+                Log.i("NYA_$TAG", "File $safeUri successfully deleted.")
+            } else {
+                Log.i("NYA_$TAG", "Can't delete $safeUri, file doesn't exist.")
+            }
         }
     }
 

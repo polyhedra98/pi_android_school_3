@@ -10,6 +10,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import java.io.File
 import java.net.URL
 import java.util.*
 
@@ -326,6 +328,38 @@ class PrefVM(
             lastObtainedUri = it
             return it
         }
+    }
+
+
+    fun getAbsolutePathByUri(context: Context, uri: Uri?): String? {
+        if (uri == null) {
+            Log.i("NYA_$TAG", "Error getting absolute path. Uri is null.")
+            return null
+        }
+        var pathToReturn: String? = null
+
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context.contentResolver
+            .query(
+                uri,
+                projection,
+                null,
+                null,
+                null
+            )
+
+        cursor?.let { safeCursor ->
+            if (safeCursor.moveToFirst()) {
+                pathToReturn = safeCursor.getString(safeCursor.getColumnIndex(MediaStore.Images.Media.DATA))
+            }
+        }
+
+        cursor?.close()
+        if (pathToReturn != null) {
+            pathToReturn = Uri.fromFile(File(pathToReturn!!)).toString()
+        }
+        Log.i("NYA_$TAG", "Absolute path to return: $pathToReturn")
+        return pathToReturn
     }
 
 
