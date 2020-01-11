@@ -3,6 +3,7 @@ package com.mishenka.notbasic.general
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -123,21 +124,41 @@ class MainActivity : ExtendedActivity(), ISplashHost {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode) {
+            //TODO("I really don't like the fact that I have to save 'lastObtainedUri'.
+            // Camera intent return null in extras for EXTRA_OUTPUT though, so
+            // there is nothing I can do about it")
             TAKE_PHOTO_RC -> {
                 when (resultCode) {
                     //TODO("UCROP")
-                    Activity.RESULT_OK ->
+                    Activity.RESULT_OK -> {
                         eventVM.photoSuccessfullyTaken()
-                    Activity.RESULT_CANCELED ->
+                    }
+                    Activity.RESULT_CANCELED -> {
                         Log.i("NYA_$TAG", "Taking a photo was cancelled.")
-                    else ->
+                        deleteTempFile(prefVM.getLastObtainedUri())
+                    }
+                    else -> {
                         Log.i("NYA_$TAG", "Taking a photo is unsuccessful.")
+                        deleteTempFile(prefVM.getLastObtainedUri())
+                    }
                 }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
+
+
+    //TODO("This function was supposed to delete an empty temp file for camera to save photo into,
+    // if the process was cancelled.
+    // It doesn't work though, logs say 'Obtained uri X', but the delete function says
+    // 'File X not found' afterwards. Might have to look into it later.")
+    private fun deleteTempFile(uri: Uri?) {
+        Log.i("NYA_$TAG", "Attempting to delete $uri")
+        uri?.toString()?.let { safeUri ->
+            prefVM.deletePhoto(this, safeUri, null)
+        }
+    }
 
 
     private fun setupEventVM() {

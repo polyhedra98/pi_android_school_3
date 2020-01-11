@@ -47,6 +47,9 @@ class PrefVM(
         get() = _userId
 
 
+    private var lastObtainedUri: Uri? = null
+
+
 
     fun start(context: Context) {
         val prefUserData = prefGetUser(context)
@@ -301,6 +304,7 @@ class PrefVM(
                 val id = safeCursor.getLong(safeCursor.getColumnIndex(MediaStore.Images.Media._ID))
                 val deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
                 cr.delete(deleteUri, null, null)
+                Log.i("NYA_$TAG", "$deleteUri deleted.")
             } else {
                 Log.i("NYA_$TAG", "File $uri not found.")
             }
@@ -318,9 +322,14 @@ class PrefVM(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             ContentValues()
         ).also {
+            Log.i("NYA_$TAG", "Obtained uri: $it")
+            lastObtainedUri = it
             return it
         }
     }
+
+
+    fun getLastObtainedUri(): Uri? = lastObtainedUri
     //TODO("~Why would I put this here (Part 3)? Might have to refactor later.")
 
 
