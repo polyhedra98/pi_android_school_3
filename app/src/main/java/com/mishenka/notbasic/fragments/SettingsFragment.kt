@@ -1,16 +1,20 @@
 package com.mishenka.notbasic.fragments
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
+import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
+import com.mishenka.notbasic.general.BootReceiver
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
@@ -86,6 +90,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         }
 
+
+        val startupPref = findPreference<CheckBoxPreference>(getString(R.string.pref_startup_key))
+
+        startupPref?.setOnPreferenceChangeListener { _, newValue ->
+
+            changeBootReceiverState(newValue as Boolean)
+            true
+
+        }
+
     }
 
 
@@ -97,6 +111,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
         AppCompatDelegate.setDefaultNightMode(nightModeValue)
+    }
+
+
+    private fun changeBootReceiverState(newValue: Boolean) {
+        val componentName = ComponentName(context!!, BootReceiver::class.java)
+        if (newValue) {
+            context!!.packageManager.setComponentEnabledSetting(componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED , PackageManager.DONT_KILL_APP)
+        } else {
+            context!!.packageManager.setComponentEnabledSetting(componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        }
     }
 
 

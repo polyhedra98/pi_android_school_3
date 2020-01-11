@@ -39,6 +39,7 @@
     <string name="bundle_url_key">url_key</string>
 
     <string name="settings_username_key">username_key</string>
+    <string name="pref_startup_key">startup_key</string>
     <string name="settings_theme_key">theme_key</string>
     <string name="settings_auth_key">auth_key</string>
 
@@ -108,6 +109,8 @@
     <string name="settings_account_category_title">Account</string>
 
     <string name="change_theme_ui">Change theme</string>
+    <string name="start_on_boot_ui">Start on boot</string>
+    <string name="start_on_boot_summary"><b>Not recommended.</b> Automatically start application on boot.</string>
 
     <string name="log_in_ui">Log in</string>
     <string name="log_out_ui">Log out</string>
