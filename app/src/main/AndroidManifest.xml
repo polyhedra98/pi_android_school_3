@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme">
 
         <receiver
-            android:name=".general.BootReceiver"
+            android:name=".general.broadcast.BootReceiver"
             android:enabled="false"
             android:exported="true">
             <intent-filter>

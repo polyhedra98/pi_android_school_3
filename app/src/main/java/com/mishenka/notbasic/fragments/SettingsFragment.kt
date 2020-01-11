@@ -14,7 +14,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
-import com.mishenka.notbasic.general.BootReceiver
+import com.mishenka.notbasic.general.broadcast.BootReceiver
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
@@ -91,11 +91,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
 
-        val startupPref = findPreference<CheckBoxPreference>(getString(R.string.pref_startup_key))
+        val startupPref = findPreference<CheckBoxPreference>(getString(R.string.settings_startup_key))
 
         startupPref?.setOnPreferenceChangeListener { _, newValue ->
 
             changeBootReceiverState(newValue as Boolean)
+            true
+
+        }
+
+
+        val powerPref = findPreference<CheckBoxPreference>(getString(R.string.settings_power_key))
+
+        powerPref?.setOnPreferenceChangeListener { _, newValue ->
+
+            prefVM.powerNotificationPrefChanged(newValue as Boolean)
             true
 
         }

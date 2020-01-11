@@ -14,6 +14,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.preference.PreferenceManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppDatabase
@@ -49,6 +50,11 @@ class PrefVM(
         get() = _userId
 
 
+    private val _powerNotificationsPreferred = MutableLiveData<Boolean>()
+    val powerNotificationsPreferred: LiveData<Boolean>
+        get() = _powerNotificationsPreferred
+
+
     private var lastObtainedUri: Uri? = null
 
 
@@ -57,6 +63,15 @@ class PrefVM(
         val prefUserData = prefGetUser(context)
         _username.value = prefUserData?.username
         _userId.value = prefUserData?.id
+
+        val prefPower = PreferenceManager.getDefaultSharedPreferences(context)
+            ?.getBoolean(context.getString(R.string.settings_power_key), false) ?: false
+        _powerNotificationsPreferred.value = prefPower
+    }
+
+
+    fun powerNotificationPrefChanged(newValue: Boolean) {
+        _powerNotificationsPreferred.value = newValue
     }
 
 

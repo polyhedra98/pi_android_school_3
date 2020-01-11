@@ -1,8 +1,9 @@
-package com.mishenka.notbasic.general
+package com.mishenka.notbasic.general.broadcast
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.mishenka.notbasic.general.MainActivity
 
 
 class BootReceiver : BroadcastReceiver() {

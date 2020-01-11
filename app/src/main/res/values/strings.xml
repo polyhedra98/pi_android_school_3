@@ -39,7 +39,8 @@
     <string name="bundle_url_key">url_key</string>
 
     <string name="settings_username_key">username_key</string>
-    <string name="pref_startup_key">startup_key</string>
+    <string name="settings_startup_key">startup_key</string>
+    <string name="settings_power_key">power_key</string>
     <string name="settings_theme_key">theme_key</string>
     <string name="settings_auth_key">auth_key</string>
 
@@ -111,6 +112,8 @@
     <string name="change_theme_ui">Change theme</string>
     <string name="start_on_boot_ui">Start on boot</string>
     <string name="start_on_boot_summary"><b>Not recommended.</b> Automatically start application on boot.</string>
+    <string name="power_changes_ui">Power change notifications</string>
+    <string name="power_changes_summary"><b>Not recommended.</b> Receive notifications any time power state changes.</string>
 
     <string name="log_in_ui">Log in</string>
     <string name="log_out_ui">Log out</string>
@@ -125,6 +128,11 @@
     <string name="favourites_anonymous_ui">Log in to access favourites.</string>
     <string name="favourites_ui">%1$s\'s favourites</string>
     <string name="favourites_page_ui">Page: %1$d</string>
+
+    <string name="power_connected_ui">Power connected</string>
+    <string name="power_disconnected_ui">Power disconnected</string>
+
+    <string name="broadcast_error_ui">Broadcast error</string>
     <!-- ~UI values -->
 
 

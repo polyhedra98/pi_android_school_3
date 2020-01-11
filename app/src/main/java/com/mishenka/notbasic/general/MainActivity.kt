@@ -3,6 +3,7 @@ package com.mishenka.notbasic.general
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -21,6 +22,7 @@ import com.mishenka.notbasic.fragments.AuthFragment
 import com.mishenka.notbasic.fragments.DetailFragment
 import com.mishenka.notbasic.fragments.HomeFragment
 import com.mishenka.notbasic.fragments.SplashFragment
+import com.mishenka.notbasic.general.broadcast.SystemReceiver
 import com.mishenka.notbasic.interfaces.ISplashHost
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
@@ -52,6 +54,8 @@ class MainActivity : ExtendedActivity(), ISplashHost {
 
 
     private lateinit var drawerLayout: DrawerLayout
+
+    private var systemReceiver: SystemReceiver? = null
 
 
 
@@ -96,6 +100,8 @@ class MainActivity : ExtendedActivity(), ISplashHost {
         }
 
         setupEventVM()
+
+        setupPowerReceiver()
     }
 
 
@@ -129,6 +135,13 @@ class MainActivity : ExtendedActivity(), ISplashHost {
         navigationManager.removeHost()
 
         super.onPause()
+    }
+
+
+    override fun onDestroy() {
+        unregisterPowerNotificationsReceiver()
+
+        super.onDestroy()
     }
 
 
@@ -247,6 +260,39 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                     }
                 }
             })
+        }
+    }
+
+
+    private fun setupPowerReceiver() {
+
+        prefVM.powerNotificationsPreferred.observe(this, Observer {
+            if (it) {
+                registerPowerNotificationsReceiver()
+            } else {
+                unregisterPowerNotificationsReceiver()
+            }
+        })
+    }
+
+
+    private fun registerPowerNotificationsReceiver() {
+        if (systemReceiver == null) {
+            systemReceiver = SystemReceiver()
+        }
+
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_POWER_CONNECTED)
+            addAction(Intent.ACTION_POWER_DISCONNECTED)
+        }
+
+        registerReceiver(systemReceiver, filter)
+    }
+
+
+    private fun unregisterPowerNotificationsReceiver() {
+        if (systemReceiver != null) {
+            unregisterReceiver(systemReceiver!!)
         }
     }
 
