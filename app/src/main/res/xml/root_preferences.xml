@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/settings_appearance_category_title">
+
+        <ListPreference
+            android:title="@string/change_theme_ui"
+            android:key="@string/settings_theme_key"
+            android:defaultValue="theme_auto"
+            app:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            />
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_account_category_title">
 

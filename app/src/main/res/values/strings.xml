@@ -39,6 +39,7 @@
     <string name="bundle_url_key">url_key</string>
 
     <string name="settings_username_key">username_key</string>
+    <string name="settings_theme_key">theme_key</string>
     <string name="settings_auth_key">auth_key</string>
 
     <string name="pref_username_key">pref_username_key</string>
@@ -103,7 +104,10 @@
     <string name="url_ui">Url: %1$s</string>
 
     <string name="settings_general_category_title">General</string>
+    <string name="settings_appearance_category_title">Appearance</string>
     <string name="settings_account_category_title">Account</string>
+
+    <string name="change_theme_ui">Change theme</string>
 
     <string name="log_in_ui">Log in</string>
     <string name="log_out_ui">Log out</string>

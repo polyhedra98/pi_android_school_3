@@ -43,8 +43,6 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     private val EXT_STORAGE_PERM_RC = 1
 
-    private val TAKE_PHOTO_RC = 2
-
 
     private val eventVM by sharedViewModel<EventVM>()
 

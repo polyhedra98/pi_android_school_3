@@ -196,6 +196,14 @@ class NavigationManager {
     }
 
 
+    fun getInitialPopulationStatus(): Boolean = isPopulated
+
+
+    fun initialPopulationFinished() {
+        isPopulated = true
+    }
+
+
     fun requestInitialPopulation(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         if (!isPopulated) {
             requestAddition(request, additionalExtras)

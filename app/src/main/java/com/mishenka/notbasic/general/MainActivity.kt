@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -57,21 +59,26 @@ class MainActivity : ExtendedActivity(), ISplashHost {
         super.onCreate(null)
         setContentView(R.layout.activity_main)
 
-        if (savedInstanceState == null) {
-            setupActionBar(R.id.home_tb)
-            navigationManager.run {
-                conditionallyInitializeHost(this@MainActivity)
-                requestInitialPopulation(SplashFragment.SplashRequest, null)
+        if (!navigationManager.getInitialPopulationStatus()) {
+            setupActionBar(R.id.home_tb) {
+                supportActionBar?.hide()
             }
-        }
-        else {
+            if (savedInstanceState == null) {
+                setupNightMode()
+                navigationManager.run {
+                    conditionallyInitializeHost(this@MainActivity)
+                    requestAddition(SplashFragment.SplashRequest, null)
+                }
+            }
+        } else {
             mainContentRequested(false)
         }
-
     }
 
 
     override fun mainContentRequested(fromSplash: Boolean) {
+
+        navigationManager.initialPopulationFinished()
 
         setupActionBar(R.id.home_tb) {
             setHomeAsUpIndicator(R.drawable.ic_menu_24px)
@@ -275,6 +282,20 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             inputManager.hideSoftInputFromWindow(safeCurrentFocus.windowToken, InputMethodManager.SHOW_FORCED)
         }
         currentFocus?.clearFocus()
+    }
+
+
+    private fun setupNightMode() {
+        val nightModeString = PreferenceManager.getDefaultSharedPreferences(
+            this
+        ).getString(getString(R.string.settings_theme_key), "theme_empty")
+        Log.i("NYA", "Night mode string: $nightModeString")
+        val nightModeValue = when(nightModeString) {
+            "theme_light" -> AppCompatDelegate.MODE_NIGHT_NO
+            "theme_dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(nightModeValue)
     }
 
 }

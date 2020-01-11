@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.mishenka.notbasic.R
@@ -74,6 +76,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
             Log.i("NYA_$TAG", "Error. User / Auth pref is null.")
         }
 
+
+        val themePref = findPreference<ListPreference>(getString(R.string.settings_theme_key))
+
+        themePref?.setOnPreferenceChangeListener { _, newValue ->
+
+            themeChanged(newValue.toString())
+            true
+
+        }
+
+    }
+
+
+
+    private fun themeChanged(newValue: String) {
+        val nightModeValue = when(newValue) {
+            "theme_light" -> AppCompatDelegate.MODE_NIGHT_NO
+            "theme_dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(nightModeValue)
     }
 
 

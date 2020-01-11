@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
@@ -44,11 +47,10 @@ class SplashFragment : Fragment() {
         prefVM.start(activity!!)
     }
 
-
     private fun invokeHandler() {
         Handler().postDelayed({
-            (activity as ISplashHost).mainContentRequested(true)
-                .also {
+            (activity as ISplashHost?)?.mainContentRequested(true)
+                ?.also {
                     activity!!.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                 }
         }, 2000)
