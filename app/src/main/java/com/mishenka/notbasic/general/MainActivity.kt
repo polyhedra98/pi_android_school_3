@@ -22,6 +22,7 @@ import com.mishenka.notbasic.interfaces.ISplashHost
 import com.mishenka.notbasic.managers.navigation.NavigationManager
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -129,9 +130,11 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             // there is nothing I can do about it")
             TAKE_PHOTO_RC -> {
                 when (resultCode) {
-                    //TODO("UCROP")
                     Activity.RESULT_OK -> {
-                        eventVM.photoSuccessfullyTaken()
+                        prefVM.getLastObtainedUri()?.let { safeUri ->
+                            Log.i("NYA_$TAG", "Starting UCrop with $safeUri")
+                            UCrop.of(safeUri, safeUri).start(this)
+                        }
                     }
                     Activity.RESULT_CANCELED -> {
                         Log.i("NYA_$TAG", "Taking a photo was cancelled.")
@@ -139,6 +142,26 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                     }
                     else -> {
                         Log.i("NYA_$TAG", "Taking a photo is unsuccessful.")
+                        deleteTempFile(prefVM.getLastObtainedUri())
+                    }
+                }
+            }
+            UCrop.REQUEST_CROP -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        eventVM.photoSuccessfullyTaken()
+                    }
+                    Activity.RESULT_CANCELED -> {
+                        Log.i("NYA_$TAG", "UCrop was cancelled.")
+                        deleteTempFile(prefVM.getLastObtainedUri())
+                    }
+                    else -> {
+                        Log.i("NYA_$TAG", "UCrop was unsuccessful.")
+                        if (data != null) {
+                            Log.i("NYA_$TAG", "UCrop error: ${UCrop.getError(data)?.localizedMessage}.")
+                        } else {
+                            Log.i("NYA_$TAG", "Can't get UCrop error. Data is null.")
+                        }
                         deleteTempFile(prefVM.getLastObtainedUri())
                     }
                 }
