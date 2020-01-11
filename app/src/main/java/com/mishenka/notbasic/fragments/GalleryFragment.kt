@@ -116,11 +116,11 @@ class GalleryFragment : Fragment(), IPagerHost {
 
     override fun pagerSetupRequested() {
         Log.i("NYA_$TAG", "Pager setup requested.")
-        val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager)
+        val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager?)
 
         //TODO("It's really annoying that I have to do explicit cast, even though I inherit
         // PhotosAdapter in StdAdapter")
-        pager.setupRecycler(
+        pager?.setupRecycler(
             StdAdapter(
                 listOf(object : PagerElement(getString(R.string.default_gallery_header)) {}),
                 this::galleryResultClicked,
@@ -200,13 +200,13 @@ class GalleryFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun updatePagerData(data: IPagerData, pager: IPager) {
+    private fun updatePagerData(data: IPagerData, pager: IPager?) {
         with(data) {
-            pager.updateHeader(
+            pager?.updateHeader(
                 object : PagerElement(getString(R.string.gallery_header, currentPage, lastPage)) {}
             )
         }
-        pager.updateData(data)
+        pager?.updateData(data)
     }
 
 
@@ -245,7 +245,7 @@ class GalleryFragment : Fragment(), IPagerHost {
 
                 pagerDataChanged(newData)
 
-                val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager)
+                val pager = (childFragmentManager.findFragmentById(R.id.gallery_results_content_frame) as IPager?)
                 updatePagerData(newData, pager)
 
             }

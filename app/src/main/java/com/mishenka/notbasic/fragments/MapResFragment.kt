@@ -118,11 +118,11 @@ class MapResFragment : Fragment(), IPagerHost {
 
     override fun pagerSetupRequested() {
         Log.i("NYA_$TAG", "Pager setup requested.")
-        val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
+        val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager?)
 
         //TODO("It's really annoying that I have to do explicit cast, even though I inherit
         // PhotosAdapter in StdAdapter")
-        pager.setupRecycler(
+        pager?.setupRecycler(
             StdAdapter(
                 listOf(object : PagerElement(getString(R.string.default_map_res_header)) {}),
                 this::mapResResultClicked,
@@ -224,7 +224,7 @@ class MapResFragment : Fragment(), IPagerHost {
 
                 pagerDataChanged(newData)
 
-                val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager)
+                val pager = (childFragmentManager.findFragmentById(R.id.map_res_results_content_frame) as IPager?)
                 updatePagerData(newData, pager)
 
             } else {
@@ -239,13 +239,13 @@ class MapResFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun updatePagerData(data: LatLngPagerData, pager: IPager) {
+    private fun updatePagerData(data: LatLngPagerData, pager: IPager?) {
         with(data) {
-            pager.updateHeader(
+            pager?.updateHeader(
                 object : PagerElement(getString(R.string.map_res_header, lat, lng, currentPage, lastPage)) {}
             )
         }
-        pager.updateData(data)
+        pager?.updateData(data)
     }
 
 

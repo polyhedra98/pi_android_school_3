@@ -111,11 +111,11 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
     override fun pagerSetupRequested() {
         Log.i("NYA_$TAG", "Pager setup requested.")
-        val pager = (childFragmentManager.findFragmentById(R.id.favourites_results_content_frame) as IPager)
+        val pager = (childFragmentManager.findFragmentById(R.id.favourites_results_content_frame) as IPager?)
 
         //TODO("It's really annoying that I have to do explicit cast, even though I inherit
         // PhotosAdapter in StdAdapter")
-        pager.setupRecycler(
+        pager?.setupRecycler(
             FavAdapter(
                 emptyList<FavPagerElement>(),
                 this::handleResultClick,
@@ -186,8 +186,8 @@ class FavouritesFragment : Fragment(), IPagerHost {
     }
 
 
-    private fun updatePagerData(data: IPagerData, pager: IPager) {
-        pager.updateData(data)
+    private fun updatePagerData(data: IPagerData, pager: IPager?) {
+        pager?.updateData(data)
     }
 
 
@@ -232,7 +232,7 @@ class FavouritesFragment : Fragment(), IPagerHost {
 
                 pagerDataChanged(newData)
 
-                val pager = (childFragmentManager.findFragmentById(R.id.favourites_results_content_frame) as IPager)
+                val pager = (childFragmentManager.findFragmentById(R.id.favourites_results_content_frame) as IPager?)
                 updatePagerData(newData, pager)
             }
         })

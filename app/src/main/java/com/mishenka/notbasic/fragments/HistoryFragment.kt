@@ -114,8 +114,8 @@ class HistoryFragment : Fragment() {
 
 
     private fun setupRecycler(items: List<HistorySelectItem?>) {
-        history_rv.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        history_rv.adapter = HistoryAdapter(items)
+        history_rv?.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        history_rv?.adapter = HistoryAdapter(items)
     }
 
 
