@@ -64,6 +64,11 @@ class PrefVM(
         _username.value = prefUserData?.username
         _userId.value = prefUserData?.id
 
+        setupPowerPreference(context)
+    }
+
+
+    fun setupPowerPreference(context: Context) {
         val prefPower = PreferenceManager.getDefaultSharedPreferences(context)
             ?.getBoolean(context.getString(R.string.settings_power_key), false) ?: false
         _powerNotificationsPreferred.value = prefPower
