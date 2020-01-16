@@ -43,6 +43,7 @@
     <string name="settings_power_key">power_key</string>
     <string name="settings_theme_key">theme_key</string>
     <string name="settings_auth_key">auth_key</string>
+    <string name="settings_scheduler_key">scheduler_key</string>
 
     <string name="pref_username_key">pref_username_key</string>
     <string name="pref_user_id_key">pref_user_id_key</string>
@@ -61,6 +62,7 @@
     <string name="nav_detail_title">Detail</string>
     <string name="nav_splash_title">Welcome</string>
     <string name="nav_auth_title">Authorization</string>
+    <string name="nav_scheduler_title">Schedule</string>
     <!-- ~Navigation titles -->
 
 
@@ -75,6 +77,7 @@
     <string name="download_button_text">Download</string>
     <string name="photo_button_text">Take a photo</string>
     <string name="request_permission_button_text">Request permission</string>
+    <string name="submit_button_text">Submit</string>
 
     <string name="previous_page_button_text">&lt; previous page</string>
     <string name="next_page_button_text">next page &gt;</string>
@@ -114,6 +117,10 @@
     <string name="start_on_boot_summary"><b>Not recommended.</b> Automatically start application on boot.</string>
     <string name="power_changes_ui">Power change notifications</string>
     <string name="power_changes_summary"><b>Not recommended.</b> Receive notifications any time power state changes.</string>
+    <string name="scheduler_ui">Scheduler</string>
+    <string name="scheduler_summary">Schedule updates for a selected search query.</string>
+
+    <string name="scheduler_info_ui">"%1$s" data will be fetched in %2$s.</string>
 
     <string name="log_in_ui">Log in</string>
     <string name="log_out_ui">Log out</string>

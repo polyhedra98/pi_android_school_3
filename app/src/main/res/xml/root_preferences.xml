@@ -18,6 +18,12 @@
             android:summary="@string/power_changes_summary"
             />
 
+        <Preference
+            android:title="@string/scheduler_ui"
+            android:summary="@string/scheduler_summary"
+            android:key="@string/settings_scheduler_key"
+            />
+
     </PreferenceCategory>
 
 

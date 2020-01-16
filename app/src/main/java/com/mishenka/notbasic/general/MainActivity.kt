@@ -18,10 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
 import com.mishenka.notbasic.R
-import com.mishenka.notbasic.fragments.AuthFragment
-import com.mishenka.notbasic.fragments.DetailFragment
-import com.mishenka.notbasic.fragments.HomeFragment
-import com.mishenka.notbasic.fragments.SplashFragment
+import com.mishenka.notbasic.fragments.*
 import com.mishenka.notbasic.general.broadcast.SystemReceiver
 import com.mishenka.notbasic.interfaces.ISplashHost
 import com.mishenka.notbasic.managers.navigation.NavigationManager
@@ -247,6 +244,13 @@ class MainActivity : ExtendedActivity(), ISplashHost {
                     hideKeyboard()
                     eventVM.requestSecondaryFragmentsRemoval(AuthFragment.AuthRequest.fragmentTag)
                     prefVM.signUp(this@MainActivity, username)
+                }
+            })
+
+            schedulerValuesApproved.observe(this@MainActivity, Observer {
+                it.getContentIfNotHandled()?.let {
+                    hideKeyboard()
+                    eventVM.requestSecondaryFragmentsRemoval(SchedulerFragment.SchedulerRequest.fragmentTag)
                 }
             })
 

@@ -110,6 +110,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         }
 
+
+        val schedulerPref = findPreference<Preference>(getString(R.string.settings_scheduler_key))
+
+        schedulerPref?.setOnPreferenceClickListener {
+
+            handleSchedulerClick()
+            true
+
+        }
+
     }
 
 
@@ -138,6 +148,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun handleLogInClick() {
         eventVM.requestFragment(AuthFragment.AuthRequest, null)
+    }
+
+
+    private fun handleSchedulerClick() {
+        eventVM.requestFragment(SchedulerFragment.SchedulerRequest, null)
     }
 
 
