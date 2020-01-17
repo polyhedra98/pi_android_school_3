@@ -1,7 +1,7 @@
 package com.mishenka.notbasic.data.model.user
 
 import androidx.room.*
-import com.mishenka.notbasic.utils.data.DateConverter
+import com.mishenka.notbasic.utils.date.DateConverter
 import java.util.*
 
 @Entity(

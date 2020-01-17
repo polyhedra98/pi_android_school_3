@@ -47,6 +47,11 @@
 
     <string name="pref_username_key">pref_username_key</string>
     <string name="pref_user_id_key">pref_user_id_key</string>
+    <string name="pref_sched_query_key">pref_sched_query_key</string>
+    <string name="pref_sched_pages_key">pref_sched_pages_key</string>
+    <string name="pref_sched_interval_key">pref_sched_interval_key</string>
+    <string name="pref_sched_starttime_key">pref_sched_starttime_key</string>
+    <string name="pref_sched_lasttime_key">pref_sched_lasttime_key</string>
     <!-- ~Keys -->
 
 
@@ -58,6 +63,7 @@
     <string name="nav_gallery_title">Gallery</string>
     <string name="nav_map_title">Map</string>
     <string name="nav_map_res_title">Location search</string>
+    <string name="nav_sched_res_title">Scheduled results</string>
     <string name="nav_settings_title">Settings</string>
     <string name="nav_detail_title">Detail</string>
     <string name="nav_splash_title">Welcome</string>
@@ -121,6 +127,12 @@
     <string name="scheduler_summary">Schedule updates for a selected search query.</string>
 
     <string name="scheduler_info_ui">"%1$s" data will be fetched in %2$s.</string>
+    <string name="scheduler_period_ui">Interval: </string>
+    <string name="scheduler_pages_ui">Pages: </string>
+
+    <string name="sched_res_not_set_up_ui">You can set up periodical updates in Settings.</string>
+    <string name="sched_res_not_updated_ui">Periodical updates were set up on %1$s.\nSpecified interval has not yet passed.\nQuery: %2$s, Pages: %3$s, Interval: %4$s</string>
+    <string name="sched_res_updated_ui">Periodical updates were set up on %1$s.\nLast update was received on %2$s.\nQuery: %3$s, Pages: %4$d out of %5$d, Interval: %6$s</string>
 
     <string name="log_in_ui">Log in</string>
     <string name="log_out_ui">Log out</string>

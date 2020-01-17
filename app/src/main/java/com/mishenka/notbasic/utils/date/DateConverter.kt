@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.utils.data
+package com.mishenka.notbasic.utils.date
 
 import androidx.room.TypeConverter
 import java.util.*
@@ -14,7 +14,7 @@ object DateConverter {
         }
 
     @TypeConverter
-    @JvmStatic fun fromData(date: Date?) =
+    @JvmStatic fun fromDate(date: Date?) =
         date?.time
 
 }

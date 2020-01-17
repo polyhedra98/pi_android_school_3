@@ -3,14 +3,11 @@ package com.mishenka.notbasic.viewmodels
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +15,7 @@ import androidx.preference.PreferenceManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.user.*
 import com.mishenka.notbasic.data.source.AppDatabase
+import com.mishenka.notbasic.utils.date.DateConverter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -387,6 +385,54 @@ class PrefVM(
     //TODO("~Why would I put this here (Part 3)? Might have to refactor later.")
 
 
+    fun prefSaveScheduler(context: Context, prefData: PrefSchedulerData) {
+        with(context) {
+            getSharedPreferences(
+                getString(R.string.pref_filename), Context.MODE_PRIVATE
+            ).edit().run {
+                putString(getString(R.string.pref_sched_query_key), prefData.query)
+                putInt(getString(R.string.pref_sched_pages_key), prefData.pages)
+                putInt(getString(R.string.pref_sched_interval_key), prefData.interval)
+                putLong(getString(R.string.pref_sched_starttime_key), prefData.startTime)
+                putLong(getString(R.string.pref_sched_lasttime_key), prefData.lastTime)
+                commit()
+            }
+        }
+    }
+
+
+    fun prefGetSchedulerData(context: Context): PrefSchedulerData? {
+        var data: PrefSchedulerData? = null
+
+        with(context) {
+            getSharedPreferences(
+                getString(R.string.pref_filename), Context.MODE_PRIVATE
+            )?.let {
+                val query = it.getString(getString(R.string.pref_sched_query_key), null)
+                val pages = it.getInt(getString(R.string.pref_sched_pages_key), -1)
+                val interval = it.getInt(getString(R.string.pref_sched_interval_key), -1)
+                val startTime = it.getLong(getString(R.string.pref_sched_starttime_key), -1)
+                val lastTime = it.getLong(getString(R.string.pref_sched_lasttime_key), -1)
+
+                if (query != null &&
+                        pages != -1 &&
+                        interval != -1 &&
+                        startTime != (-1).toLong()) {
+                    data = PrefSchedulerData(
+                        query,
+                        pages,
+                        interval,
+                        startTime,
+                        lastTime
+                    )
+                }
+            }
+        }
+
+        return data
+    }
+
+
     private fun prefDeleteUser(context: Context) {
         with(context) {
             getSharedPreferences(
@@ -435,6 +481,15 @@ class PrefVM(
     data class PrefUserData(
         val username: String,
         val id: Long
+    )
+
+
+    data class PrefSchedulerData(
+        val query: String,
+        val pages: Int,
+        val interval: Int,
+        val startTime: Long,
+        val lastTime: Long
     )
 
 }

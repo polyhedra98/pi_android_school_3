@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.content.StdContentExtras
 import com.mishenka.notbasic.data.content.StdContentResponse
-import com.mishenka.notbasic.data.model.photo.OuterClass
+import com.mishenka.notbasic.data.model.photo.network.OuterClass
 import com.mishenka.notbasic.interfaces.IContentExtras
 import com.mishenka.notbasic.interfaces.IContentResolver
 import com.mishenka.notbasic.interfaces.IContentResponse

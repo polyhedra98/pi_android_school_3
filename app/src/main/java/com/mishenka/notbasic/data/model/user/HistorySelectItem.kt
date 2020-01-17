@@ -2,7 +2,7 @@ package com.mishenka.notbasic.data.model.user
 
 import androidx.room.ColumnInfo
 import androidx.room.TypeConverters
-import com.mishenka.notbasic.utils.data.DateConverter
+import com.mishenka.notbasic.utils.date.DateConverter
 import java.util.*
 
 @TypeConverters(DateConverter::class)

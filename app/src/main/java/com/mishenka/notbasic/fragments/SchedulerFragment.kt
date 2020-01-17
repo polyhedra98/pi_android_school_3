@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.mishenka.notbasic.R
@@ -14,10 +13,13 @@ import com.mishenka.notbasic.data.fragment.SchedulerFragmentData
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
+import com.mishenka.notbasic.utils.date.DateConverter
 import com.mishenka.notbasic.viewmodels.EventVM
+import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import java.util.*
 
 
 class SchedulerFragment : Fragment() {
@@ -26,6 +28,8 @@ class SchedulerFragment : Fragment() {
 
 
     private val eventVM by sharedViewModel<EventVM>()
+
+    private val prefVM by sharedViewModel<PrefVM>()
 
     private val preservationManager = get<PreservationManager>()
 
@@ -87,9 +91,16 @@ class SchedulerFragment : Fragment() {
 
     private fun setupViews() {
 
-        scheduler_spinner.adapter = ArrayAdapter.createFromResource(
+        scheduler_pages_spinner.adapter = ArrayAdapter.createFromResource(
             context!!,
-            R.array.update_schedule_entries,
+            R.array.pages_schedule_entries,
+            android.R.layout.simple_spinner_item
+        )
+
+
+        scheduler_period_spinner.adapter = ArrayAdapter.createFromResource(
+            context!!,
+            R.array.period_schedule_entries,
             android.R.layout.simple_spinner_item
         )
 
@@ -110,11 +121,27 @@ class SchedulerFragment : Fragment() {
             return
         }
 
-        val interval = scheduler_spinner.selectedItem.toString()
+        val verbalInterval = scheduler_period_spinner.selectedItem.toString()
+        val verbalPages = scheduler_pages_spinner.selectedItem.toString()
 
-        Log.i("NYA_$TAG", "Setting up manager for query $query, interval $interval")
+        Log.i("NYA_$TAG", "Setting up manager for query: $query, " +
+                "interval: $verbalInterval, pages: $verbalPages")
 
-        //TODO("Setup WorkManager")
+        val interval = resources.getIntArray(R.array.period_schedule_values).elementAt(
+            scheduler_period_spinner.selectedItemPosition
+        )
+        val pages = resources.getIntArray(R.array.pages_scheduler_values).elementAt(
+            scheduler_pages_spinner.selectedItemPosition
+        )
+
+        Log.i("NYA_$TAG", "Actual scheduler interval: $interval, pages: $pages")
+
+        prefVM.prefSaveScheduler(context!!, PrefVM.PrefSchedulerData(
+            query, pages, interval, DateConverter.fromDate(Date())!!, -1
+        ))
+
+        //TODO("Set up WorkManager.")
+
 
         eventVM.schedulerValuesApproved()
     }
@@ -149,7 +176,7 @@ class SchedulerFragment : Fragment() {
 
 
     private fun preserveSpinnerValue() {
-        spinnerValueToPreserve = scheduler_spinner.selectedItem.toString()
+        spinnerValueToPreserve = scheduler_period_spinner.selectedItem.toString()
     }
 
 

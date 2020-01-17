@@ -183,6 +183,7 @@ class NavigationManager {
 
         when (itemId) {
             R.id.home_nav_menu_item -> requestAddition(HomeFragment.HomeRequest, null)
+            R.id.scheduler_nav_menu_item -> requestAddition(SchedResFragment.SchedResRequest, null)
             R.id.fav_nav_menu_item -> requestAddition(FavouritesFragment.FavouritesRequest, null)
             R.id.gallery_nav_menu_item -> requestAddition(GalleryFragment.GalleryRequest, null)
             R.id.map_nav_menu_item -> requestAddition(MapFragment.MapRequest, null)

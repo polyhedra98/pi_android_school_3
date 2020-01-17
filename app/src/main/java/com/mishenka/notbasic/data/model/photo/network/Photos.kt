@@ -1,4 +1,4 @@
-package com.mishenka.notbasic.data.model.photo
+package com.mishenka.notbasic.data.model.photo.network
 
 class Photos(
     var page: Int?,
