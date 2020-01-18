@@ -1,10 +1,13 @@
 package com.mishenka.notbasic.general
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
@@ -85,6 +88,11 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             setHomeAsUpIndicator(R.drawable.ic_menu_24px)
             setDisplayHomeAsUpEnabled(true)
         }
+
+        createNotificationChannel(
+            getString(R.string.scheduler_notifications_channel_id),
+            getString(R.string.scheduler_channel_name)
+        )
 
         setupNavigationDrawer()
 
@@ -194,6 +202,29 @@ class MainActivity : ExtendedActivity(), ISplashHost {
         }
     }
 
+
+
+    private fun createNotificationChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            notificationChannel.description = getString(R.string.scheduler_channel_description)
+
+            val notificationManager = getSystemService(
+                NotificationManager::class.java
+            )
+            if (notificationManager == null) {
+                Log.i("NYA_$TAG", "Error creating notification channel. Notification manager is null.")
+            } else {
+                Log.i("NYA_$TAG", "Successful notification channel creation.")
+                notificationManager.createNotificationChannel(notificationChannel)
+            }
+        }
+    }
 
 
     private fun deleteTempFile(uri: Uri?) {

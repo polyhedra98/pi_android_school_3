@@ -57,7 +57,21 @@
     <string name="worker_query_key">worker_query_key</string>
     <string name="worker_pages_key">worker_pages_key</string>
     <string name="worker_scheduler_tag">worker_scheduler_tag</string>
+
+    <string name="scheduler_notifications_channel_id">sched_notification_channel_id</string>
+    <string name="scheduler_notification_id">1</string>
     <!-- ~Keys -->
+
+
+
+    <!-- Notification values -->
+    <string name="scheduler_notification_title">Scheduled update successful</string>
+    <string name="scheduler_notification_text">Preview: %1$s</string>
+    <string name="scheduler_notification_info">Total photos: %1$d</string>
+
+    <string name="scheduler_channel_name">Schedule</string>
+    <string name="scheduler_channel_description">Scheduled data fetches.</string>
+    <!-- ~Notification values -->
 
 
 

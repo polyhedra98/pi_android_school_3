@@ -1,7 +1,10 @@
 package com.mishenka.notbasic.utils.workmanager
 
+import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.mishenka.notbasic.R
@@ -46,7 +49,8 @@ class ScheduleWorker(
         Log.i("NYA_$TAG", "Set up worker with query $plainQuery, pages $pages")
 
         var fetchedPages = 0
-        var notificationInfo: String? = null
+        var firstUrl: String? = null
+        var totalPhotos: Int = 0
         var totalPages: Int? = null
 
         if (plainQuery == null || pages == -1) {
@@ -81,7 +85,10 @@ class ScheduleWorker(
                         Log.i("NYA_$TAG", "Successful response for page $initialPage. Saving data.")
                         saveData(body) {
                             totalPages = body.photos?.pages
-                            notificationInfo = body.photos?.photo?.firstOrNull()?.constructURL()
+                            firstUrl = body.photos?.photo?.firstOrNull()?.constructURL()
+                            body.photos?.photo?.let { safeList ->
+                                totalPhotos += safeList.size
+                            }
                             fetchedPages++
                             initialLatch.countDown()
                         }
@@ -123,6 +130,9 @@ class ScheduleWorker(
                         if (body != null) {
                             Log.i("NYA_$TAG", "Successful response for page $currentPage. Saving data.")
                             saveData(body) {
+                                body.photos?.photo?.let { safeList ->
+                                    totalPhotos += safeList.size
+                                }
                                 fetchedPages++
                                 furtherLatch.countDown()
                             }
@@ -142,11 +152,38 @@ class ScheduleWorker(
 
         saveValuesToPref(applicationContext, fetchedPages, DateConverter.fromDate(Date())!!)
 
-        Log.i("NYA_$TAG", "Done working. Notification info: $notificationInfo")
+        Log.i("NYA_$TAG", "Done working. Notification info: $firstUrl")
+        if (firstUrl != null) {
+            sendNotification(firstUrl!!, totalPhotos)
+        } else {
+            Log.i("NYA_$TAG", "Can't send notification, since first url is null.")
+        }
 
         return Result.success()
     }
 
+
+
+    private fun sendNotification(url: String, total: Int) {
+        val builder = NotificationCompat.Builder(
+            applicationContext,
+            applicationContext.getString(R.string.scheduler_notifications_channel_id)
+        )
+            .setSmallIcon(R.drawable.ic_search_24px)
+            .setContentTitle(applicationContext.getString(R.string.scheduler_notification_title))
+            .setContentText(applicationContext.getString(R.string.scheduler_notification_text, url))
+            .setContentInfo(applicationContext.getString(R.string.scheduler_notification_info, total))
+
+        val notificationManager = ContextCompat.getSystemService(
+            applicationContext,
+            NotificationManager::class.java
+        ) as NotificationManager
+
+        notificationManager.notify(
+            applicationContext.getString(R.string.scheduler_notification_id).toInt(),
+            builder.build()
+        )
+    }
 
 
     private fun handleNetworking(service: ApiService, query: String,
