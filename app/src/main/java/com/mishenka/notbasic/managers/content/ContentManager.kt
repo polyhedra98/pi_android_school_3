@@ -24,7 +24,8 @@ class ContentManager {
         Pair(ContentType.LAT_LNG_TYPE, LatLngContentResolver()),
         Pair(ContentType.HISTORY_TYPE, HistoryContentResolver()),
         Pair(ContentType.FAV_TYPE, FavContentResolver()),
-        Pair(ContentType.GAL_TYPE, GalleryContentResolver())
+        Pair(ContentType.GAL_TYPE, GalleryContentResolver()),
+        Pair(ContentType.SCHED_TYPE, ScheduledContentResolver())
     )
 
 

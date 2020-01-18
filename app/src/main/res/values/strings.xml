@@ -113,6 +113,8 @@
     <string name="map_res_header">Lat: %1$f\nLng: %2$f\nCurrent page: %3$d\nTotal pages: %4$d</string>
     <string name="default_gallery_header">Gallery of saved photos.</string>
     <string name="gallery_header">Current page: %1$d\nTotal pages: %2$d</string>
+    <string name="default_sched_res_header"> </string>
+    <string name="sched_res_header">Current page: %1$d\nTotal pages: %2$d</string>
 
     <string name="lat_lng_string_representation">Lat/Lng - %1$f/%2$f</string>
 

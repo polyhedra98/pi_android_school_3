@@ -385,6 +385,16 @@ class PrefVM(
     //TODO("~Why would I put this here (Part 3)? Might have to refactor later.")
 
 
+    //TODO("Why would I put this here (Part 4)? Might have to refactor later.")
+    fun deleteScheduledResult(url: String, page: Int) {
+        //TODO("Change scope.")
+        GlobalScope.launch {
+            appDatabase.photoDao().deleteShedResByUrlAndPage(url, page)
+        }
+    }
+    //TODO("~Why would I put this here (Part 4)? Might have to refactor later.")
+
+
     fun prefSaveScheduler(context: Context, prefData: PrefSchedulerData) {
         with(context) {
             getSharedPreferences(
@@ -434,6 +444,7 @@ class PrefVM(
 
         return data
     }
+
 
 
     private fun prefDeleteUser(context: Context) {

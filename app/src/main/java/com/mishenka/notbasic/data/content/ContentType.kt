@@ -5,5 +5,6 @@ enum class ContentType {
     LAT_LNG_TYPE,
     HISTORY_TYPE,
     FAV_TYPE,
-    GAL_TYPE
+    GAL_TYPE,
+    SCHED_TYPE
 }

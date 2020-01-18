@@ -16,8 +16,23 @@ interface PhotoDao {
     suspend fun getScheduledResultsForPage(page: Int): List<SchedResSelectItem>?
 
 
+    @Query("""
+        SELECT MAX(page)
+        FROM sched_res
+    """)
+    suspend fun getLastSchedResPage(): Int?
+
+
     @Insert
     suspend fun insertAllScheduledResults(values: List<SchedRes>)
+
+
+    @Query("""
+        DELETE
+        FROM sched_res
+        WHERE url = :url AND page = :page
+    """)
+    suspend fun deleteShedResByUrlAndPage(url: String, page: Int)
 
 
     @Query("DELETE FROM sched_res")

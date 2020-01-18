@@ -63,11 +63,6 @@ class EventVM: ViewModel() {
         get() = _schedulerValuesApproved
 
 
-    private val _schedulerValuesUpdated = MutableLiveData<Event<Unit>>()
-    val schedulerValuesUpdated: LiveData<Event<Unit>>
-        get() = _schedulerValuesUpdated
-
-
 
     fun requestFragment(request: IFragmentRequest, additionalExtras: IFragmentAdditionalExtras?) {
         _fragmentRequested.value = Event(Pair(request, additionalExtras))
@@ -111,11 +106,6 @@ class EventVM: ViewModel() {
 
     fun schedulerValuesApproved() {
         _schedulerValuesApproved.value = Event(Unit)
-    }
-
-
-    fun schedulerValuesUpdated() {
-        _schedulerValuesUpdated.value = Event(Unit)
     }
 
 }
