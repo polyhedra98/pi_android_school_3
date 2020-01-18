@@ -52,6 +52,11 @@
     <string name="pref_sched_interval_key">pref_sched_interval_key</string>
     <string name="pref_sched_starttime_key">pref_sched_starttime_key</string>
     <string name="pref_sched_lasttime_key">pref_sched_lasttime_key</string>
+    <string name="pref_sched_fetched_pages_key">pref_sched_fetched_pages_key</string>
+
+    <string name="worker_query_key">worker_query_key</string>
+    <string name="worker_pages_key">worker_pages_key</string>
+    <string name="worker_scheduler_tag">worker_scheduler_tag</string>
     <!-- ~Keys -->
 
 

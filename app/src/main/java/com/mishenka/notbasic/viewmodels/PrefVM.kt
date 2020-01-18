@@ -392,6 +392,7 @@ class PrefVM(
             ).edit().run {
                 putString(getString(R.string.pref_sched_query_key), prefData.query)
                 putInt(getString(R.string.pref_sched_pages_key), prefData.pages)
+                putInt(getString(R.string.pref_sched_fetched_pages_key), prefData.fetchedPages)
                 putInt(getString(R.string.pref_sched_interval_key), prefData.interval)
                 putLong(getString(R.string.pref_sched_starttime_key), prefData.startTime)
                 putLong(getString(R.string.pref_sched_lasttime_key), prefData.lastTime)
@@ -410,6 +411,7 @@ class PrefVM(
             )?.let {
                 val query = it.getString(getString(R.string.pref_sched_query_key), null)
                 val pages = it.getInt(getString(R.string.pref_sched_pages_key), -1)
+                val fetchedPages = it.getInt(getString(R.string.pref_sched_fetched_pages_key), -1)
                 val interval = it.getInt(getString(R.string.pref_sched_interval_key), -1)
                 val startTime = it.getLong(getString(R.string.pref_sched_starttime_key), -1)
                 val lastTime = it.getLong(getString(R.string.pref_sched_lasttime_key), -1)
@@ -421,6 +423,7 @@ class PrefVM(
                     data = PrefSchedulerData(
                         query,
                         pages,
+                        fetchedPages,
                         interval,
                         startTime,
                         lastTime
@@ -487,6 +490,7 @@ class PrefVM(
     data class PrefSchedulerData(
         val query: String,
         val pages: Int,
+        val fetchedPages: Int,
         val interval: Int,
         val startTime: Long,
         val lastTime: Long

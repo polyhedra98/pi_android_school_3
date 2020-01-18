@@ -8,18 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.work.Data
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.fragment.SchedulerFragmentData
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
 import com.mishenka.notbasic.managers.preservation.PreservationManager
 import com.mishenka.notbasic.utils.date.DateConverter
+import com.mishenka.notbasic.utils.workmanager.ScheduleWorker
 import com.mishenka.notbasic.viewmodels.EventVM
 import com.mishenka.notbasic.viewmodels.PrefVM
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class SchedulerFragment : Fragment() {
@@ -137,11 +142,10 @@ class SchedulerFragment : Fragment() {
         Log.i("NYA_$TAG", "Actual scheduler interval: $interval, pages: $pages")
 
         prefVM.prefSaveScheduler(context!!, PrefVM.PrefSchedulerData(
-            query, pages, interval, DateConverter.fromDate(Date())!!, -1
+            query, pages, -1, interval, DateConverter.fromDate(Date())!!, -1
         ))
 
-        //TODO("Set up WorkManager.")
-
+        setupWorkManager(query, pages, interval)
 
         eventVM.schedulerValuesApproved()
     }
@@ -157,6 +161,24 @@ class SchedulerFragment : Fragment() {
         else {
             return null
         }
+    }
+
+
+    private fun setupWorkManager(query: String, pages: Int, interval: Int) {
+        val appContext = activity!!.applicationContext
+        val manager = WorkManager.getInstance(appContext)
+        manager.cancelAllWorkByTag(getString(R.string.worker_scheduler_tag))
+
+        val work = PeriodicWorkRequestBuilder<ScheduleWorker>(interval.toLong(), TimeUnit.MINUTES)
+            .addTag(getString(R.string.worker_scheduler_tag))
+            //TODO("Change initial delay to an actual interval.")
+            .setInputData(Data.Builder()
+                .putString(getString(R.string.worker_query_key), query)
+                .putInt(getString(R.string.worker_pages_key), pages)
+                .build()
+            )
+            .build()
+        manager.enqueue(work)
     }
 
 

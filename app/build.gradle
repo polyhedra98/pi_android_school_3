@@ -63,6 +63,10 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.10.0'
 
 
+    //WorkManager
+    implementation 'androidx.work:work-runtime-ktx:2.2.0'
+
+
     //Koin
     implementation 'org.koin:koin-android:2.0.1'
     implementation 'org.koin:koin-androidx-viewmodel:2.0.1'

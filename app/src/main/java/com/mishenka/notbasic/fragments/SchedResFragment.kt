@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.mishenka.notbasic.R
 import com.mishenka.notbasic.data.model.FragmentExtras
 import com.mishenka.notbasic.interfaces.IFragmentRequest
@@ -49,6 +50,12 @@ class SchedResFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        eventVM.schedulerValuesUpdated.observe(this, Observer {
+            it.getContentIfNotHandled()?.let {
+                setupViews()
+            }
+        })
+
         setupViews()
     }
 
@@ -57,20 +64,22 @@ class SchedResFragment : Fragment() {
     private fun setupViews() {
         val data = prefVM.prefGetSchedulerData(context!!)
 
-        when {
-            data == null -> sched_res_upper_info_tv.text = getString(R.string.sched_res_not_set_up_ui)
-            data.lastTime == (-1).toLong() -> {
-                val pages = resources.getStringArray(R.array.pages_schedule_entries).elementAt(
-                    resources.getIntArray(R.array.pages_scheduler_values).indexOf(data.pages)
-                )
-                val interval = resources.getStringArray(R.array.period_schedule_entries).elementAt(
-                    resources.getIntArray(R.array.period_schedule_values).indexOf(data.interval)
-                )
+        if (data == null) {
+            sched_res_upper_info_tv.text = getString(R.string.sched_res_not_set_up_ui)
+        } else {
+            val pages = resources.getStringArray(R.array.pages_schedule_entries).elementAt(
+                resources.getIntArray(R.array.pages_scheduler_values).indexOf(data.pages)
+            )
+            val interval = resources.getStringArray(R.array.period_schedule_entries).elementAt(
+                resources.getIntArray(R.array.period_schedule_values).indexOf(data.interval)
+            )
+            if (data.lastTime == (-1).toLong()) {
                 sched_res_upper_info_tv.text = getString(R.string.sched_res_not_updated_ui,
                     DateConverter.toDate(data.startTime)?.toString(), data.query, pages, interval)
-            }
-            else -> {
-                //TODO("Set up")
+            } else {
+                sched_res_upper_info_tv.text = getString(R.string.sched_res_updated_ui,
+                    DateConverter.toDate(data.startTime)?.toString(), DateConverter.toDate(data.lastTime)?.toString(),
+                    data.query, data.fetchedPages, data.pages, interval)
             }
         }
     }
