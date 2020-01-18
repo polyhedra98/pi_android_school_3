@@ -1,7 +1,9 @@
 package com.mishenka.notbasic.utils.workmanager
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -12,6 +14,7 @@ import com.mishenka.notbasic.data.ApiService
 import com.mishenka.notbasic.data.model.photo.SchedRes
 import com.mishenka.notbasic.data.model.photo.network.OuterClass
 import com.mishenka.notbasic.data.source.AppDatabase
+import com.mishenka.notbasic.general.MainActivity
 import com.mishenka.notbasic.utils.date.DateConverter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -165,6 +168,20 @@ class ScheduleWorker(
 
 
     private fun sendNotification(url: String, total: Int) {
+        val contentIntent = Intent(applicationContext, MainActivity::class.java).also {
+            it.putExtra(
+                applicationContext.getString(R.string.notification_id_key),
+                applicationContext.getString(R.string.scheduler_notification_id).toInt()
+            )
+        }
+
+        val contentPendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            applicationContext.getString(R.string.scheduler_notification_id).toInt(),
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         val builder = NotificationCompat.Builder(
             applicationContext,
             applicationContext.getString(R.string.scheduler_notifications_channel_id)
@@ -173,6 +190,8 @@ class ScheduleWorker(
             .setContentTitle(applicationContext.getString(R.string.scheduler_notification_title))
             .setContentText(applicationContext.getString(R.string.scheduler_notification_text, url))
             .setContentInfo(applicationContext.getString(R.string.scheduler_notification_info, total))
+            .setContentIntent(contentPendingIntent)
+            .setAutoCancel(true)
 
         val notificationManager = ContextCompat.getSystemService(
             applicationContext,

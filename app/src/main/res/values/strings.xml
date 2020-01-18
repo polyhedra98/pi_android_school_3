@@ -60,6 +60,8 @@
 
     <string name="scheduler_notifications_channel_id">sched_notification_channel_id</string>
     <string name="scheduler_notification_id">1</string>
+
+    <string name="notification_id_key">notification_id_key</string>
     <!-- ~Keys -->
 
 

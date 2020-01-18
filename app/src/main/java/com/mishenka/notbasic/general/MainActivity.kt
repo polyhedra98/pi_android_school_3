@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import com.google.android.material.navigation.NavigationView
@@ -94,15 +95,25 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             getString(R.string.scheduler_channel_name)
         )
 
-        setupNavigationDrawer()
+        var initialCheckedItem = R.id.home_nav_menu_item
 
         navigationManager.run {
             if (fromSplash) {
                 clear()
             }
             conditionallyInitializeHost(this@MainActivity)
-            requestInitialPopulation(HomeFragment.HomeRequest, null)
+
+            val intExtra = intent.getIntExtra(getString(R.string.notification_id_key), -1)
+            if (intExtra == getString(R.string.scheduler_notification_id).toInt()) {
+                requestInitialPopulation(SchedResFragment.SchedResRequest, null).also {
+                    initialCheckedItem = R.id.scheduler_nav_menu_item
+                }
+            } else {
+                requestInitialPopulation(HomeFragment.HomeRequest, null)
+            }
         }
+
+        setupNavigationDrawer(initialCheckedItem)
 
         setupEventVM()
 
@@ -209,7 +220,7 @@ class MainActivity : ExtendedActivity(), ISplashHost {
             val notificationChannel = NotificationChannel(
                 channelId,
                 channelName,
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW
             )
 
             notificationChannel.description = getString(R.string.scheduler_channel_description)
@@ -332,14 +343,14 @@ class MainActivity : ExtendedActivity(), ISplashHost {
     }
 
 
-    private fun setupNavigationDrawer() {
+    private fun setupNavigationDrawer(initialCheckedItem: Int) {
         drawerLayout = home_dl
-        setupDrawerContent(home_nav_view)
+        setupDrawerContent(initialCheckedItem, home_nav_view)
     }
 
 
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.menu.findItem(R.id.home_nav_menu_item).isChecked = true
+    private fun setupDrawerContent(initialCheckedItem: Int, navigationView: NavigationView) {
+        navigationView.menu.findItem(initialCheckedItem).isChecked = true
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             drawerLayout.closeDrawers()
